@@ -136,6 +136,32 @@ const VIEW: CouponMapView = {
   },
 };
 
+const KFC_VIEW: CouponMapView = {
+  stores: [
+    {
+      ...VIEW.stores[0],
+      id: 'kfc-hongdae',
+      brand: {
+        id: 'brand-kfc',
+        source: 'kfc-kr-adb',
+        external_id: 'kfc',
+        name: 'KFC',
+        app_scheme: 'kfc_ko.kore.kg.kfc_korea://',
+        store_url: 'https://www.kfckorea.com',
+        app_store_url: 'https://play.google.com/store/apps/details?id=kfc_ko.kore.kg.kfc_korea',
+      },
+      brandName: 'KFC',
+      brandInitial: 'KF',
+      brandColor: '#175cd3',
+    },
+  ],
+  totals: {
+    brands: 1,
+    stores: 1,
+    activeCoupons: 2,
+  },
+};
+
 function firePointer(
   target: HTMLElement,
   type: 'pointerdown' | 'pointermove' | 'pointerup',
@@ -150,6 +176,22 @@ function firePointer(
     pointerType: { value: 'touch' },
   });
   fireEvent(target, event);
+}
+
+function mockMobileViewport() {
+  Object.defineProperty(window, 'matchMedia', {
+    configurable: true,
+    value: vi.fn((query: string) => ({
+      matches: query === '(max-width: 760px)',
+      media: query,
+      onchange: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  });
 }
 
 describe('CouponMapScreen', () => {
@@ -193,6 +235,18 @@ describe('CouponMapScreen', () => {
       undefined,
       'mcdonaldskr://coupon/fries'
     );
+  });
+
+  it('uses the same KFC brand badge in the selected detail and coupon list', () => {
+    const { container } = render(<CouponMapScreen view={KFC_VIEW} status="ready" message={null} />);
+
+    const selectedLogo = container.querySelector('.selectedHead .brandLogo');
+    const listLogo = container.querySelector('.couponListRow .storeLogo');
+
+    expect(selectedLogo?.textContent).toBe('KFC');
+    expect(listLogo?.textContent).toBe('KFC');
+    expect(selectedLogo?.getAttribute('data-brand-logo')).toBe('kfc');
+    expect(listLogo?.getAttribute('data-brand-logo')).toBe('kfc');
   });
 
   it('updates the selected store from marker and list interactions', () => {
@@ -239,19 +293,7 @@ describe('CouponMapScreen', () => {
   });
 
   it('lowers and restores the mobile coupon sheet from the drag handle', () => {
-    Object.defineProperty(window, 'matchMedia', {
-      configurable: true,
-      value: vi.fn((query: string) => ({
-        matches: query === '(max-width: 760px)',
-        media: query,
-        onchange: null,
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-        dispatchEvent: vi.fn(),
-      })),
-    });
+    mockMobileViewport();
 
     const { container } = render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
     const sheetDragArea = container.querySelector('.sheetDragArea') as HTMLElement;
@@ -273,6 +315,51 @@ describe('CouponMapScreen', () => {
     firePointer(sheetDragArea, 'pointerup', 240);
 
     expect(panelDock.className).not.toContain('isSheetLowered');
+  });
+
+  it('expands the mobile coupon sheet to the top when dragged upward', () => {
+    mockMobileViewport();
+
+    const { container } = render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+    const sheetDragArea = container.querySelector('.sheetDragArea') as HTMLElement;
+    const panelDock = container.querySelector('.panelDock') as HTMLElement;
+
+    firePointer(sheetDragArea, 'pointerdown', 240);
+    firePointer(sheetDragArea, 'pointermove', 120);
+
+    expect(panelDock.style.getPropertyValue('--sheet-drag-y')).toBe('-120px');
+
+    firePointer(sheetDragArea, 'pointerup', 120);
+
+    expect(panelDock.className).toContain('isSheetExpanded');
+    expect(panelDock.className).not.toContain('isSheetLowered');
+
+    firePointer(sheetDragArea, 'pointerdown', 120);
+    firePointer(sheetDragArea, 'pointermove', 220);
+    firePointer(sheetDragArea, 'pointerup', 220);
+
+    expect(panelDock.className).not.toContain('isSheetExpanded');
+  });
+
+  it('lowers the expanded mobile coupon sheet when the map is tapped', () => {
+    mockMobileViewport();
+
+    const { container } = render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+    const sheetDragArea = container.querySelector('.sheetDragArea') as HTMLElement;
+    const panelDock = container.querySelector('.panelDock') as HTMLElement;
+    const mapCanvas = container.querySelector('.mapCanvas') as HTMLElement;
+
+    firePointer(sheetDragArea, 'pointerdown', 240);
+    firePointer(sheetDragArea, 'pointermove', 120);
+    firePointer(sheetDragArea, 'pointerup', 120);
+
+    expect(panelDock.className).toContain('isSheetExpanded');
+
+    fireEvent.click(mapCanvas);
+
+    expect(panelDock.className).not.toContain('isSheetExpanded');
+    expect(panelDock.className).toContain('isSheetLowered');
+    expect(panelDock.style.getPropertyValue('--sheet-base-y')).toBe('calc(100% - 124px)');
   });
 
   it('keeps the empty state visible when there are no stores', () => {

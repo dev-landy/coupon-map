@@ -108,8 +108,11 @@ const MAP_PROGRAMMATIC_MOVE_SUPPRESSION_MS = 900;
 const COUPON_RELOAD_CACHE_TTL_MS = 2 * 60 * 1000;
 const COUPON_RELOAD_CACHE_MAX_ENTRIES = 40;
 const COUPON_SHEET_PEEK_HEIGHT_PX = 124;
+const COUPON_SHEET_EXPANDED_TOP_GAP_PX = 72;
 const COUPON_SHEET_DRAG_LIMIT_PX = 640;
 const COUPON_SHEET_DRAG_THRESHOLD_PX = 56;
+const COUPON_SHEET_EXPAND_DRAG_THRESHOLD_PX = 180;
+const KFC_BRAND_COLOR = '#e4002b';
 
 interface CachedCouponMapApiResponse {
   response: CouponMapApiResponse;
@@ -157,6 +160,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
   const [searchRadiusMeters, setSearchRadiusMeters] = useState(DEFAULT_RADIUS_METERS);
   const [isCouponPanelOpen, setIsCouponPanelOpen] = useState(true);
   const [isCouponSheetLowered, setIsCouponSheetLowered] = useState(false);
+  const [isCouponSheetExpanded, setIsCouponSheetExpanded] = useState(false);
   const [sheetDragY, setSheetDragY] = useState(0);
   const [isSheetDragging, setIsSheetDragging] = useState(false);
   const [mapProviderStatus, setMapProviderStatus] = useState<MapProviderStatus>(
@@ -572,7 +576,13 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     }, 240);
 
     return () => window.clearTimeout(timeout);
-  }, [isCouponPanelOpen, mapProviderStatus, scheduleMarkerProjection]);
+  }, [
+    isCouponPanelOpen,
+    isCouponSheetExpanded,
+    isCouponSheetLowered,
+    mapProviderStatus,
+    scheduleMarkerProjection,
+  ]);
 
   const selectStore = useCallback(
     (storeId: string) => {
@@ -580,6 +590,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
       setSelectedCouponSelection(null);
       setIsCouponPanelOpen(true);
       setIsCouponSheetLowered(false);
+      setIsCouponSheetExpanded(false);
 
       const store = displayView.stores.find((candidate) => candidate.id === storeId);
       const map = mapRef.current;
@@ -604,7 +615,10 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
   const toggleCouponPanel = useCallback(() => {
     setIsCouponPanelOpen((isOpen) => {
       const nextIsOpen = !isOpen;
-      if (nextIsOpen) setIsCouponSheetLowered(false);
+      if (nextIsOpen) {
+        setIsCouponSheetLowered(false);
+        setIsCouponSheetExpanded(false);
+      }
       return nextIsOpen;
     });
   }, []);
@@ -635,12 +649,13 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     const pointerY = getPointerY(event);
     drag.lastY = pointerY;
     const rawDragY = pointerY - drag.startY;
-    const nextDragY = isCouponSheetLowered
-      ? Math.max(-COUPON_SHEET_DRAG_LIMIT_PX, Math.min(0, rawDragY))
-      : Math.min(COUPON_SHEET_DRAG_LIMIT_PX, Math.max(0, rawDragY));
+    const nextDragY = resolveCouponSheetDragY(rawDragY, {
+      isExpanded: isCouponSheetExpanded,
+      isLowered: isCouponSheetLowered,
+    });
     setSheetDragY(nextDragY);
     if (nextDragY !== 0) event.preventDefault();
-  }, [isCouponSheetLowered]);
+  }, [isCouponSheetExpanded, isCouponSheetLowered]);
 
   const finishCouponSheetDrag = useCallback((event: React.PointerEvent<HTMLElement>) => {
     const drag = sheetDragRef.current;
@@ -655,23 +670,48 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
 
     if (event.type === 'pointercancel') return;
 
+    if (isCouponSheetExpanded) {
+      if (finalDragY >= COUPON_SHEET_DRAG_THRESHOLD_PX) {
+        setIsCouponSheetExpanded(false);
+      }
+      return;
+    }
+
     if (isCouponSheetLowered) {
-      if (signedDragY <= -COUPON_SHEET_DRAG_THRESHOLD_PX || Math.abs(signedDragY) < 8) {
+      if (signedDragY <= -COUPON_SHEET_EXPAND_DRAG_THRESHOLD_PX) {
+        setIsCouponSheetLowered(false);
+        setIsCouponSheetExpanded(true);
+      } else if (signedDragY <= -COUPON_SHEET_DRAG_THRESHOLD_PX || Math.abs(signedDragY) < 8) {
         setIsCouponSheetLowered(false);
       }
+      return;
+    }
+
+    if (signedDragY <= -COUPON_SHEET_DRAG_THRESHOLD_PX) {
+      setIsCouponSheetExpanded(true);
       return;
     }
 
     if (finalDragY >= COUPON_SHEET_DRAG_THRESHOLD_PX) {
       setIsCouponSheetLowered(true);
     }
-  }, [isCouponSheetLowered]);
+  }, [isCouponSheetExpanded, isCouponSheetLowered]);
+
+  const lowerExpandedSheetFromMap = useCallback((event: React.MouseEvent<HTMLElement>) => {
+    if (!isCouponPanelOpen || !isCouponSheetExpanded || !isMobileCouponSheet()) return;
+    if (event.target instanceof Element && event.target.closest('.marker')) return;
+
+    setIsCouponSheetExpanded(false);
+    setIsCouponSheetLowered(true);
+    setSheetDragY(0);
+  }, [isCouponPanelOpen, isCouponSheetExpanded]);
 
   return (
     <main className="appShell">
       <section
         className={`mapCanvas ${mapProviderStatus === 'ready' ? 'hasProviderMap' : 'usesFallbackMap'} ${mapProviderStatus === 'loading' ? 'isMapLoading' : ''}`}
         aria-label="coupon map"
+        onClick={lowerExpandedSheetFromMap}
       >
         <div ref={mapContainerRef} className="providerMap" aria-hidden="true" />
         {mapProviderStatus !== 'ready' ? <MapStatusOverlay status={mapProviderStatus} /> : null}
@@ -725,7 +765,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
               onClick={() => selectStore(store.id)}
             >
               <span className="pinBubble">
-                <span className="pinLogo">{store.brandInitial}</span>
+                <BrandLogo store={store} className="pinLogo" />
                 <span className="pinDeal">
                   <small>최대</small>
                   <b>{store.bestCoupon.headline}</b>
@@ -742,7 +782,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
       ) : null}
 
       <div
-        className={`panelDock ${isCouponPanelOpen ? 'isPanelOpen' : 'isPanelClosed'} ${isCouponSheetLowered ? 'isSheetLowered' : ''} ${isSheetDragging ? 'isSheetDragging' : ''}`}
+        className={`panelDock ${isCouponPanelOpen ? 'isPanelOpen' : 'isPanelClosed'} ${isCouponSheetLowered ? 'isSheetLowered' : ''} ${isCouponSheetExpanded ? 'isSheetExpanded' : ''} ${isSheetDragging ? 'isSheetDragging' : ''}`}
         style={
           {
             '--sheet-base-y': isCouponSheetLowered
@@ -800,9 +840,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
                   data-selected-coupon-id={selectedCoupon.id}
                 >
                   <div className="selectedHead">
-                    <span className="brandLogo" style={{ background: selectedStore.brandColor }}>
-                      {selectedStore.brandInitial}
-                    </span>
+                    <BrandLogo store={selectedStore} className="brandLogo" />
                     <div>
                       <p>{selectedStore.brandName}</p>
                       <h2>{selectedCoupon.title}</h2>
@@ -1006,6 +1044,24 @@ function getPointerY(event: React.PointerEvent<HTMLElement>): number {
   return candidates.find((value) => Number.isFinite(value)) ?? 0;
 }
 
+function resolveCouponSheetDragY(
+  rawDragY: number,
+  state: { isExpanded: boolean; isLowered: boolean }
+): number {
+  if (state.isExpanded) {
+    return Math.min(COUPON_SHEET_DRAG_LIMIT_PX, Math.max(0, rawDragY));
+  }
+
+  if (state.isLowered) {
+    return Math.max(-COUPON_SHEET_DRAG_LIMIT_PX, Math.min(0, rawDragY));
+  }
+
+  return Math.max(
+    -COUPON_SHEET_DRAG_LIMIT_PX,
+    Math.min(COUPON_SHEET_DRAG_LIMIT_PX, rawDragY)
+  );
+}
+
 function CouponListRow({
   rowId,
   store,
@@ -1034,9 +1090,7 @@ function CouponListRow({
       aria-label={`${store.brandName} ${store.name} ${coupon.title} ${coupon.headline}`}
       onClick={onSelect}
     >
-      <div className="storeLogo" style={{ background: store.brandColor }}>
-        {store.brandInitial}
-      </div>
+      <BrandLogo store={store} className="storeLogo" />
       <div className="couponRowCopy">
         <div className="couponRowTitle">
           <h3>{coupon.title}</h3>
@@ -1051,6 +1105,57 @@ function CouponListRow({
       </div>
     </button>
   );
+}
+
+function BrandLogo({
+  store,
+  className,
+}: {
+  store: CouponMapStore;
+  className: 'pinLogo' | 'brandLogo' | 'storeLogo';
+}) {
+  const logo = resolveBrandLogo(store);
+
+  return (
+    <span
+      className={`${className} brandBadge`}
+      style={{ background: logo.background }}
+      data-brand-logo={logo.kind}
+      aria-hidden="true"
+    >
+      {logo.label}
+    </span>
+  );
+}
+
+function resolveBrandLogo(store: CouponMapStore): {
+  kind: string;
+  label: string;
+  background: string;
+} {
+  const brandTokens = [
+    store.brandName,
+    store.brand.source,
+    store.brand.external_id,
+    store.brand.store_url,
+  ]
+    .filter((token): token is string => typeof token === 'string')
+    .join(' ')
+    .toLowerCase();
+
+  if (/\bkfc\b/.test(brandTokens) || brandTokens.includes('kfckorea')) {
+    return {
+      kind: 'kfc',
+      label: 'KFC',
+      background: KFC_BRAND_COLOR,
+    };
+  }
+
+  return {
+    kind: 'default',
+    label: store.brandInitial,
+    background: store.brandColor,
+  };
 }
 
 function MapStatusOverlay({ status }: { status: MapProviderStatus }) {
@@ -1341,6 +1446,13 @@ const styles = `
     color: #fff;
     font-weight: 900;
     line-height: 1;
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+
+  .brandBadge[data-brand-logo="kfc"] {
+    font-family: Arial, Helvetica, sans-serif;
+    text-transform: uppercase;
   }
 
   .pinLogo {
@@ -1555,6 +1667,12 @@ const styles = `
     font-size: 16px;
   }
 
+  .brandLogo.brandBadge[data-brand-logo="kfc"] {
+    width: 42px;
+    height: 42px;
+    font-size: 13px;
+  }
+
   .selectedHead p {
     color: #15151a;
     font-size: 17px;
@@ -1570,7 +1688,7 @@ const styles = `
     letter-spacing: 0;
   }
 
-  .selectedHead span {
+  .selectedHead div span {
     display: block;
     margin-top: 3px;
     color: #9a9aa2;
@@ -1765,6 +1883,11 @@ const styles = `
       max-height: calc(100dvh - 92px);
     }
 
+    .panelDock.isSheetExpanded {
+      height: calc(100dvh - ${COUPON_SHEET_EXPANDED_TOP_GAP_PX}px - env(safe-area-inset-top));
+      max-height: calc(100dvh - ${COUPON_SHEET_EXPANDED_TOP_GAP_PX}px);
+    }
+
     .panelDock.isPanelClosed {
       transform: translateY(100%);
     }
@@ -1843,6 +1966,12 @@ const styles = `
       width: 44px;
       height: 44px;
       font-size: 14px;
+    }
+
+    .brandLogo.brandBadge[data-brand-logo="kfc"] {
+      width: 40px;
+      height: 40px;
+      font-size: 13px;
     }
 
     .selectedHead p {
