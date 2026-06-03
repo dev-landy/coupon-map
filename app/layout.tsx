@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import { SITE_DESCRIPTION, SITE_KEYWORDS, SITE_NAME, SITE_TITLE, getSiteUrl } from '../lib/seo';
 
@@ -73,9 +74,24 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
+      <head>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-YW4N6K6GD8" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+
+              gtag('config', 'G-YW4N6K6GD8');
+            `,
+          }}
+        />
+      </head>
       <body>
         {children}
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
