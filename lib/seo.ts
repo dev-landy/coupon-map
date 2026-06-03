@@ -3,7 +3,7 @@ import type { CouponMapView } from './frontendData';
 export const SITE_NAME = '쿠폰맵';
 export const SITE_TITLE = '쿠폰맵 - 내 주변 프랜차이즈 쿠폰 지도';
 export const SITE_DESCRIPTION =
-  '내 위치 근처 맥도날드, 버거킹, KFC 등 프랜차이즈 매장의 할인 쿠폰과 유효기간을 지도에서 확인하세요.';
+  '내 주변에서 바로 쓸 수 있는 맥도날드, 버거킹, KFC 할인 쿠폰을 지도에서 한눈에 확인하세요.';
 export const SITE_KEYWORDS = [
   '쿠폰맵',
   '프랜차이즈 쿠폰',
@@ -17,7 +17,7 @@ export const SITE_KEYWORDS = [
 
 type JsonLdObject = Record<string, unknown>;
 
-const PRODUCTION_SITE_URL = 'https://쿠폰맵.com';
+const PRODUCTION_SITE_URL = 'https://www.쿠폰맵.com';
 const MAX_STRUCTURED_DATA_STORES = 20;
 const MAX_STRUCTURED_DATA_COUPONS_PER_STORE = 3;
 
