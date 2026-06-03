@@ -1,19 +1,16 @@
 import type { CouponMapView } from './frontendData';
 
 export const SITE_NAME = '쿠폰맵';
-export const SITE_TITLE = '쿠폰맵 - 내 주변 프랜차이즈 쿠폰 지도';
+export const SITE_TITLE = '쿠폰맵 - 내 주변 프랜차이즈 할인 쿠폰 지도';
 export const SITE_DESCRIPTION =
-  '내 주변에서 바로 쓸 수 있는 맥도날드, 버거킹, KFC 할인 쿠폰을 지도에서 한눈에 확인하세요.';
-export const SITE_KEYWORDS = [
-  '쿠폰맵',
-  '프랜차이즈 쿠폰',
-  '할인 쿠폰',
-  '주변 쿠폰',
-  '맥도날드 쿠폰',
-  '버거킹 쿠폰',
-  'KFC 쿠폰',
-  '쿠폰 지도',
-];
+  '내 주변 맥도날드, 버거킹, KFC 매장의 할인 쿠폰과 유효기간을 지도에서 비교하고 바로 앱으로 열어보세요.';
+export const SITE_LANGUAGE = 'ko-KR';
+export const SITE_LOCALE = 'ko_KR';
+export const SITE_OG_IMAGE = '/og-coupon-map-ad-dark-1080.png';
+export const SITE_OG_IMAGE_WIDTH = 1080;
+export const SITE_OG_IMAGE_HEIGHT = 1080;
+export const SITE_ICON = '/icon.svg';
+export const SITE_IMAGE_ALT = '쿠폰맵 주변 프랜차이즈 쿠폰 찾기 광고 이미지';
 
 type JsonLdObject = Record<string, unknown>;
 
@@ -43,27 +40,60 @@ export function getCanonicalUrl(pathname = '/'): string {
 }
 
 export function buildHomePageJsonLd(view: CouponMapView): JsonLdObject[] {
+  const siteUrl = getCanonicalUrl('/');
+
   return [
     {
       '@context': 'https://schema.org',
-      '@type': 'WebApplication',
+      '@type': 'WebSite',
+      '@id': getCanonicalFragmentUrl('website'),
       name: SITE_NAME,
-      url: getCanonicalUrl('/'),
-      applicationCategory: 'FoodAndDrinkApplication',
-      operatingSystem: 'Web',
-      inLanguage: 'ko-KR',
+      url: siteUrl,
+      inLanguage: SITE_LANGUAGE,
       description: SITE_DESCRIPTION,
     },
     {
       '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      '@id': getCanonicalFragmentUrl('app'),
+      name: SITE_NAME,
+      url: siteUrl,
+      applicationCategory: 'FoodAndDrinkApplication',
+      operatingSystem: 'Web',
+      inLanguage: SITE_LANGUAGE,
+      description: SITE_DESCRIPTION,
+      isAccessibleForFree: true,
+      image: getCanonicalUrl(SITE_OG_IMAGE),
+      provider: {
+        '@type': 'Organization',
+        name: SITE_NAME,
+        url: siteUrl,
+        logo: getCanonicalUrl(SITE_ICON),
+      },
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'KRW',
+      },
+      areaServed: {
+        '@type': 'Country',
+        name: '대한민국',
+      },
+    },
+    {
+      '@context': 'https://schema.org',
       '@type': 'ItemList',
+      '@id': getCanonicalFragmentUrl('nearby-coupon-stores'),
       name: '근처 프랜차이즈 쿠폰 매장',
+      description: '현재 지도 반경 안에서 사용할 수 있는 프랜차이즈 쿠폰 매장 목록입니다.',
+      url: siteUrl,
       numberOfItems: view.stores.length,
       itemListElement: view.stores
         .slice(0, MAX_STRUCTURED_DATA_STORES)
         .map((store, index) => ({
           '@type': 'ListItem',
           position: index + 1,
+          url: getStoreFragmentUrl(store),
           item: buildStoreJsonLd(store),
         })),
     },
@@ -87,10 +117,12 @@ function normalizeSiteUrl(value: string | undefined): URL | null {
 }
 
 function buildStoreJsonLd(store: CouponMapView['stores'][number]): JsonLdObject {
+  const storeUrl = getStoreFragmentUrl(store);
   const storeJsonLd: JsonLdObject = {
     '@type': 'LocalBusiness',
+    '@id': storeUrl,
     name: `${store.brandName} ${store.name}`,
-    url: getCanonicalUrl('/'),
+    url: storeUrl,
     geo: {
       '@type': 'GeoCoordinates',
       latitude: roundCoordinate(store.lat),
@@ -104,7 +136,12 @@ function buildStoreJsonLd(store: CouponMapView['stores'][number]): JsonLdObject 
         name: coupon.title,
         description: `${coupon.detail} · ${coupon.validLabel}`,
         category: coupon.discountType,
-        url: getCanonicalUrl('/'),
+        url: storeUrl,
+        availability: 'https://schema.org/InStock',
+        areaServed: {
+          '@type': 'Country',
+          name: '대한민국',
+        },
       })),
   };
 
@@ -139,4 +176,14 @@ function isHttpUrl(value: string): boolean {
 
 function roundCoordinate(value: number): number {
   return Number(value.toFixed(6));
+}
+
+function getCanonicalFragmentUrl(fragment: string): string {
+  const url = new URL('/', getSiteUrl());
+  url.hash = fragment;
+  return url.toString();
+}
+
+function getStoreFragmentUrl(store: CouponMapView['stores'][number]): string {
+  return getCanonicalFragmentUrl(`store-${store.id}`);
 }

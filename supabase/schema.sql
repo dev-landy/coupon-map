@@ -53,6 +53,28 @@ create table if not exists coupons (
   created_at     timestamptz not null default now()
 );
 
+-- User-submitted feedback. Reference fields are intentionally text because
+-- reports may point at stale, deleted, or development/demo entities.
+create table if not exists feedback_reports (
+  id                   uuid primary key default gen_random_uuid(),
+  type                 text not null check (
+    type in ('coupon_incorrect', 'store_location', 'app_problem', 'feature_request', 'other')
+  ),
+  message              text not null check (char_length(message) between 3 and 1000),
+  contact              text,
+  store_id             text,
+  coupon_id            text,
+  brand_id             text,
+  brand_name           text,
+  page_path            text,
+  search_radius_meters integer,
+  user_agent           text,
+  source               text not null default 'coupon-map-web',
+  status               text not null default 'new' check (status in ('new', 'reviewed', 'resolved')),
+  created_at           timestamptz not null default now(),
+  reviewed_at          timestamptz
+);
+
 -- Keep re-running this setup file useful for existing databases.
 alter table brands add column if not exists source text not null default 'manual';
 alter table brands add column if not exists external_id text;
@@ -71,10 +93,23 @@ alter table coupons add column if not exists raw_payload jsonb;
 alter table coupons add column if not exists updated_at timestamptz not null default now();
 alter table coupons add column if not exists last_seen_at timestamptz;
 
+alter table feedback_reports add column if not exists contact text;
+alter table feedback_reports add column if not exists store_id text;
+alter table feedback_reports add column if not exists coupon_id text;
+alter table feedback_reports add column if not exists brand_id text;
+alter table feedback_reports add column if not exists brand_name text;
+alter table feedback_reports add column if not exists page_path text;
+alter table feedback_reports add column if not exists search_radius_meters integer;
+alter table feedback_reports add column if not exists user_agent text;
+alter table feedback_reports add column if not exists source text not null default 'coupon-map-web';
+alter table feedback_reports add column if not exists status text not null default 'new';
+alter table feedback_reports add column if not exists reviewed_at timestamptz;
+
 -- Public frontend reads. Supabase service_role keeps its default RLS bypass for ingest.
 alter table brands enable row level security;
 alter table stores enable row level security;
 alter table coupons enable row level security;
+alter table feedback_reports enable row level security;
 
 drop policy if exists brands_select_anon_authenticated on brands;
 create policy brands_select_anon_authenticated
@@ -99,14 +134,20 @@ create policy coupons_select_anon_authenticated
 
 -- Browser clients read with anon/authenticated roles; RLS policies above limit
 -- them to SELECT-only access. Service-side crawler/import scripts use the
--- service_role key for writes.
+-- service_role key for writes. Feedback reports are written only through
+-- the server API with the service_role key.
 grant usage on schema public to anon, authenticated, service_role;
 grant select on table brands, stores, coupons to anon, authenticated;
-grant all on table brands, stores, coupons to service_role;
+grant all on table brands, stores, coupons, feedback_reports to service_role;
 
 -- Indexes for the hot lookup paths (filter map stores/coupons by brand and active validity).
 create index if not exists idx_stores_brand_id on stores (brand_id);
 create index if not exists idx_coupons_brand_id on coupons (brand_id);
+create index if not exists idx_feedback_reports_status_created_at
+  on feedback_reports (status, created_at desc);
+create index if not exists idx_feedback_reports_store_id_created_at
+  on feedback_reports (store_id, created_at desc)
+  where store_id is not null;
 create index if not exists idx_stores_brand_lat_lng
   on stores (brand_id, lat, lng);
 create index if not exists idx_coupons_active_brand_valid_until

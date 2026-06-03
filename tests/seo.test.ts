@@ -2,9 +2,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
   buildHomePageJsonLd,
+  getCanonicalUrl,
   getSiteUrl,
   serializeJsonLd,
   SITE_DESCRIPTION,
+  SITE_ICON,
   SITE_NAME,
 } from '../lib/seo';
 import type { CouponMapView } from '../lib/frontendData';
@@ -71,21 +73,43 @@ describe('SEO helpers', () => {
     vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'coupon.example.com/path');
 
     expect(getSiteUrl().toString()).toBe('https://coupon.example.com/');
+    expect(getCanonicalUrl('/sitemap.xml')).toBe('https://coupon.example.com/sitemap.xml');
   });
 
   it('builds home page structured data from visible coupon stores', () => {
     vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://coupon.example.com');
 
     const jsonLd = buildHomePageJsonLd(VIEW);
+    const website = jsonLd[0];
+    const webApp = jsonLd[1];
+    const itemList = jsonLd[2];
 
-    expect(jsonLd[0]).toMatchObject({
-      '@type': 'WebApplication',
+    expect(website).toMatchObject({
+      '@type': 'WebSite',
+      '@id': 'https://coupon.example.com/#website',
       name: SITE_NAME,
       description: SITE_DESCRIPTION,
       url: 'https://coupon.example.com/',
     });
+    expect(webApp).toMatchObject({
+      '@type': 'WebApplication',
+      '@id': 'https://coupon.example.com/#app',
+      name: SITE_NAME,
+      description: SITE_DESCRIPTION,
+      url: 'https://coupon.example.com/',
+      image: 'https://coupon.example.com/og-coupon-map-ad-dark-1080.png',
+      isAccessibleForFree: true,
+      provider: {
+        '@type': 'Organization',
+        logo: `https://coupon.example.com${SITE_ICON}`,
+      },
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'KRW',
+      },
+    });
 
-    const itemList = jsonLd[1];
     const itemListElement = itemList.itemListElement as Record<string, unknown>[];
     const storeItem = itemListElement[0].item as Record<string, unknown>;
     const geo = storeItem.geo as Record<string, unknown>;
@@ -93,16 +117,21 @@ describe('SEO helpers', () => {
 
     expect(itemList).toMatchObject({
       '@type': 'ItemList',
+      '@id': 'https://coupon.example.com/#nearby-coupon-stores',
+      url: 'https://coupon.example.com/',
       numberOfItems: 1,
     });
     expect(itemListElement[0]).toMatchObject({
       '@type': 'ListItem',
       position: 1,
+      url: 'https://coupon.example.com/#store-hongdae',
     });
     expect(storeItem).toMatchObject({
       '@type': 'LocalBusiness',
+      '@id': 'https://coupon.example.com/#store-hongdae',
       name: '맥도날드 홍대점',
       address: '서울 마포구',
+      url: 'https://coupon.example.com/#store-hongdae',
     });
     expect(geo).toMatchObject({
       latitude: 37.556346,
@@ -113,7 +142,8 @@ describe('SEO helpers', () => {
       name: '빅맥 20%',
       description: '할인 · D-7',
       category: '정률',
-      url: 'https://coupon.example.com/',
+      url: 'https://coupon.example.com/#store-hongdae',
+      availability: 'https://schema.org/InStock',
     });
   });
 

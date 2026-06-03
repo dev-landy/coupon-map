@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="CouponMap icon">
+  <rect width="512" height="512" rx="96" fill="#0f172a" />
+  <path
+    d="M118 176c0-22.1 17.9-40 40-40h196c22.1 0 40 17.9 40 40v36c-24.3 0-44 19.7-44 44s19.7 44 44 44v36c0 22.1-17.9 40-40 40H158c-22.1 0-40-17.9-40-40v-36c24.3 0 44-19.7 44-44s-19.7-44-44-44v-36Z"
+    fill="#f8fafc"
+  />
+  <path
+    d="M256 176c-41.4 0-75 33.6-75 75 0 55.4 75 119 75 119s75-63.6 75-119c0-41.4-33.6-75-75-75Z"
+    fill="#ef4444"
+  />
+  <circle cx="256" cy="251" r="31" fill="#fef2f2" />
+  <path d="M230 352h52" stroke="#0f172a" stroke-width="18" stroke-linecap="round" />
+</svg>

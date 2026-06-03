@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import CouponMapScreen from '../app/CouponMapScreen';
@@ -21,6 +21,11 @@ afterEach(() => {
     configurable: true,
     value: originalMatchMedia,
   });
+  try {
+    window.localStorage.removeItem?.('coupon-map-feedback-last-submitted-at');
+  } catch {
+    // Some jsdom launch modes provide a partial localStorage shim.
+  }
   vi.unstubAllGlobals();
   vi.clearAllMocks();
 });
@@ -374,6 +379,57 @@ describe('CouponMapScreen', () => {
     expect(screen.getByText('Supabase에 표시 가능한 쿠폰 데이터가 없습니다.')).toBeTruthy();
     expect(screen.getByText('표시할 쿠폰이 없습니다')).toBeTruthy();
     expect(screen.queryByTestId('selected-store-detail')).toBeNull();
+  });
+
+  it('submits selected coupon feedback without showing the coupon context in the dialog', async () => {
+    Object.defineProperty(navigator, 'geolocation', {
+      configurable: true,
+      value: {
+        watchPosition: vi.fn(() => 12),
+        clearWatch: vi.fn(),
+      },
+    });
+    const fetchMock = vi.fn((_input: RequestInfo | URL, _init?: RequestInit) =>
+      Promise.resolve({
+        ok: true,
+        status: 201,
+        json: () => Promise.resolve({ ok: true }),
+      } as Response)
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+
+    fireEvent.click(screen.getByRole('button', { name: '정보 수정 제안' }));
+
+    const dialog = screen.getByRole('dialog', { name: '피드백 보내기' });
+    expect(dialog).toBeTruthy();
+    expect(within(dialog).queryByText('맥도날드 홍대점')).toBeNull();
+    expect(within(dialog).queryByText('빅맥 20%')).toBeNull();
+
+    fireEvent.change(screen.getByLabelText('내용'), {
+      target: { value: ' 빅맥 쿠폰 조건이 실제 앱과 달라요. ' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '보내기' }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+
+    const [url, options] = fetchMock.mock.calls[0];
+    expect(url).toBe('/api/feedback');
+    expect(options?.method).toBe('POST');
+
+    const payload = JSON.parse(String(options?.body));
+    expect(payload).toMatchObject({
+      type: 'coupon_incorrect',
+      message: '빅맥 쿠폰 조건이 실제 앱과 달라요.',
+      storeId: 'hongdae',
+      couponId: 'bigmac',
+      brandId: 'brand-mcdonalds',
+      brandName: '맥도날드',
+      pagePath: '/',
+      searchRadiusMeters: 1000,
+    });
+    expect(screen.getByText('피드백을 보냈습니다')).toBeTruthy();
   });
 
   it('does not render the old illustrated map fallback before the map provider is ready', () => {

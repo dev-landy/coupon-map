@@ -2,7 +2,18 @@ import type { Metadata, Viewport } from 'next';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
-import { SITE_DESCRIPTION, SITE_KEYWORDS, SITE_NAME, SITE_TITLE, getSiteUrl } from '../lib/seo';
+import {
+  SITE_DESCRIPTION,
+  SITE_ICON,
+  SITE_IMAGE_ALT,
+  SITE_LOCALE,
+  SITE_NAME,
+  SITE_OG_IMAGE,
+  SITE_OG_IMAGE_HEIGHT,
+  SITE_OG_IMAGE_WIDTH,
+  SITE_TITLE,
+  getSiteUrl,
+} from '../lib/seo';
 
 export const metadata: Metadata = {
   metadataBase: getSiteUrl(),
@@ -12,7 +23,6 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
-  keywords: SITE_KEYWORDS,
   authors: [{ name: SITE_NAME }],
   creator: SITE_NAME,
   publisher: SITE_NAME,
@@ -22,17 +32,17 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    locale: 'ko_KR',
+    locale: SITE_LOCALE,
     url: '/',
     siteName: SITE_NAME,
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     images: [
       {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: SITE_TITLE,
+        url: SITE_OG_IMAGE,
+        width: SITE_OG_IMAGE_WIDTH,
+        height: SITE_OG_IMAGE_HEIGHT,
+        alt: SITE_IMAGE_ALT,
       },
     ],
   },
@@ -40,7 +50,21 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    images: ['/og-image.png'],
+    images: [
+      {
+        url: SITE_OG_IMAGE,
+        alt: SITE_IMAGE_ALT,
+      },
+    ],
+  },
+  icons: {
+    icon: [
+      {
+        url: SITE_ICON,
+        type: 'image/svg+xml',
+      },
+    ],
+    shortcut: [SITE_ICON],
   },
   robots: {
     index: true,

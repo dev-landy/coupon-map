@@ -113,6 +113,25 @@ const COUPON_SHEET_DRAG_LIMIT_PX = 640;
 const COUPON_SHEET_DRAG_THRESHOLD_PX = 56;
 const COUPON_SHEET_EXPAND_DRAG_THRESHOLD_PX = 180;
 const KFC_BRAND_COLOR = '#e4002b';
+const FEEDBACK_COOLDOWN_STORAGE_KEY = 'coupon-map-feedback-last-submitted-at';
+const FEEDBACK_COOLDOWN_MS = 30 * 1000;
+
+type FeedbackType =
+  | 'coupon_incorrect'
+  | 'store_location'
+  | 'app_problem'
+  | 'feature_request'
+  | 'other';
+
+type FeedbackSubmitStatus = 'idle' | 'submitting' | 'success' | 'error';
+
+const FEEDBACK_TYPE_OPTIONS: Array<{ value: FeedbackType; label: string }> = [
+  { value: 'coupon_incorrect', label: '쿠폰 정보 오류' },
+  { value: 'store_location', label: '매장 위치 오류' },
+  { value: 'app_problem', label: '앱 사용 문제' },
+  { value: 'feature_request', label: '기능 제안' },
+  { value: 'other', label: '기타' },
+];
 
 interface CachedCouponMapApiResponse {
   response: CouponMapApiResponse;
@@ -163,6 +182,13 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
   const [isCouponSheetExpanded, setIsCouponSheetExpanded] = useState(false);
   const [sheetDragY, setSheetDragY] = useState(0);
   const [isSheetDragging, setIsSheetDragging] = useState(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [feedbackType, setFeedbackType] = useState<FeedbackType>('coupon_incorrect');
+  const [feedbackMessage, setFeedbackMessage] = useState('');
+  const [feedbackContact, setFeedbackContact] = useState('');
+  const [feedbackSubmitStatus, setFeedbackSubmitStatus] =
+    useState<FeedbackSubmitStatus>('idle');
+  const [feedbackError, setFeedbackError] = useState<string | null>(null);
   const [mapProviderStatus, setMapProviderStatus] = useState<MapProviderStatus>(
     KAKAO_MAP_APP_KEY ? 'loading' : 'missing-key'
   );
@@ -706,6 +732,113 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     setSheetDragY(0);
   }, [isCouponPanelOpen, isCouponSheetExpanded]);
 
+  const openFeedback = useCallback(
+    (initialType: FeedbackType = selectedStore ? 'coupon_incorrect' : 'feature_request') => {
+      setFeedbackType(initialType);
+      setFeedbackSubmitStatus('idle');
+      setFeedbackError(null);
+      setIsFeedbackOpen(true);
+    },
+    [selectedStore]
+  );
+
+  const closeFeedback = useCallback(() => {
+    if (feedbackSubmitStatus === 'submitting') return;
+    setIsFeedbackOpen(false);
+    setFeedbackSubmitStatus('idle');
+    setFeedbackError(null);
+  }, [feedbackSubmitStatus]);
+
+  useEffect(() => {
+    if (!isFeedbackOpen) return;
+
+    const handleKeydown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') closeFeedback();
+    };
+
+    document.addEventListener('keydown', handleKeydown);
+    return () => document.removeEventListener('keydown', handleKeydown);
+  }, [closeFeedback, isFeedbackOpen]);
+
+  const submitFeedback = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+
+      const formData = new FormData(event.currentTarget);
+      const spamTrap = String(formData.get('website') ?? '').trim();
+      if (spamTrap) {
+        setFeedbackSubmitStatus('success');
+        setFeedbackError(null);
+        return;
+      }
+
+      const trimmedMessage = feedbackMessage.trim();
+      const trimmedContact = feedbackContact.trim();
+      if (trimmedMessage.length < 3) {
+        setFeedbackSubmitStatus('error');
+        setFeedbackError('내용을 조금 더 적어주세요.');
+        return;
+      }
+
+      const now = Date.now();
+      const lastSubmittedAt = readLastFeedbackSubmittedAt();
+      if (lastSubmittedAt !== null && now - lastSubmittedAt < FEEDBACK_COOLDOWN_MS) {
+        setFeedbackSubmitStatus('error');
+        setFeedbackError('잠시 후 다시 보내주세요.');
+        return;
+      }
+
+      setFeedbackSubmitStatus('submitting');
+      setFeedbackError(null);
+
+      try {
+        const response = await fetch('/api/feedback', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: feedbackType,
+            message: trimmedMessage,
+            contact: trimmedContact || undefined,
+            storeId: selectedStore?.id,
+            couponId: selectedCoupon?.id,
+            brandId: selectedStore?.brand.id,
+            brandName: selectedStore?.brandName,
+            pagePath: getCurrentPagePath(),
+            searchRadiusMeters,
+          }),
+        });
+
+        if (!response.ok) {
+          const body = (await response.json().catch(() => null)) as { message?: unknown } | null;
+          throw new Error(
+            typeof body?.message === 'string' ? body.message : '피드백을 보내지 못했습니다.'
+          );
+        }
+
+        writeLastFeedbackSubmittedAt(now);
+        setFeedbackSubmitStatus('success');
+        setFeedbackError(null);
+        setFeedbackMessage('');
+        setFeedbackContact('');
+      } catch (error) {
+        setFeedbackSubmitStatus('error');
+        setFeedbackError(
+          error instanceof Error ? error.message : '피드백을 보내지 못했습니다.'
+        );
+      }
+    },
+    [
+      feedbackContact,
+      feedbackMessage,
+      feedbackType,
+      searchRadiusMeters,
+      selectedCoupon,
+      selectedStore,
+    ]
+  );
+
   return (
     <main className="appShell">
       <section
@@ -737,6 +870,13 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
           <div className="empty">
             <strong>표시할 쿠폰이 없습니다</strong>
             <span>{emptyDescription}</span>
+            <button
+              type="button"
+              className="emptyFeedbackButton"
+              onClick={() => openFeedback('store_location')}
+            >
+              누락된 매장 제보
+            </button>
           </div>
         ) : showFallbackPins ? (
           displayView.stores.map((store) => (
@@ -860,16 +1000,25 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
                     </dl>
                   ) : null}
 
-                  <button
-                    type="button"
-                    className="openAppButton"
-                    onClick={() =>
-                      openBrandApp(selectedStore.brand, undefined, selectedCoupon.appLink)
-                    }
-                  >
-                    앱에서 열기
-                    <ArrowIcon />
-                  </button>
+                  <div className="selectedActions">
+                    <button
+                      type="button"
+                      className="openAppButton"
+                      onClick={() =>
+                        openBrandApp(selectedStore.brand, undefined, selectedCoupon.appLink)
+                      }
+                    >
+                      앱에서 열기
+                      <ArrowIcon />
+                    </button>
+                    <button
+                      type="button"
+                      className="reportCouponButton"
+                      onClick={() => openFeedback('coupon_incorrect')}
+                    >
+                      정보 수정 제안
+                    </button>
+                  </div>
                 </section>
               ) : null}
 
@@ -892,13 +1041,177 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
                   />
                 ))}
               </div>
+
+              <footer className="feedbackEntry">
+                <button
+                  type="button"
+                  className="feedbackOpenButton"
+                  onClick={() => openFeedback(selectedStore ? 'other' : 'feature_request')}
+                >
+                  피드백 보내기
+                </button>
+              </footer>
             </>
           ) : null}
         </aside>
       </div>
 
+      {isFeedbackOpen ? (
+        <FeedbackDialog
+          type={feedbackType}
+          message={feedbackMessage}
+          contact={feedbackContact}
+          status={feedbackSubmitStatus}
+          error={feedbackError}
+          onTypeChange={setFeedbackType}
+          onMessageChange={setFeedbackMessage}
+          onContactChange={setFeedbackContact}
+          onSubmit={submitFeedback}
+          onClose={closeFeedback}
+        />
+      ) : null}
+
       <style dangerouslySetInnerHTML={{ __html: styles }} />
     </main>
+  );
+}
+
+function FeedbackDialog({
+  type,
+  message,
+  contact,
+  status,
+  error,
+  onTypeChange,
+  onMessageChange,
+  onContactChange,
+  onSubmit,
+  onClose,
+}: {
+  type: FeedbackType;
+  message: string;
+  contact: string;
+  status: FeedbackSubmitStatus;
+  error: string | null;
+  onTypeChange: (type: FeedbackType) => void;
+  onMessageChange: (message: string) => void;
+  onContactChange: (contact: string) => void;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  onClose: () => void;
+}) {
+  const isSubmitting = status === 'submitting';
+  const isSuccess = status === 'success';
+
+  return (
+    <div className="feedbackOverlay" role="presentation">
+      <form
+        className="feedbackDialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="feedback-title"
+        onSubmit={onSubmit}
+      >
+        <div className="feedbackHeader">
+          <div>
+            <p className="eyebrow">Feedback</p>
+            <h2 id="feedback-title">피드백 보내기</h2>
+          </div>
+          <button
+            type="button"
+            className="feedbackCloseButton"
+            aria-label="피드백 닫기"
+            onClick={onClose}
+            disabled={isSubmitting}
+          >
+            ×
+          </button>
+        </div>
+
+        {isSuccess ? (
+          <div className="feedbackSuccess" role="status">
+            <strong>피드백을 보냈습니다</strong>
+            <span>확인 후 쿠폰맵에 반영하겠습니다.</span>
+          </div>
+        ) : (
+          <>
+            <label className="feedbackField">
+              <span>유형</span>
+              <select
+                value={type}
+                onChange={(event) => onTypeChange(event.target.value as FeedbackType)}
+                disabled={isSubmitting}
+              >
+                {FEEDBACK_TYPE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="feedbackField">
+              <span>내용</span>
+              <textarea
+                value={message}
+                minLength={3}
+                maxLength={1000}
+                rows={5}
+                placeholder="잘못된 쿠폰 조건, 누락된 매장, 오류 상황 등을 알려주세요."
+                onChange={(event) => onMessageChange(event.target.value)}
+                disabled={isSubmitting}
+                required
+              />
+            </label>
+
+            <label className="feedbackField">
+              <span>연락처</span>
+              <input
+                value={contact}
+                maxLength={160}
+                placeholder="선택 입력"
+                onChange={(event) => onContactChange(event.target.value)}
+                disabled={isSubmitting}
+              />
+            </label>
+
+            <input
+              className="feedbackTrap"
+              type="text"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+            />
+
+            {error ? (
+              <p className="feedbackError" role="alert">
+                {error}
+              </p>
+            ) : null}
+          </>
+        )}
+
+        <div className="feedbackActions">
+          <button
+            type="button"
+            className="feedbackSecondaryButton"
+            onClick={onClose}
+            disabled={isSubmitting}
+          >
+            닫기
+          </button>
+          {!isSuccess ? (
+            <button
+              type="submit"
+              className="feedbackSubmitButton"
+              disabled={isSubmitting || message.trim().length < 3}
+            >
+              {isSubmitting ? '보내는 중' : '보내기'}
+            </button>
+          ) : null}
+        </div>
+      </form>
+    </div>
   );
 }
 
@@ -922,6 +1235,34 @@ function formatRadiusLabel(radiusMeters: number): string {
   return radiusMeters >= 1000
     ? `${Number((radiusMeters / 1000).toFixed(1)).toLocaleString('ko-KR')}km`
     : `${Math.round(radiusMeters).toLocaleString('ko-KR')}m`;
+}
+
+function getCurrentPagePath(): string | undefined {
+  if (typeof window === 'undefined') return undefined;
+  return `${window.location.pathname}${window.location.search}`;
+}
+
+function readLastFeedbackSubmittedAt(): number | null {
+  if (typeof window === 'undefined') return null;
+
+  try {
+    const value = window.localStorage.getItem(FEEDBACK_COOLDOWN_STORAGE_KEY);
+    if (!value) return null;
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeLastFeedbackSubmittedAt(value: number) {
+  if (typeof window === 'undefined') return;
+
+  try {
+    window.localStorage.setItem(FEEDBACK_COOLDOWN_STORAGE_KEY, String(value));
+  } catch {
+    // Storage can be disabled; feedback submission should still succeed.
+  }
 }
 
 function makeCouponRequestCacheKey(center: Coords, radiusMeters: number): string {
@@ -1494,6 +1835,12 @@ const styles = `
   .marker:focus-visible,
   .couponListRow:focus-visible,
   .openAppButton:focus-visible,
+  .reportCouponButton:focus-visible,
+  .feedbackOpenButton:focus-visible,
+  .emptyFeedbackButton:focus-visible,
+  .feedbackCloseButton:focus-visible,
+  .feedbackSecondaryButton:focus-visible,
+  .feedbackSubmitButton:focus-visible,
   .panelToggle:focus-visible {
     outline: 3px solid rgba(46,118,255,.32);
     outline-offset: 3px;
@@ -1520,6 +1867,19 @@ const styles = `
   .empty strong {
     color: #15151a;
     font-size: 18px;
+  }
+
+  .emptyFeedbackButton {
+    justify-self: center;
+    min-height: 38px;
+    border: 1px solid rgba(21,21,26,.1);
+    border-radius: 8px;
+    padding: 0 12px;
+    background: #15151a;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 900;
+    cursor: pointer;
   }
 
   .panelDock {
@@ -1734,6 +2094,11 @@ const styles = `
     font-weight: 900;
   }
 
+  .selectedActions {
+    display: grid;
+    gap: 8px;
+  }
+
   .openAppButton {
     display: flex;
     align-items: center;
@@ -1746,6 +2111,18 @@ const styles = `
     background: #f5402c;
     color: #fff;
     font-size: 16px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .reportCouponButton {
+    width: 100%;
+    min-height: 42px;
+    border: 1px solid #ececef;
+    border-radius: 8px;
+    background: #fff;
+    color: #46464f;
+    font-size: 14px;
     font-weight: 900;
     cursor: pointer;
   }
@@ -1864,6 +2241,186 @@ const styles = `
     font-weight: 900;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
+  }
+
+  .feedbackEntry {
+    flex: 0 0 auto;
+    border-top: 1px solid #ececef;
+    padding: 10px 18px 12px;
+    background: rgba(255,255,255,.98);
+  }
+
+  .feedbackOpenButton {
+    width: 100%;
+    min-height: 42px;
+    border: 1px solid #d7d7dc;
+    border-radius: 8px;
+    background: #f7f7f5;
+    color: #15151a;
+    font-size: 14px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .feedbackOverlay {
+    position: fixed;
+    z-index: 80;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(21,21,26,.36);
+  }
+
+  .feedbackDialog {
+    display: grid;
+    gap: 14px;
+    width: min(430px, 100%);
+    max-height: calc(100dvh - 40px);
+    overflow: auto;
+    border: 1px solid rgba(21,21,26,.1);
+    border-radius: 8px;
+    padding: 18px;
+    background: #fff;
+    color: #15151a;
+    box-shadow: 0 24px 80px rgba(20,20,30,.28);
+  }
+
+  .feedbackHeader {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .feedbackHeader h2 {
+    margin-top: 2px;
+    font-size: 20px;
+    line-height: 1.2;
+  }
+
+  .feedbackCloseButton {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid #ececef;
+    border-radius: 8px;
+    background: #f7f7f5;
+    color: #46464f;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .feedbackField {
+    display: grid;
+    gap: 7px;
+  }
+
+  .feedbackField span {
+    color: #46464f;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .feedbackField select,
+  .feedbackField textarea,
+  .feedbackField input {
+    width: 100%;
+    border: 1px solid #d7d7dc;
+    border-radius: 8px;
+    background: #fff;
+    color: #15151a;
+    font: inherit;
+    font-size: 14px;
+  }
+
+  .feedbackField select,
+  .feedbackField input {
+    min-height: 42px;
+    padding: 0 11px;
+  }
+
+  .feedbackField textarea {
+    resize: vertical;
+    min-height: 120px;
+    padding: 11px;
+    line-height: 1.45;
+  }
+
+  .feedbackTrap {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  .feedbackError {
+    border: 1px solid #fecdca;
+    border-radius: 8px;
+    padding: 9px 10px;
+    background: #fffbfa;
+    color: #b42318;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .feedbackSuccess {
+    display: grid;
+    gap: 5px;
+    border: 1px solid #abefc6;
+    border-radius: 8px;
+    padding: 14px;
+    background: #f6fef9;
+  }
+
+  .feedbackSuccess strong {
+    color: #067647;
+    font-size: 17px;
+    font-weight: 900;
+  }
+
+  .feedbackSuccess span {
+    color: #46464f;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .feedbackActions {
+    display: flex;
+    justify-content: end;
+    gap: 8px;
+  }
+
+  .feedbackSecondaryButton,
+  .feedbackSubmitButton {
+    min-height: 42px;
+    border-radius: 8px;
+    padding: 0 14px;
+    font-size: 14px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .feedbackSecondaryButton {
+    border: 1px solid #d7d7dc;
+    background: #fff;
+    color: #46464f;
+  }
+
+  .feedbackSubmitButton {
+    border: 0;
+    background: #f5402c;
+    color: #fff;
+  }
+
+  .feedbackCloseButton:disabled,
+  .feedbackSecondaryButton:disabled,
+  .feedbackSubmitButton:disabled {
+    cursor: not-allowed;
+    opacity: .58;
   }
 
   @media (max-width: 760px) {
@@ -1995,6 +2552,11 @@ const styles = `
       font-size: 15px;
     }
 
+    .reportCouponButton {
+      min-height: 40px;
+      font-size: 13px;
+    }
+
     .sectionHeader {
       padding: 12px 18px 8px;
     }
@@ -2015,6 +2577,32 @@ const styles = `
 
     .couponRowDeal strong {
       font-size: 16px;
+    }
+
+    .feedbackEntry {
+      padding: 9px 18px max(10px, env(safe-area-inset-bottom));
+    }
+
+    .feedbackOverlay {
+      place-items: end center;
+      padding: 12px;
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+    }
+
+    .feedbackDialog {
+      width: 100%;
+      max-height: min(86dvh, 640px);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .feedbackHeader h2 {
+      font-size: 18px;
+    }
+
+    .feedbackActions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
     }
 
     .marker {
