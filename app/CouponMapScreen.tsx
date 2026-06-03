@@ -2,10 +2,19 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import type { CouponMapCoupon, CouponMapStore, CouponMapView } from '../lib/frontendData';
 import { openBrandApp } from '../lib/deeplink';
+import { useUserLocation } from '../lib/geo';
+import type {
+  CouponMapCoupon,
+  CouponMapLoadStatus,
+  CouponMapStore,
+  CouponMapView,
+} from '../lib/frontendData';
+import { DEFAULT_LOCATION, type Coords } from '../lib/location';
+import { radiusMetersForMapLevel } from '../lib/mapScale';
+import { DEFAULT_RADIUS_METERS, haversineMeters } from '../lib/stores';
 
-export type CouponMapLoadStatus = 'ready' | 'missing-env' | 'empty' | 'error';
+export type { CouponMapLoadStatus } from '../lib/frontendData';
 
 type MapProviderStatus = 'loading' | 'ready' | 'missing-key' | 'error';
 
@@ -28,6 +37,8 @@ interface KakaoMapProjection {
 }
 
 interface KakaoMap {
+  getCenter(): KakaoLatLng;
+  getLevel(): number;
   getProjection(): KakaoMapProjection;
   panTo(latlng: KakaoLatLng): void;
   relayout(): void;
@@ -76,31 +87,80 @@ interface CouponMapScreenProps {
   message: string | null;
 }
 
+interface CouponMapApiResponse {
+  view: CouponMapView;
+  status: CouponMapLoadStatus;
+  message: string | null;
+}
+
 const KAKAO_MAP_APP_KEY = process.env.NEXT_PUBLIC_KAKAO_MAP_APP_KEY?.trim() ?? '';
 const KAKAO_MAP_SCRIPT_ID = 'coupon-map-kakao-sdk';
 const DEFAULT_CENTER = { lat: 37.5572, lng: 126.9254 };
+const LOCATION_RELOAD_THRESHOLD_METERS = 50;
+const MAP_RELOAD_DEBOUNCE_MS = 220;
 
 export default function CouponMapScreen({ view, status, message }: CouponMapScreenProps) {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<KakaoMap | null>(null);
   const kakaoMapsRef = useRef<KakaoMapsNamespace | null>(null);
   const markerFrameRef = useRef<number | null>(null);
+  const viewportReloadTimeoutRef = useRef<number | null>(null);
+  const activeRequestRef = useRef<AbortController | null>(null);
+  const lastLoadedSearchRef = useRef({ center: DEFAULT_LOCATION, radiusMeters: DEFAULT_RADIUS_METERS });
   const [selectedStoreId, setSelectedStoreId] = useState<string | null>(
     view.stores[0]?.id ?? null
   );
+  const [displayView, setDisplayView] = useState(view);
+  const [loadStatus, setLoadStatus] = useState<CouponMapLoadStatus>(status);
+  const [loadMessage, setLoadMessage] = useState<string | null>(message);
+  const [isReloading, setIsReloading] = useState(false);
+  const [searchCenter, setSearchCenter] = useState<Coords>(DEFAULT_LOCATION);
+  const [searchRadiusMeters, setSearchRadiusMeters] = useState(DEFAULT_RADIUS_METERS);
   const [mapProviderStatus, setMapProviderStatus] = useState<MapProviderStatus>(
     KAKAO_MAP_APP_KEY ? 'loading' : 'missing-key'
   );
   const [markerPoints, setMarkerPoints] = useState<Record<string, MarkerScreenPoint>>({});
+  const [locationPoint, setLocationPoint] = useState<MarkerScreenPoint | null>(null);
+  const userLocation = useUserLocation();
+  const storesRef = useRef(displayView.stores);
+  const userCoordsRef = useRef<Coords>(userLocation.coords);
+  const searchRadiusRef = useRef(searchRadiusMeters);
+
+  storesRef.current = displayView.stores;
+  userCoordsRef.current = userLocation.coords;
+  searchRadiusRef.current = searchRadiusMeters;
+
   const selectedStore = useMemo(
-    () => view.stores.find((store) => store.id === selectedStoreId) ?? view.stores[0] ?? null,
-    [selectedStoreId, view.stores]
+    () =>
+      displayView.stores.find((store) => store.id === selectedStoreId) ??
+      displayView.stores[0] ??
+      null,
+    [displayView.stores, selectedStoreId]
   );
   const activeStoreId = selectedStore?.id ?? null;
   const markerDataKey = useMemo(
-    () => view.stores.map((store) => `${store.id}:${store.lat},${store.lng}`).join('|'),
-    [view.stores]
+    () => displayView.stores.map((store) => `${store.id}:${store.lat},${store.lng}`).join('|'),
+    [displayView.stores]
   );
+  const searchCenterDistanceFromUser = haversineMeters(
+    searchCenter.lat,
+    searchCenter.lng,
+    userLocation.coords.lat,
+    userLocation.coords.lng
+  );
+  const locationTitle =
+    searchCenterDistanceFromUser > 120
+      ? '지도 중심 기준'
+      : userLocation.usingDefault
+        ? '홍대입구 기준'
+        : '내 위치 기준';
+  const locationSubtitle = userLocation.isLoading
+    ? '위치 확인 중'
+    : isReloading
+      ? '쿠폰 새로 로딩 중'
+      : `${formatRadiusLabel(searchRadiusMeters)} 반경 쿠폰`;
+  const emptyDescription =
+    loadMessage ?? formatNearbyEmptyMessage(searchRadiusMeters);
 
   const scheduleMarkerProjection = useCallback(() => {
     if (markerFrameRef.current !== null) return;
@@ -115,44 +175,184 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
       const projection = map.getProjection();
       const nextPoints: Record<string, MarkerScreenPoint> = {};
 
-      for (const store of view.stores) {
+      for (const store of storesRef.current) {
         nextPoints[store.id] = projection.containerPointFromCoords(
           new kakaoMaps.LatLng(store.lat, store.lng)
         );
       }
 
       setMarkerPoints(nextPoints);
+      const coords = userCoordsRef.current;
+      setLocationPoint(
+        projection.containerPointFromCoords(new kakaoMaps.LatLng(coords.lat, coords.lng))
+      );
     });
-  }, [view.stores]);
+  }, []);
 
   const fitStoreBounds = useCallback(() => {
     const map = mapRef.current;
     const kakaoMaps = kakaoMapsRef.current;
     if (!map || !kakaoMaps) return;
 
-    const centerStore = view.stores[0];
-    if (view.stores.length === 0 || !centerStore) {
-      map.setCenter(new kakaoMaps.LatLng(DEFAULT_CENTER.lat, DEFAULT_CENTER.lng));
+    const stores = storesRef.current;
+    const coords = userCoordsRef.current;
+    const userLatLng = new kakaoMaps.LatLng(coords.lat, coords.lng);
+    const centerStore = stores[0];
+
+    if (stores.length === 0 || !centerStore) {
+      map.setCenter(userLatLng);
       map.setLevel(4);
       scheduleMarkerProjection();
       return;
     }
 
-    if (view.stores.length === 1) {
-      map.setCenter(new kakaoMaps.LatLng(centerStore.lat, centerStore.lng));
-      map.setLevel(3);
+    if (
+      stores.length === 1 &&
+      haversineMeters(coords.lat, coords.lng, centerStore.lat, centerStore.lng) < 20
+    ) {
+      map.setCenter(userLatLng);
+      map.setLevel(4);
       scheduleMarkerProjection();
       return;
     }
 
     const bounds = new kakaoMaps.LatLngBounds();
-    for (const store of view.stores) {
+    bounds.extend(userLatLng);
+    for (const store of stores) {
       bounds.extend(new kakaoMaps.LatLng(store.lat, store.lng));
     }
 
     map.setBounds(bounds, ...getMapPadding());
     scheduleMarkerProjection();
-  }, [scheduleMarkerProjection, view.stores]);
+  }, [scheduleMarkerProjection]);
+
+  const reloadNearbyCoupons = useCallback(
+    async (
+      center: Coords,
+      options: { force?: boolean; radiusMeters?: number } = {}
+    ) => {
+      const radiusMeters = options.radiusMeters ?? searchRadiusRef.current;
+      const previousSearch = lastLoadedSearchRef.current;
+      const distanceFromLastLoad = haversineMeters(
+        previousSearch.center.lat,
+        previousSearch.center.lng,
+        center.lat,
+        center.lng
+      );
+
+      setSearchRadiusMeters(radiusMeters);
+
+      if (
+        !options.force &&
+        previousSearch.radiusMeters === radiusMeters &&
+        distanceFromLastLoad < LOCATION_RELOAD_THRESHOLD_METERS
+      ) {
+        return;
+      }
+
+      activeRequestRef.current?.abort();
+      const request = new AbortController();
+      activeRequestRef.current = request;
+      setIsReloading(true);
+
+      try {
+        const params = new URLSearchParams({
+          lat: String(center.lat),
+          lng: String(center.lng),
+          radiusMeters: String(radiusMeters),
+        });
+        const response = await fetch(`/api/coupon-map?${params.toString()}`, {
+          signal: request.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to reload coupons: HTTP ${response.status}`);
+        }
+
+        const nextState = (await response.json()) as CouponMapApiResponse;
+        setDisplayView(nextState.view);
+        setLoadStatus(nextState.status);
+        setLoadMessage(nextState.message);
+        setSearchCenter(center);
+        setSearchRadiusMeters(radiusMeters);
+        lastLoadedSearchRef.current = { center, radiusMeters };
+      } catch (error) {
+        if (isAbortError(error)) return;
+        setLoadStatus('error');
+        setLoadMessage('쿠폰 데이터를 새로 불러오지 못했습니다.');
+      } finally {
+        if (activeRequestRef.current === request) {
+          activeRequestRef.current = null;
+          setIsReloading(false);
+        }
+      }
+    },
+    []
+  );
+
+  const reloadForMapViewport = useCallback(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const center = map.getCenter();
+    void reloadNearbyCoupons(
+      { lat: center.getLat(), lng: center.getLng() },
+      { radiusMeters: radiusMetersForMapLevel(map.getLevel()) }
+    );
+  }, [reloadNearbyCoupons]);
+
+  const scheduleViewportReload = useCallback(() => {
+    scheduleMarkerProjection();
+
+    if (viewportReloadTimeoutRef.current !== null) {
+      window.clearTimeout(viewportReloadTimeoutRef.current);
+    }
+
+    viewportReloadTimeoutRef.current = window.setTimeout(() => {
+      viewportReloadTimeoutRef.current = null;
+      reloadForMapViewport();
+    }, MAP_RELOAD_DEBOUNCE_MS);
+  }, [reloadForMapViewport, scheduleMarkerProjection]);
+
+  const refreshNearbyCoupons = useCallback(() => {
+    const map = mapRef.current;
+    const kakaoMaps = kakaoMapsRef.current;
+    const radiusMeters = map ? radiusMetersForMapLevel(map.getLevel()) : searchRadiusRef.current;
+
+    if (map && kakaoMaps) {
+      map.setCenter(new kakaoMaps.LatLng(userLocation.coords.lat, userLocation.coords.lng));
+    }
+
+    void reloadNearbyCoupons(userLocation.coords, { force: true, radiusMeters });
+    scheduleMarkerProjection();
+  }, [reloadNearbyCoupons, scheduleMarkerProjection, userLocation.coords]);
+
+  useEffect(() => {
+    if (userLocation.isLoading) return;
+    void reloadNearbyCoupons(userLocation.coords, {
+      radiusMeters: searchRadiusRef.current,
+    });
+  }, [reloadNearbyCoupons, userLocation.coords, userLocation.isLoading]);
+
+  useEffect(() => {
+    return () => {
+      activeRequestRef.current?.abort();
+      if (viewportReloadTimeoutRef.current !== null) {
+        window.clearTimeout(viewportReloadTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (displayView.stores.length === 0) {
+      setSelectedStoreId(null);
+      return;
+    }
+
+    if (!displayView.stores.some((store) => store.id === selectedStoreId)) {
+      setSelectedStoreId(displayView.stores[0].id);
+    }
+  }, [displayView.stores, selectedStoreId]);
 
   useEffect(() => {
     if (!KAKAO_MAP_APP_KEY) {
@@ -170,14 +370,15 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
 
         kakaoMapsRef.current = kakaoMaps;
 
-        const centerStore = view.stores[0];
+        const centerStore = storesRef.current[0];
+        const coords = userCoordsRef.current;
         const center = new kakaoMaps.LatLng(
-          centerStore?.lat ?? DEFAULT_CENTER.lat,
-          centerStore?.lng ?? DEFAULT_CENTER.lng
+          centerStore?.lat ?? coords.lat ?? DEFAULT_CENTER.lat,
+          centerStore?.lng ?? coords.lng ?? DEFAULT_CENTER.lng
         );
         const map = new kakaoMaps.Map(mapContainerRef.current, {
           center,
-          level: view.stores.length > 1 ? 5 : 3,
+          level: storesRef.current.length > 1 ? 5 : 4,
           scrollwheel: true,
           tileAnimation: true,
         });
@@ -188,7 +389,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
         listeners = [
           kakaoMaps.event.addListener(map, 'bounds_changed', scheduleMarkerProjection),
           kakaoMaps.event.addListener(map, 'zoom_changed', scheduleMarkerProjection),
-          kakaoMaps.event.addListener(map, 'idle', scheduleMarkerProjection),
+          kakaoMaps.event.addListener(map, 'idle', scheduleViewportReload),
         ];
 
         window.requestAnimationFrame(() => {
@@ -221,30 +422,36 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
         if (mapContainerRef.current) mapContainerRef.current.innerHTML = '';
       }
     };
-  }, [fitStoreBounds, markerDataKey, scheduleMarkerProjection, view.stores]);
+  }, [fitStoreBounds, scheduleMarkerProjection, scheduleViewportReload]);
 
   useEffect(() => {
     if (mapProviderStatus !== 'ready') return;
-    fitStoreBounds();
-  }, [fitStoreBounds, mapProviderStatus, markerDataKey]);
+    scheduleMarkerProjection();
+  }, [
+    mapProviderStatus,
+    markerDataKey,
+    scheduleMarkerProjection,
+    userLocation.coords.lat,
+    userLocation.coords.lng,
+  ]);
 
   useEffect(() => {
     if (mapProviderStatus !== 'ready') return;
 
     const handleResize = () => {
       mapRef.current?.relayout();
-      fitStoreBounds();
+      scheduleMarkerProjection();
     };
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [fitStoreBounds, mapProviderStatus]);
+  }, [mapProviderStatus, scheduleMarkerProjection]);
 
   const selectStore = useCallback(
     (storeId: string) => {
       setSelectedStoreId(storeId);
 
-      const store = view.stores.find((candidate) => candidate.id === storeId);
+      const store = displayView.stores.find((candidate) => candidate.id === storeId);
       const map = mapRef.current;
       const kakaoMaps = kakaoMapsRef.current;
       if (!store || !map || !kakaoMaps) return;
@@ -252,7 +459,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
       map.panTo(new kakaoMaps.LatLng(store.lat, store.lng));
       scheduleMarkerProjection();
     },
-    [scheduleMarkerProjection, view.stores]
+    [displayView.stores, scheduleMarkerProjection]
   );
 
   return (
@@ -264,17 +471,28 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
         <div ref={mapContainerRef} className="providerMap" aria-hidden="true" />
         <MapBackdrop />
         <div className="mapSoftLayer" />
-        <div className="myLocation" aria-hidden="true">
+        <div
+          className="myLocation"
+          style={
+            locationPoint
+              ? ({
+                  '--user-x': `${locationPoint.x}px`,
+                  '--user-y': `${locationPoint.y}px`,
+                } as React.CSSProperties)
+              : undefined
+          }
+          aria-hidden="true"
+        >
           <span />
         </div>
 
-        {view.stores.length === 0 ? (
+        {displayView.stores.length === 0 ? (
           <div className="empty">
             <strong>표시할 쿠폰이 없습니다</strong>
-            <span>Supabase에 활성 쿠폰과 매장 좌표가 들어오면 여기에 표시됩니다.</span>
+            <span>{emptyDescription}</span>
           </div>
         ) : (
-          view.stores.map((store) => (
+          displayView.stores.map((store) => (
             <button
               key={store.id}
               type="button"
@@ -316,21 +534,24 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
         <div className="locationBar">
           <LocationIcon />
           <div>
-            <p>홍대입구</p>
-            <span>근처 쿠폰 지도</span>
+            <p>{locationTitle}</p>
+            <span>{locationSubtitle}</span>
           </div>
         </div>
         <button
           type="button"
           className="iconButton"
-          aria-label="쿠폰 위치 다시 보기"
-          onClick={fitStoreBounds}
+          aria-label="현재 위치 쿠폰 다시 불러오기"
+          aria-busy={isReloading ? 'true' : undefined}
+          onClick={refreshNearbyCoupons}
         >
           <LocateIcon />
         </button>
       </section>
 
-      {message ? <p className={`notice ${status}`}>{message}</p> : null}
+      {loadMessage && displayView.stores.length > 0 ? (
+        <p className={`notice ${loadStatus}`}>{loadMessage}</p>
+      ) : null}
 
       <aside className="couponPanel" aria-label="nearby coupons">
         <div className="sheetHandle" aria-hidden="true" />
@@ -340,9 +561,9 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
             <h1>근처 쿠폰 매장</h1>
           </div>
           <div className="stats" aria-label="coupon summary">
-            <span>{view.totals.brands} brands</span>
-            <span>{view.totals.stores} stores</span>
-            <span>{view.totals.activeCoupons} coupons</span>
+            <span>{displayView.totals.brands} brands</span>
+            <span>{displayView.totals.stores} stores</span>
+            <span>{displayView.totals.activeCoupons} coupons</span>
           </div>
         </div>
 
@@ -396,12 +617,12 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
         ) : null}
 
         <div className="sectionHeader">
-          <h2>전체 매장</h2>
-          <span>{view.stores.length}</span>
+          <h2>{formatRadiusLabel(searchRadiusMeters)} 내 매장</h2>
+          <span>{displayView.stores.length}</span>
         </div>
 
         <div className="storeList">
-          {view.stores.map((store) => (
+          {displayView.stores.map((store) => (
             <StoreCard
               key={store.id}
               store={store}
@@ -415,6 +636,28 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
       <style dangerouslySetInnerHTML={{ __html: styles }} />
     </main>
   );
+}
+
+function isAbortError(error: unknown): boolean {
+  return error instanceof DOMException && error.name === 'AbortError';
+}
+
+function formatNearbyEmptyMessage(radiusMeters: number): string {
+  return `현재 위치 ${formatRadiusLabel(radiusMeters)} 반경에 표시할 쿠폰 매장이 없습니다.`;
+}
+
+function formatDistanceLabel(distanceMeters: number): string {
+  if (distanceMeters >= 1000) {
+    return `${Number((distanceMeters / 1000).toFixed(1)).toLocaleString('ko-KR')}km`;
+  }
+
+  return `${Math.max(0, Math.round(distanceMeters)).toLocaleString('ko-KR')}m`;
+}
+
+function formatRadiusLabel(radiusMeters: number): string {
+  return radiusMeters >= 1000
+    ? `${Number((radiusMeters / 1000).toFixed(1)).toLocaleString('ko-KR')}km`
+    : `${Math.round(radiusMeters).toLocaleString('ko-KR')}m`;
 }
 
 function loadKakaoMaps(appKey: string): Promise<KakaoMapsNamespace> {
@@ -512,7 +755,11 @@ function StoreCard({
           <span>{store.name}</span>
         </div>
         <p>{store.bestCoupon.detail}</p>
-        <address>{store.address}</address>
+        <address>
+          {store.distanceMeters === undefined
+            ? store.address
+            : `${formatDistanceLabel(store.distanceMeters)} · ${store.address}`}
+        </address>
       </div>
       <div className="storeDeal">
         <small>최대</small>
@@ -814,6 +1061,10 @@ const styles = `
     cursor: pointer;
   }
 
+  .iconButton[aria-busy="true"] {
+    color: #f5402c;
+  }
+
   .notice {
     position: fixed;
     z-index: 50;
@@ -839,8 +1090,8 @@ const styles = `
   .myLocation {
     position: absolute;
     z-index: 5;
-    left: 50%;
-    top: 50%;
+    left: var(--user-x, 50%);
+    top: var(--user-y, 50%);
     width: 46px;
     height: 46px;
     transform: translate(-50%, -50%);

@@ -320,17 +320,25 @@ async function ensureCouponScreen(adbPath: string): Promise<void> {
     const xml = dumpUiXml(adbPath);
     if (await dismissTransientUiIfPresent(adbPath, xml)) continue;
     if (isCouponScreen(xml)) return;
-    if (isCouponScreenTextSet(ocrCurrentScreen(adbPath))) return;
 
     const couponButton =
-      findTextButtonCenter(xml, '쿠폰 전체보기') ?? findTextButtonCenter(xml, '쿠폰');
-    if (!couponButton && looksLikeHomeCouponTeaser(xml)) {
+      findTextButtonCenter(xml, '쿠폰 전체보기') ??
+      findHomeCouponMoreButtonCenter(xml) ??
+      findTextButtonCenter(xml, '쿠폰');
+
+    if (couponButton) {
+      runAdb(adbPath, ['shell', 'input', 'tap', String(couponButton.x), String(couponButton.y)]);
+      await wait(DEFAULT_WAIT_MS);
+      continue;
+    }
+
+    if (attempt < 5 && looksLikeHomeCouponTeaser(xml)) {
       scrollTowardHomeTop(adbPath, size);
       await wait(DEFAULT_WAIT_MS);
       continue;
     }
 
-    const target = couponButton ?? {
+    const target = {
       x: Math.round(size.width * 0.3),
       y: Math.round(size.height * 0.92),
     };
@@ -382,6 +390,47 @@ function looksLikeHomeCouponTeaser(xml: string): boolean {
     xml.includes('text="쿠폰 전체보기"') ||
     xml.includes('text="지금 바로 사용 가능한"')
   );
+}
+
+function findHomeCouponMoreButtonCenter(xml: string): { x: number; y: number } | null {
+  const root = parseUiXml(xml);
+  const headings: UiNode[] = [];
+  const moreButtons: UiNode[] = [];
+
+  function visit(node: UiNode): void {
+    if (node.text === '할인쿠폰') headings.push(node);
+    if (node.text === '더보기' && node.className === 'android.widget.Button') {
+      moreButtons.push(node);
+    }
+    node.children.forEach(visit);
+  }
+
+  visit(root);
+
+  for (const heading of headings) {
+    const headingBounds = parseBounds(heading.bounds);
+    if (
+      !headingBounds ||
+      headingBounds.x2 <= headingBounds.x1 ||
+      headingBounds.y2 <= headingBounds.y1
+    ) {
+      continue;
+    }
+
+    for (const button of moreButtons) {
+      const buttonCenter = nodeCenter(button);
+      if (!buttonCenter) continue;
+      if (buttonCenter.x <= headingBounds.x2) continue;
+      if (
+        buttonCenter.y >= headingBounds.y1 - 80 &&
+        buttonCenter.y <= headingBounds.y2 + 120
+      ) {
+        return { x: Math.round(buttonCenter.x), y: Math.round(buttonCenter.y) };
+      }
+    }
+  }
+
+  return null;
 }
 
 function scrollTowardHomeTop(adbPath: string, size: { width: number; height: number }): void {
@@ -447,8 +496,18 @@ function getScreenSize(adbPath: string): { width: number; height: number } {
 }
 
 function dumpUiXml(adbPath: string): string {
-  runAdb(adbPath, ['shell', 'uiautomator', 'dump', REMOTE_XML_PATH]);
-  return runAdb(adbPath, ['exec-out', 'cat', REMOTE_XML_PATH], 32 * 1024 * 1024);
+  let lastError: unknown;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      runAdb(adbPath, ['shell', 'uiautomator', 'dump', REMOTE_XML_PATH]);
+      return runAdb(adbPath, ['exec-out', 'cat', REMOTE_XML_PATH], 32 * 1024 * 1024);
+    } catch (error: unknown) {
+      lastError = error;
+      sleepSync(500);
+    }
+  }
+
+  throw lastError;
 }
 
 function runAdb(adbPath: string, args: string[], maxBuffer = 4 * 1024 * 1024): string {
@@ -502,6 +561,10 @@ function isSuccessfulUiAutomatorDump(
 
 function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function sleepSync(ms: number): void {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
 }
 
 function parseExpectedCouponCount(xml: string): number | null {

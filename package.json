@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "tsc --noEmit -p tsconfig.typecheck.json",
     "crawl:all": "node --experimental-strip-types scripts/crawl-all.ts",
     "crawl:burgerking:adb": "node --experimental-strip-types scripts/crawl-burgerking-adb.ts",
     "crawl:kfc:adb": "node --experimental-strip-types scripts/crawl-kfc-adb.ts",

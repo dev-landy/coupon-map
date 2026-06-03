@@ -147,7 +147,7 @@ npm run dev
 화면이 비어 있다면 Supabase에서 아래를 확인합니다.
 
 - 브라우저 화면에 `permission denied for table brands` 같은 메시지가 보이면
-  [supabase/schema.sql](../supabase/schema.sql)을 SQL Editor에서 다시 실행했는지
+  [supabase/public-read-grants.sql](../supabase/public-read-grants.sql)을 SQL Editor에서 실행했는지
 - `brands`에 row가 있는지
 - `coupons`에 `is_active=true`인 row가 있는지
 - `stores`에 유효한 `brand_id`, `lat`, `lng`가 있는지

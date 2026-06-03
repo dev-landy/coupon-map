@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+import { DEFAULT_LOCATION, type Coords } from './location';
+
 /**
  * Browser geolocation with a graceful fallback to 홍대 center.
  *
@@ -9,16 +11,7 @@ import { useEffect, useState } from 'react';
  * the React hook so they can be unit tested without a DOM/geolocation env.
  */
 
-export interface Coords {
-  lat: number;
-  lng: number;
-}
-
-/** 홍대 center — the MVP's home turf and the fallback when geolocation fails. */
-export const DEFAULT_LOCATION: Readonly<Coords> = Object.freeze({
-  lat: 37.5563,
-  lng: 126.9236,
-});
+export { DEFAULT_LOCATION, type Coords } from './location';
 
 export interface UserLocation {
   coords: Coords;
@@ -39,7 +32,7 @@ export function toCoords(position: GeolocationPosition): Coords {
 }
 
 /**
- * Request the user's location once on mount. On grant -> real coords; on
+ * Watch the user's location on mount. On grant -> real coords; on
  * deny / unsupported / error -> DEFAULT_LOCATION with usingDefault = true.
  *
  * The hook is intentionally thin: all non-trivial logic lives in the pure
@@ -54,7 +47,10 @@ export function useUserLocation(): UserLocation {
   });
 
   useEffect(() => {
-    if (typeof navigator === 'undefined' || !('geolocation' in navigator)) {
+    const geolocation =
+      typeof navigator === 'undefined' ? undefined : navigator.geolocation;
+
+    if (!geolocation?.watchPosition || !geolocation.clearWatch) {
       setState({
         coords: DEFAULT_LOCATION,
         usingDefault: true,
@@ -66,7 +62,7 @@ export function useUserLocation(): UserLocation {
 
     let isCancelled = false;
 
-    navigator.geolocation.getCurrentPosition(
+    const watchId = geolocation.watchPosition(
       (position) => {
         if (isCancelled) return;
         setState({
@@ -78,17 +74,34 @@ export function useUserLocation(): UserLocation {
       },
       (error) => {
         if (isCancelled) return;
-        setState({
-          coords: DEFAULT_LOCATION,
-          usingDefault: true,
-          isLoading: false,
-          errorReason: error.message || 'Geolocation request failed.',
+        const errorReason = error.message || 'Geolocation request failed.';
+        setState((current) => {
+          if (!current.isLoading && !current.usingDefault) {
+            return {
+              ...current,
+              isLoading: false,
+              errorReason,
+            };
+          }
+
+          return {
+            coords: DEFAULT_LOCATION,
+            usingDefault: true,
+            isLoading: false,
+            errorReason,
+          };
         });
+      },
+      {
+        enableHighAccuracy: false,
+        maximumAge: 30_000,
+        timeout: 10_000,
       }
     );
 
     return () => {
       isCancelled = true;
+      geolocation.clearWatch(watchId);
     };
   }, []);
 

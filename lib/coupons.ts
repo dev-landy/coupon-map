@@ -1,4 +1,5 @@
 import type { Coupon, DiscountType } from './types';
+import { getKoreaDateOnly, isValidDateOnly } from './dateOnly';
 
 /**
  * Coupon filtering and ranking.
@@ -16,13 +17,12 @@ import type { Coupon, DiscountType } from './types';
  * for the whole of that day.
  */
 export function filterActiveCoupons(coupons: readonly Coupon[], now: Date): Coupon[] {
-  const todayStart = startOfDay(now).getTime();
+  const today = getKoreaDateOnly(now);
   return coupons.filter((coupon) => {
     if (!coupon.is_active) return false;
     if (coupon.valid_until === null) return true;
-    const expiry = parseDateOnly(coupon.valid_until);
-    if (expiry === null) return false; // malformed date -> treat as unusable
-    return expiry.getTime() >= todayStart;
+    if (!isValidDateOnly(coupon.valid_until)) return false;
+    return coupon.valid_until >= today;
   });
 }
 
@@ -80,27 +80,4 @@ const TYPE_PRIORITY: Record<DiscountType, number> = {
  */
 function withinTypeRank(coupon: Coupon): number {
   return coupon.discount_type === '세트' ? -coupon.discount_value : coupon.discount_value;
-}
-
-function startOfDay(date: Date): Date {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
-
-/** Parse a YYYY-MM-DD string into a local-midnight Date, or null if invalid. */
-function parseDateOnly(value: string): Date | null {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
-  if (!match) return null;
-  const year = Number(match[1]);
-  const month = Number(match[2]);
-  const day = Number(match[3]);
-  const date = new Date(year, month - 1, day);
-  // Reject overflow like 2024-13-40 that Date silently rolls over.
-  if (
-    date.getFullYear() !== year ||
-    date.getMonth() !== month - 1 ||
-    date.getDate() !== day
-  ) {
-    return null;
-  }
-  return date;
 }

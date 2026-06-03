@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import CouponMapScreen from '../app/CouponMapScreen';
 import type { CouponMapView } from '../lib/frontendData';
@@ -9,6 +9,16 @@ vi.mock('../lib/deeplink', () => ({
 }));
 
 const { openBrandApp } = await import('../lib/deeplink');
+const originalGeolocation = navigator.geolocation;
+
+afterEach(() => {
+  Object.defineProperty(navigator, 'geolocation', {
+    configurable: true,
+    value: originalGeolocation,
+  });
+  vi.unstubAllGlobals();
+  vi.clearAllMocks();
+});
 
 const VIEW: CouponMapView = {
   stores: [
@@ -165,5 +175,62 @@ describe('CouponMapScreen', () => {
     expect(screen.getByText('Supabase에 표시 가능한 쿠폰 데이터가 없습니다.')).toBeTruthy();
     expect(screen.getByText('표시할 쿠폰이 없습니다')).toBeTruthy();
     expect(screen.queryByTestId('selected-store-detail')).toBeNull();
+  });
+
+  it('reloads coupon data when the browser reports a moved location', async () => {
+    Object.defineProperty(navigator, 'geolocation', {
+      configurable: true,
+      value: {
+        watchPosition: vi.fn((onSuccess: PositionCallback) => {
+          onSuccess({
+            coords: {
+              latitude: 37.4979,
+              longitude: 127.0276,
+            },
+          } as GeolocationPosition);
+          return 7;
+        }),
+        clearWatch: vi.fn(),
+      },
+    });
+    const nextView: CouponMapView = {
+      stores: [VIEW.stores[1]],
+      totals: {
+        brands: 1,
+        stores: 1,
+        activeCoupons: 1,
+      },
+    };
+    const fetchMock = vi.fn((_input: RequestInfo | URL, _init?: RequestInit) =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () =>
+          Promise.resolve({
+            view: nextView,
+            status: 'ready',
+            message: null,
+          }),
+      } as Response)
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+
+    const requestedUrl = String(fetchMock.mock.calls[0]?.[0] ?? '');
+    expect(requestedUrl).toContain('/api/coupon-map?');
+    expect(requestedUrl).toContain('lat=37.4979');
+    expect(requestedUrl).toContain('lng=127.0276');
+    expect(requestedUrl).toContain('radiusMeters=1000');
+
+    await waitFor(() =>
+      expect(screen.getByTestId('selected-store-detail').getAttribute('data-selected-store-id')).toBe(
+        'gangnam'
+      )
+    );
+    expect(screen.queryByRole('button', { name: '맥도날드 홍대점 20%' })).toBeNull();
+    expect(screen.getByRole('button', { name: '버거킹 강남점 3,000원' })).toBeTruthy();
   });
 });

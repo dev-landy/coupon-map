@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { buildCouponMapView } from '../lib/frontendData';
 import type { Brand, Coupon, Store } from '../lib/types';
 
-const NOW = new Date(2026, 5, 2);
+const NOW = new Date('2026-06-02T00:00:00+09:00');
 
 function makeBrand(overrides: Partial<Brand> = {}): Brand {
   return {
@@ -63,6 +63,19 @@ describe('buildCouponMapView', () => {
     });
     expect(view.stores[0].markerX).toBe(50);
     expect(view.stores[0].markerY).toBe(50);
+  });
+
+  it('formats validity labels using Korea calendar days instead of the runtime timezone', () => {
+    const view = buildCouponMapView(
+      {
+        brands: [makeBrand()],
+        stores: [makeStore()],
+        coupons: [makeCoupon({ valid_until: '2026-06-02' })],
+      },
+      new Date('2026-06-01T15:30:00.000Z') // 2026-06-02 00:30 in Korea
+    );
+
+    expect(view.stores[0].bestCoupon.validLabel).toBe('오늘까지');
   });
 
   it('summarizes rich raw_payload fields for coupon detail display', () => {
@@ -147,6 +160,29 @@ describe('buildCouponMapView', () => {
     expect(view.totals.activeCoupons).toBe(2);
     expect(view.stores.map((store) => store.id)).toEqual(['valid']);
     expect(view.stores[0].coupons.map((coupon) => coupon.id)).toEqual(['valid-coupon']);
+  });
+
+  it('can scope coupon stores to a radius around the current location', () => {
+    const view = buildCouponMapView(
+      {
+        brands: [makeBrand()],
+        stores: [
+          makeStore({ id: 'near', lat: 37.5564, lng: 126.9236 }),
+          makeStore({ id: 'far', lat: 37.58, lng: 126.9236 }),
+        ],
+        coupons: [makeCoupon()],
+      },
+      NOW,
+      {
+        center: { lat: 37.5563, lng: 126.9236 },
+        radiusMeters: 1000,
+      }
+    );
+
+    expect(view.stores.map((store) => store.id)).toEqual(['near']);
+    expect(view.stores[0].distanceMeters).toBeGreaterThan(0);
+    expect(view.stores[0].distanceMeters).toBeLessThan(30);
+    expect(view.totals).toEqual({ brands: 1, stores: 1, activeCoupons: 1 });
   });
 
   it('applies active brand-wide coupons to every store for that brand only', () => {

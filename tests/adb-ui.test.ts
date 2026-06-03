@@ -39,6 +39,36 @@ describe('ADB transient UI helpers', () => {
     );
   });
 
+  it('does not treat a footer social X button as a dismiss target', () => {
+    const xml = `
+      <hierarchy>
+        <node text="Burger King" class="android.view.View" bounds="[49,1753][1029,1832]" />
+        <node text="Instagram" class="android.widget.Button" clickable="true" bounds="[49,2063][118,2128]" />
+        <node text="Facebook" class="android.widget.Button" clickable="true" bounds="[147,2063][210,2128]" />
+        <node text="X" class="android.widget.Button" clickable="true" bounds="[238,2063][307,2128]" />
+        <node text="Youtube" class="android.widget.Button" clickable="true" bounds="[336,2063][399,2128]" />
+      </hierarchy>
+    `;
+
+    expect(findTransientUiDismissTarget(xml)).toBeNull();
+  });
+
+  it('still treats a top-right X button as a dismiss target', () => {
+    const xml = `
+      <hierarchy>
+        <node text="이벤트 안내" class="android.widget.TextView" bounds="[80,600][1000,680]" />
+        <node text="X" class="android.widget.Button" clickable="true" bounds="[980,120][1040,180]" />
+      </hierarchy>
+    `;
+
+    expect(findTransientUiDismissTarget(xml)).toEqual(
+      expect.objectContaining({
+        label: 'X',
+        point: { x: 1010, y: 150 },
+      })
+    );
+  });
+
   it('detects strong transient UI hints even without an explicit close button', () => {
     const xml = `
       <hierarchy>
@@ -61,4 +91,3 @@ describe('ADB transient UI helpers', () => {
     expect(looksLikeTransientUi(xml)).toBe(false);
   });
 });
-

@@ -97,6 +97,7 @@ export function findTransientUiDismissTarget(
       const match = findDismissMatch(node, customLabels);
       if (!match) return null;
       if (!isLikelyTappableDismiss(node, match.priority)) return null;
+      if (isLikelySocialX(node, match.label, bounds)) return null;
 
       return {
         point: {
@@ -198,6 +199,17 @@ function isLikelyTappableDismiss(node: UiNodeAttrs, priority: number): boolean {
   }
 
   return priority <= 1 && /textview|view/i.test(node.className);
+}
+
+function isLikelySocialX(
+  node: UiNodeAttrs,
+  label: string,
+  bounds: NonNullable<ReturnType<typeof parseBounds>>
+): boolean {
+  if (normalizeLabel(label) !== 'x') return false;
+  if (isTopRight(bounds)) return false;
+  if (/close|닫기/i.test(`${node.text} ${node.contentDesc}`)) return false;
+  return true;
 }
 
 function parseAttributes(input: string): Record<string, string> {

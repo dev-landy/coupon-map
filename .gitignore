@@ -23,11 +23,17 @@ yarn-debug.log*
 yarn-error.log*
 /logs/
 
+# deployment
+/.vercel/
+
 # local env files
 .env*.local
 
 # local crawl artifacts
 /data/crawls/
+
+# local agent artifacts
+/.codex-review-log/
 
 # typescript
 *.tsbuildinfo

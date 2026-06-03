@@ -474,8 +474,18 @@ function ensurePackageInstalled(adbPath: string, packageName: string): void {
 }
 
 function dumpUiXml(adbPath: string): string {
-  runAdb(adbPath, ['shell', 'uiautomator', 'dump', REMOTE_XML_PATH]);
-  return runAdb(adbPath, ['exec-out', 'cat', REMOTE_XML_PATH], 32 * 1024 * 1024);
+  let lastError: unknown;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      runAdb(adbPath, ['shell', 'uiautomator', 'dump', REMOTE_XML_PATH]);
+      return runAdb(adbPath, ['exec-out', 'cat', REMOTE_XML_PATH], 32 * 1024 * 1024);
+    } catch (error: unknown) {
+      lastError = error;
+      sleepSync(500);
+    }
+  }
+
+  throw lastError;
 }
 
 function runAdb(adbPath: string, args: string[], maxBuffer = 4 * 1024 * 1024): string {
@@ -512,6 +522,10 @@ function isSuccessfulUiAutomatorDump(
 
 function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function sleepSync(ms: number): void {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
 }
 
 function getScreenSize(adbPath: string): { width: number; height: number } {

@@ -16,7 +16,7 @@ function makeCoupon(overrides: Partial<Coupon> = {}): Coupon {
 }
 
 describe('filterActiveCoupons', () => {
-  const NOW = new Date(2026, 5, 1); // 2026-06-01 local
+  const NOW = new Date('2026-06-01T00:00:00+09:00');
 
   it('drops coupons whose valid_until is before today', () => {
     // Arrange
@@ -36,6 +36,19 @@ describe('filterActiveCoupons', () => {
 
     // Act
     const result = filterActiveCoupons([today], NOW);
+
+    // Assert
+    expect(result.map((c) => c.id)).toEqual(['today']);
+  });
+
+  it('uses Korea calendar days instead of the runtime timezone', () => {
+    // Arrange
+    const now = new Date('2026-06-01T15:30:00.000Z'); // 2026-06-02 00:30 in Korea
+    const expiredInKorea = makeCoupon({ id: 'expired', valid_until: '2026-06-01' });
+    const todayInKorea = makeCoupon({ id: 'today', valid_until: '2026-06-02' });
+
+    // Act
+    const result = filterActiveCoupons([expiredInKorea, todayInKorea], now);
 
     // Assert
     expect(result.map((c) => c.id)).toEqual(['today']);

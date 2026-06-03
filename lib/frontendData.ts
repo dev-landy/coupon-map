@@ -1,6 +1,9 @@
 import { filterActiveCoupons, sortByDiscount } from './coupons';
-import { isValidCoordinate } from './stores';
+import { diffDateOnlyDays, getKoreaDateOnly, isValidDateOnly } from './dateOnly';
+import { DEFAULT_RADIUS_METERS, isValidCoordinate, nearbyStores } from './stores';
 import type { Brand, Coupon, Store } from './types';
+
+export type CouponMapLoadStatus = 'ready' | 'missing-env' | 'empty' | 'error';
 
 export interface CouponMapCoupon {
   id: string;
@@ -31,6 +34,7 @@ export interface CouponMapStore {
   lng: number;
   markerX: number;
   markerY: number;
+  distanceMeters?: number;
   bestCoupon: CouponMapCoupon;
   coupons: CouponMapCoupon[];
 }
@@ -50,6 +54,14 @@ export interface CouponMapRows {
   coupons: readonly Coupon[];
 }
 
+export interface BuildCouponMapViewOptions {
+  center?: {
+    lat: number;
+    lng: number;
+  };
+  radiusMeters?: number;
+}
+
 const BRAND_COLORS = [
   '#d92d20',
   '#067647',
@@ -61,7 +73,11 @@ const BRAND_COLORS = [
   '#344054',
 ];
 
-export function buildCouponMapView(rows: CouponMapRows, now: Date): CouponMapView {
+export function buildCouponMapView(
+  rows: CouponMapRows,
+  now: Date,
+  options: BuildCouponMapViewOptions = {}
+): CouponMapView {
   const brandsById = new Map(rows.brands.map((brand) => [brand.id, brand]));
   const brandColorsById = new Map(
     rows.brands.map((brand, index) => [brand.id, BRAND_COLORS[index % BRAND_COLORS.length]])
@@ -74,14 +90,24 @@ export function buildCouponMapView(rows: CouponMapRows, now: Date): CouponMapVie
     .filter((store) => isValidCoordinate(store.lat, store.lng))
     .filter((store) => (couponsByBrand.get(store.brand_id)?.length ?? 0) > 0);
 
-  const markerPositions = computeMarkerPositions(eligibleStores);
+  const scopedStores = options.center
+    ? nearbyStores(
+        options.center.lat,
+        options.center.lng,
+        eligibleStores,
+        options.radiusMeters ?? DEFAULT_RADIUS_METERS
+      )
+    : eligibleStores;
 
-  const stores = eligibleStores
+  const markerPositions = computeMarkerPositions(scopedStores);
+
+  const stores = scopedStores
     .map((store) => {
       const brand = brandsById.get(store.brand_id);
       const coupons = couponsByBrand.get(store.brand_id) ?? [];
       const couponSummaries = coupons.map((coupon) => summarizeCoupon(coupon, now));
       const marker = markerPositions.get(store.id) ?? { x: 50, y: 50 };
+      const distanceMeters = readDistanceMeters(store);
 
       return {
         id: store.id,
@@ -95,11 +121,17 @@ export function buildCouponMapView(rows: CouponMapRows, now: Date): CouponMapVie
         lng: store.lng,
         markerX: marker.x,
         markerY: marker.y,
+        ...(distanceMeters === undefined ? {} : { distanceMeters }),
         bestCoupon: couponSummaries[0],
         coupons: couponSummaries,
       };
     })
     .sort((a, b) => {
+      if (a.distanceMeters !== undefined && b.distanceMeters !== undefined) {
+        const distanceDelta = a.distanceMeters - b.distanceMeters;
+        if (distanceDelta !== 0) return distanceDelta;
+      }
+
       const rankDelta = b.bestCoupon.rankScore - a.bestCoupon.rankScore;
       if (rankDelta !== 0) return rankDelta;
       const brandDelta = a.brandName.localeCompare(b.brandName, 'ko');
@@ -112,9 +144,28 @@ export function buildCouponMapView(rows: CouponMapRows, now: Date): CouponMapVie
     totals: {
       brands: new Set(stores.map((store) => store.brandName)).size,
       stores: stores.length,
-      activeCoupons: activeCoupons.length,
+      activeCoupons: options.center ? countVisibleCouponIds(stores) : activeCoupons.length,
     },
   };
+}
+
+function countVisibleCouponIds(stores: readonly CouponMapStore[]): number {
+  const couponIds = new Set<string>();
+
+  for (const store of stores) {
+    for (const coupon of store.coupons) {
+      couponIds.add(coupon.id);
+    }
+  }
+
+  return couponIds.size;
+}
+
+function readDistanceMeters(store: Store): number | undefined {
+  const distanceMeters = (store as Partial<{ distanceMeters: unknown }>).distanceMeters;
+  return typeof distanceMeters === 'number' && Number.isFinite(distanceMeters)
+    ? distanceMeters
+    : undefined;
 }
 
 function groupCouponsByBrand(coupons: readonly Coupon[]): Map<string, Coupon[]> {
@@ -192,12 +243,10 @@ function formatDiscountDetail(coupon: Coupon): string {
 
 function formatValidityLabel(validUntil: string | null, now: Date): string {
   if (validUntil === null) return '상시';
+  if (!isValidDateOnly(validUntil)) return '기간 확인';
 
-  const expiry = parseDateOnly(validUntil);
-  if (expiry === null) return '기간 확인';
-
-  const today = startOfDay(now);
-  const dayDelta = Math.round((expiry.getTime() - today.getTime()) / 86_400_000);
+  const dayDelta = diffDateOnlyDays(getKoreaDateOnly(now), validUntil);
+  if (dayDelta === null) return '기간 확인';
   if (dayDelta === 0) return '오늘까지';
   return `D-${dayDelta}`;
 }
@@ -298,30 +347,6 @@ function formatNumber(value: number): string {
 
 function formatWon(value: number): string {
   return `${formatNumber(value)}원`;
-}
-
-function startOfDay(date: Date): Date {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
-
-function parseDateOnly(value: string): Date | null {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
-  if (!match) return null;
-
-  const year = Number(match[1]);
-  const month = Number(match[2]);
-  const day = Number(match[3]);
-  const date = new Date(year, month - 1, day);
-
-  if (
-    date.getFullYear() !== year ||
-    date.getMonth() !== month - 1 ||
-    date.getDate() !== day
-  ) {
-    return null;
-  }
-
-  return date;
 }
 
 function clamp(value: number, min: number, max: number): number {
