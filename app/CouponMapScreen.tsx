@@ -66,10 +66,16 @@ interface KakaoMapsNamespace {
     }
   ) => KakaoMap;
   event: {
-    addListener(target: unknown, eventName: string, handler: () => void): unknown;
-    removeListener(listener: unknown): void;
+    addListener(target: unknown, eventName: string, handler: () => void): void;
+    removeListener(target: unknown, eventName: string, handler: () => void): void;
   };
   load(callback: () => void): void;
+}
+
+interface KakaoMapListener {
+  target: unknown;
+  eventName: string;
+  handler: () => void;
 }
 
 declare global {
@@ -97,7 +103,15 @@ const KAKAO_MAP_APP_KEY = process.env.NEXT_PUBLIC_KAKAO_MAP_APP_KEY?.trim() ?? '
 const KAKAO_MAP_SCRIPT_ID = 'coupon-map-kakao-sdk';
 const DEFAULT_CENTER = { lat: 37.5572, lng: 126.9254 };
 const LOCATION_RELOAD_THRESHOLD_METERS = 50;
-const MAP_RELOAD_DEBOUNCE_MS = 220;
+const MAP_RELOAD_DEBOUNCE_MS = 500;
+const MAP_PROGRAMMATIC_MOVE_SUPPRESSION_MS = 900;
+const COUPON_RELOAD_CACHE_TTL_MS = 2 * 60 * 1000;
+const COUPON_RELOAD_CACHE_MAX_ENTRIES = 40;
+
+interface CachedCouponMapApiResponse {
+  response: CouponMapApiResponse;
+  expiresAt: number;
+}
 
 export default function CouponMapScreen({ view, status, message }: CouponMapScreenProps) {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -105,7 +119,10 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
   const kakaoMapsRef = useRef<KakaoMapsNamespace | null>(null);
   const markerFrameRef = useRef<number | null>(null);
   const viewportReloadTimeoutRef = useRef<number | null>(null);
+  const viewportReloadSuppressedUntilRef = useRef(0);
+  const hasUserMapInteractionRef = useRef(false);
   const activeRequestRef = useRef<AbortController | null>(null);
+  const reloadCacheRef = useRef(new Map<string, CachedCouponMapApiResponse>());
   const lastLoadedSearchRef = useRef({ center: DEFAULT_LOCATION, radiusMeters: DEFAULT_RADIUS_METERS });
   const [selectedStoreId, setSelectedStoreId] = useState<string | null>(
     view.stores[0]?.id ?? null
@@ -113,9 +130,8 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
   const [displayView, setDisplayView] = useState(view);
   const [loadStatus, setLoadStatus] = useState<CouponMapLoadStatus>(status);
   const [loadMessage, setLoadMessage] = useState<string | null>(message);
-  const [isReloading, setIsReloading] = useState(false);
-  const [searchCenter, setSearchCenter] = useState<Coords>(DEFAULT_LOCATION);
   const [searchRadiusMeters, setSearchRadiusMeters] = useState(DEFAULT_RADIUS_METERS);
+  const [isCouponPanelOpen, setIsCouponPanelOpen] = useState(true);
   const [mapProviderStatus, setMapProviderStatus] = useState<MapProviderStatus>(
     KAKAO_MAP_APP_KEY ? 'loading' : 'missing-key'
   );
@@ -142,25 +158,15 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     () => displayView.stores.map((store) => `${store.id}:${store.lat},${store.lng}`).join('|'),
     [displayView.stores]
   );
-  const searchCenterDistanceFromUser = haversineMeters(
-    searchCenter.lat,
-    searchCenter.lng,
-    userLocation.coords.lat,
-    userLocation.coords.lng
-  );
-  const locationTitle =
-    searchCenterDistanceFromUser > 120
-      ? '지도 중심 기준'
-      : userLocation.usingDefault
-        ? '홍대입구 기준'
-        : '내 위치 기준';
-  const locationSubtitle = userLocation.isLoading
-    ? '위치 확인 중'
-    : isReloading
-      ? '쿠폰 새로 로딩 중'
-      : `${formatRadiusLabel(searchRadiusMeters)} 반경 쿠폰`;
   const emptyDescription =
     loadMessage ?? formatNearbyEmptyMessage(searchRadiusMeters);
+  const showFallbackPins = mapProviderStatus !== 'loading';
+  const panelToggleLabel = isCouponPanelOpen ? '쿠폰 패널 닫기' : '쿠폰 패널 열기';
+
+  const suppressViewportReload = useCallback(() => {
+    viewportReloadSuppressedUntilRef.current =
+      Date.now() + MAP_PROGRAMMATIC_MOVE_SUPPRESSION_MS;
+  }, []);
 
   const scheduleMarkerProjection = useCallback(() => {
     if (markerFrameRef.current !== null) return;
@@ -200,6 +206,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     const centerStore = stores[0];
 
     if (stores.length === 0 || !centerStore) {
+      suppressViewportReload();
       map.setCenter(userLatLng);
       map.setLevel(4);
       scheduleMarkerProjection();
@@ -210,6 +217,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
       stores.length === 1 &&
       haversineMeters(coords.lat, coords.lng, centerStore.lat, centerStore.lng) < 20
     ) {
+      suppressViewportReload();
       map.setCenter(userLatLng);
       map.setLevel(4);
       scheduleMarkerProjection();
@@ -222,9 +230,10 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
       bounds.extend(new kakaoMaps.LatLng(store.lat, store.lng));
     }
 
-    map.setBounds(bounds, ...getMapPadding());
+    suppressViewportReload();
+    map.setBounds(bounds, ...getMapPadding(isCouponPanelOpen));
     scheduleMarkerProjection();
-  }, [scheduleMarkerProjection]);
+  }, [isCouponPanelOpen, scheduleMarkerProjection, suppressViewportReload]);
 
   const reloadNearbyCoupons = useCallback(
     async (
@@ -251,9 +260,22 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
       }
 
       activeRequestRef.current?.abort();
+      const cacheKey = makeCouponRequestCacheKey(center, radiusMeters);
+      const cachedResponse = options.force
+        ? null
+        : readCachedCouponResponse(reloadCacheRef.current, cacheKey, Date.now());
+
+      if (cachedResponse) {
+        setDisplayView(cachedResponse.view);
+        setLoadStatus(cachedResponse.status);
+        setLoadMessage(cachedResponse.message);
+        setSearchRadiusMeters(radiusMeters);
+        lastLoadedSearchRef.current = { center, radiusMeters };
+        return;
+      }
+
       const request = new AbortController();
       activeRequestRef.current = request;
-      setIsReloading(true);
 
       try {
         const params = new URLSearchParams({
@@ -273,9 +295,14 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
         setDisplayView(nextState.view);
         setLoadStatus(nextState.status);
         setLoadMessage(nextState.message);
-        setSearchCenter(center);
         setSearchRadiusMeters(radiusMeters);
         lastLoadedSearchRef.current = { center, radiusMeters };
+        writeCachedCouponResponse(
+          reloadCacheRef.current,
+          cacheKey,
+          nextState,
+          Date.now()
+        );
       } catch (error) {
         if (isAbortError(error)) return;
         setLoadStatus('error');
@@ -283,7 +310,6 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
       } finally {
         if (activeRequestRef.current === request) {
           activeRequestRef.current = null;
-          setIsReloading(false);
         }
       }
     },
@@ -306,26 +332,23 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
 
     if (viewportReloadTimeoutRef.current !== null) {
       window.clearTimeout(viewportReloadTimeoutRef.current);
+      viewportReloadTimeoutRef.current = null;
+    }
+
+    if (Date.now() < viewportReloadSuppressedUntilRef.current) {
+      return;
+    }
+
+    if (!hasUserMapInteractionRef.current) {
+      return;
     }
 
     viewportReloadTimeoutRef.current = window.setTimeout(() => {
       viewportReloadTimeoutRef.current = null;
+      hasUserMapInteractionRef.current = false;
       reloadForMapViewport();
     }, MAP_RELOAD_DEBOUNCE_MS);
   }, [reloadForMapViewport, scheduleMarkerProjection]);
-
-  const refreshNearbyCoupons = useCallback(() => {
-    const map = mapRef.current;
-    const kakaoMaps = kakaoMapsRef.current;
-    const radiusMeters = map ? radiusMetersForMapLevel(map.getLevel()) : searchRadiusRef.current;
-
-    if (map && kakaoMaps) {
-      map.setCenter(new kakaoMaps.LatLng(userLocation.coords.lat, userLocation.coords.lng));
-    }
-
-    void reloadNearbyCoupons(userLocation.coords, { force: true, radiusMeters });
-    scheduleMarkerProjection();
-  }, [reloadNearbyCoupons, scheduleMarkerProjection, userLocation.coords]);
 
   useEffect(() => {
     if (userLocation.isLoading) return;
@@ -342,6 +365,15 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
       }
     };
   }, []);
+
+  useEffect(() => {
+    writeCachedCouponResponse(
+      reloadCacheRef.current,
+      makeCouponRequestCacheKey(DEFAULT_LOCATION, DEFAULT_RADIUS_METERS),
+      { view, status, message },
+      Date.now()
+    );
+  }, [message, status, view]);
 
   useEffect(() => {
     if (displayView.stores.length === 0) {
@@ -361,8 +393,10 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     }
 
     let isActive = true;
-    let listeners: unknown[] = [];
+    let listeners: KakaoMapListener[] = [];
     let createdMap: KakaoMap | null = null;
+    let interactionContainer: HTMLElement | null = null;
+    let markUserMapInteraction: (() => void) | null = null;
 
     loadKakaoMaps(KAKAO_MAP_APP_KEY)
       .then((kakaoMaps) => {
@@ -386,11 +420,24 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
         createdMap = map;
         mapRef.current = map;
         setMapProviderStatus('ready');
+        interactionContainer = mapContainerRef.current;
+        markUserMapInteraction = () => {
+          hasUserMapInteractionRef.current = true;
+        };
+
+        interactionContainer?.addEventListener('pointerdown', markUserMapInteraction);
+        interactionContainer?.addEventListener('wheel', markUserMapInteraction, {
+          passive: true,
+        });
+
         listeners = [
-          kakaoMaps.event.addListener(map, 'bounds_changed', scheduleMarkerProjection),
-          kakaoMaps.event.addListener(map, 'zoom_changed', scheduleMarkerProjection),
-          kakaoMaps.event.addListener(map, 'idle', scheduleViewportReload),
+          { target: map, eventName: 'bounds_changed', handler: scheduleMarkerProjection },
+          { target: map, eventName: 'zoom_changed', handler: scheduleMarkerProjection },
+          { target: map, eventName: 'idle', handler: scheduleViewportReload },
         ];
+        for (const listener of listeners) {
+          kakaoMaps.event.addListener(listener.target, listener.eventName, listener.handler);
+        }
 
         window.requestAnimationFrame(() => {
           if (!isActive) return;
@@ -413,8 +460,13 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
       const kakaoMaps = kakaoMapsRef.current;
       if (kakaoMaps) {
         for (const listener of listeners) {
-          kakaoMaps.event.removeListener(listener);
+          kakaoMaps.event.removeListener(listener.target, listener.eventName, listener.handler);
         }
+      }
+
+      if (interactionContainer && markUserMapInteraction) {
+        interactionContainer.removeEventListener('pointerdown', markUserMapInteraction);
+        interactionContainer.removeEventListener('wheel', markUserMapInteraction);
       }
 
       if (createdMap && mapRef.current === createdMap) {
@@ -447,51 +499,66 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     return () => window.removeEventListener('resize', handleResize);
   }, [mapProviderStatus, scheduleMarkerProjection]);
 
+  useEffect(() => {
+    if (mapProviderStatus !== 'ready') return;
+
+    const timeout = window.setTimeout(() => {
+      mapRef.current?.relayout();
+      scheduleMarkerProjection();
+    }, 240);
+
+    return () => window.clearTimeout(timeout);
+  }, [isCouponPanelOpen, mapProviderStatus, scheduleMarkerProjection]);
+
   const selectStore = useCallback(
     (storeId: string) => {
       setSelectedStoreId(storeId);
+      setIsCouponPanelOpen(true);
 
       const store = displayView.stores.find((candidate) => candidate.id === storeId);
       const map = mapRef.current;
       const kakaoMaps = kakaoMapsRef.current;
       if (!store || !map || !kakaoMaps) return;
 
+      suppressViewportReload();
       map.panTo(new kakaoMaps.LatLng(store.lat, store.lng));
       scheduleMarkerProjection();
     },
-    [displayView.stores, scheduleMarkerProjection]
+    [displayView.stores, scheduleMarkerProjection, suppressViewportReload]
   );
 
   return (
     <main className="appShell">
       <section
-        className={`mapCanvas ${mapProviderStatus === 'ready' ? 'hasProviderMap' : 'usesFallbackMap'}`}
+        className={`mapCanvas ${mapProviderStatus === 'ready' ? 'hasProviderMap' : 'usesFallbackMap'} ${mapProviderStatus === 'loading' ? 'isMapLoading' : ''}`}
         aria-label="coupon map"
       >
         <div ref={mapContainerRef} className="providerMap" aria-hidden="true" />
-        <MapBackdrop />
+        {mapProviderStatus !== 'ready' ? <MapStatusOverlay status={mapProviderStatus} /> : null}
         <div className="mapSoftLayer" />
-        <div
-          className="myLocation"
-          style={
-            locationPoint
-              ? ({
-                  '--user-x': `${locationPoint.x}px`,
-                  '--user-y': `${locationPoint.y}px`,
-                } as React.CSSProperties)
-              : undefined
-          }
-          aria-hidden="true"
-        >
-          <span />
-        </div>
+        {showFallbackPins ? (
+          <div
+            className="myLocation"
+            style={
+              locationPoint
+                ? ({
+                    '--user-x': `${locationPoint.x}px`,
+                    '--user-y': `${locationPoint.y}px`,
+                  } as React.CSSProperties)
+                : undefined
+            }
+            aria-hidden="true"
+          >
+            <span />
+          </div>
+        ) : null}
 
         {displayView.stores.length === 0 ? (
           <div className="empty">
             <strong>표시할 쿠폰이 없습니다</strong>
             <span>{emptyDescription}</span>
           </div>
-        ) : (
+        ) : showFallbackPins ? (
           displayView.stores.map((store) => (
             <button
               key={store.id}
@@ -527,111 +594,113 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
               <span className="pinTail" />
             </button>
           ))
-        )}
-      </section>
-
-      <section className="topControls" aria-label="map controls">
-        <div className="locationBar">
-          <LocationIcon />
-          <div>
-            <p>{locationTitle}</p>
-            <span>{locationSubtitle}</span>
-          </div>
-        </div>
-        <button
-          type="button"
-          className="iconButton"
-          aria-label="현재 위치 쿠폰 다시 불러오기"
-          aria-busy={isReloading ? 'true' : undefined}
-          onClick={refreshNearbyCoupons}
-        >
-          <LocateIcon />
-        </button>
+        ) : null}
       </section>
 
       {loadMessage && displayView.stores.length > 0 ? (
         <p className={`notice ${loadStatus}`}>{loadMessage}</p>
       ) : null}
 
-      <aside className="couponPanel" aria-label="nearby coupons">
-        <div className="sheetHandle" aria-hidden="true" />
-        <div className="panelHeader">
-          <div>
-            <p className="eyebrow">CouponMap</p>
-            <h1>근처 쿠폰 매장</h1>
-          </div>
-          <div className="stats" aria-label="coupon summary">
-            <span>{displayView.totals.brands} brands</span>
-            <span>{displayView.totals.stores} stores</span>
-            <span>{displayView.totals.activeCoupons} coupons</span>
-          </div>
-        </div>
-
-        {selectedStore ? (
-          <section
-            className="selectedDetail"
-            aria-live="polite"
-            data-testid="selected-store-detail"
-            data-selected-store-id={selectedStore.id}
-          >
-            <div className="selectedHead">
-              <span className="brandLogo" style={{ background: selectedStore.brandColor }}>
-                {selectedStore.brandInitial}
-              </span>
-              <div>
-                <p>{selectedStore.brandName}</p>
-                <h2>{selectedStore.bestCoupon.title}</h2>
-                <span>{selectedStore.name}</span>
+      <div className={`panelDock ${isCouponPanelOpen ? 'isPanelOpen' : 'isPanelClosed'}`}>
+        <button
+          type="button"
+          className="panelToggle"
+          aria-controls="coupon-panel"
+          aria-expanded={isCouponPanelOpen}
+          aria-label={panelToggleLabel}
+          onClick={() => setIsCouponPanelOpen((isOpen) => !isOpen)}
+        >
+          <PanelToggleIcon />
+        </button>
+        <aside
+          id="coupon-panel"
+          className="couponPanel"
+          aria-hidden={isCouponPanelOpen ? undefined : true}
+          aria-label="nearby coupons"
+        >
+          {isCouponPanelOpen ? (
+            <>
+              <div className="sheetHandle" aria-hidden="true" />
+              <div className="panelHeader">
+                <div>
+                  <p className="eyebrow">CouponMap</p>
+                  <h1>근처 쿠폰 매장</h1>
+                </div>
+                <div className="stats" aria-label="coupon summary">
+                  <span>{displayView.totals.brands} brands</span>
+                  <span>{displayView.totals.stores} stores</span>
+                  <span>{displayView.totals.activeCoupons} coupons</span>
+                </div>
               </div>
-              <strong>{selectedStore.bestCoupon.headline}</strong>
-            </div>
 
-            {selectedStore.bestCoupon.facts.length > 0 ? (
-              <dl className="couponFacts" aria-label="coupon details">
-                {selectedStore.bestCoupon.facts.map((fact) => (
-                  <div key={`${fact.label}-${fact.value}`}>
-                    <dt>{fact.label}</dt>
-                    <dd>{fact.value}</dd>
+              {selectedStore ? (
+                <section
+                  className="selectedDetail"
+                  aria-live="polite"
+                  data-testid="selected-store-detail"
+                  data-selected-store-id={selectedStore.id}
+                >
+                  <div className="selectedHead">
+                    <span className="brandLogo" style={{ background: selectedStore.brandColor }}>
+                      {selectedStore.brandInitial}
+                    </span>
+                    <div>
+                      <p>{selectedStore.brandName}</p>
+                      <h2>{selectedStore.bestCoupon.title}</h2>
+                      <span>{selectedStore.name}</span>
+                    </div>
+                    <strong>{selectedStore.bestCoupon.headline}</strong>
                   </div>
+
+                  {selectedStore.bestCoupon.facts.length > 0 ? (
+                    <dl className="couponFacts" aria-label="coupon details">
+                      {selectedStore.bestCoupon.facts.map((fact) => (
+                        <div key={`${fact.label}-${fact.value}`}>
+                          <dt>{fact.label}</dt>
+                          <dd>{fact.value}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  ) : null}
+
+                  <div className="couponCards" aria-label={`${selectedStore.brandName} coupons`}>
+                    {selectedStore.coupons.slice(0, 3).map((coupon) => (
+                      <CouponCard coupon={coupon} key={coupon.id} />
+                    ))}
+                  </div>
+
+                  <button
+                    type="button"
+                    className="openAppButton"
+                    onClick={() =>
+                      openBrandApp(selectedStore.brand, undefined, selectedStore.bestCoupon.appLink)
+                    }
+                  >
+                    앱에서 열기
+                    <ArrowIcon />
+                  </button>
+                </section>
+              ) : null}
+
+              <div className="sectionHeader">
+                <h2>{formatRadiusLabel(searchRadiusMeters)} 내 매장</h2>
+                <span>{displayView.stores.length}</span>
+              </div>
+
+              <div className="storeList">
+                {displayView.stores.map((store) => (
+                  <StoreCard
+                    key={store.id}
+                    store={store}
+                    isSelected={store.id === activeStoreId}
+                    onSelect={() => selectStore(store.id)}
+                  />
                 ))}
-              </dl>
-            ) : null}
-
-            <div className="couponCards" aria-label={`${selectedStore.brandName} coupons`}>
-              {selectedStore.coupons.slice(0, 3).map((coupon) => (
-                <CouponCard coupon={coupon} key={coupon.id} />
-              ))}
-            </div>
-
-            <button
-              type="button"
-              className="openAppButton"
-              onClick={() =>
-                openBrandApp(selectedStore.brand, undefined, selectedStore.bestCoupon.appLink)
-              }
-            >
-              앱에서 열기
-              <ArrowIcon />
-            </button>
-          </section>
-        ) : null}
-
-        <div className="sectionHeader">
-          <h2>{formatRadiusLabel(searchRadiusMeters)} 내 매장</h2>
-          <span>{displayView.stores.length}</span>
-        </div>
-
-        <div className="storeList">
-          {displayView.stores.map((store) => (
-            <StoreCard
-              key={store.id}
-              store={store}
-              isSelected={store.id === activeStoreId}
-              onSelect={() => selectStore(store.id)}
-            />
-          ))}
-        </div>
-      </aside>
+              </div>
+            </>
+          ) : null}
+        </aside>
+      </div>
 
       <style dangerouslySetInnerHTML={{ __html: styles }} />
     </main>
@@ -658,6 +727,43 @@ function formatRadiusLabel(radiusMeters: number): string {
   return radiusMeters >= 1000
     ? `${Number((radiusMeters / 1000).toFixed(1)).toLocaleString('ko-KR')}km`
     : `${Math.round(radiusMeters).toLocaleString('ko-KR')}m`;
+}
+
+function makeCouponRequestCacheKey(center: Coords, radiusMeters: number): string {
+  return `${center.lat.toFixed(4)},${center.lng.toFixed(4)},${Math.round(radiusMeters)}`;
+}
+
+function readCachedCouponResponse(
+  cache: Map<string, CachedCouponMapApiResponse>,
+  key: string,
+  now: number
+): CouponMapApiResponse | null {
+  const cached = cache.get(key);
+  if (!cached) return null;
+  if (cached.expiresAt <= now) {
+    cache.delete(key);
+    return null;
+  }
+
+  return cached.response;
+}
+
+function writeCachedCouponResponse(
+  cache: Map<string, CachedCouponMapApiResponse>,
+  key: string,
+  response: CouponMapApiResponse,
+  now: number
+) {
+  cache.set(key, {
+    response,
+    expiresAt: now + COUPON_RELOAD_CACHE_TTL_MS,
+  });
+
+  while (cache.size > COUPON_RELOAD_CACHE_MAX_ENTRIES) {
+    const oldestKey = cache.keys().next().value;
+    if (typeof oldestKey !== 'string') return;
+    cache.delete(oldestKey);
+  }
 }
 
 function loadKakaoMaps(appKey: string): Promise<KakaoMapsNamespace> {
@@ -710,15 +816,19 @@ function loadKakaoMaps(appKey: string): Promise<KakaoMapsNamespace> {
   return window.__couponMapKakaoLoader;
 }
 
-function getMapPadding(): [number, number, number, number] {
-  if (typeof window === 'undefined') return [92, 460, 40, 32];
+function getMapPadding(isCouponPanelOpen: boolean): [number, number, number, number] {
+  if (typeof window === 'undefined') {
+    return isCouponPanelOpen ? [92, 460, 40, 32] : [92, 32, 40, 32];
+  }
 
   if (window.matchMedia('(max-width: 760px)').matches) {
-    const bottomPanelPadding = Math.min(Math.round(window.innerHeight * 0.58) + 28, 500);
+    const bottomPanelPadding = isCouponPanelOpen
+      ? Math.min(Math.round(window.innerHeight * 0.58) + 28, 500)
+      : 24;
     return [96, 24, bottomPanelPadding, 24];
   }
 
-  return [92, 460, 40, 32];
+  return isCouponPanelOpen ? [92, 460, 40, 32] : [92, 32, 40, 32];
 }
 
 function StoreCard({
@@ -788,117 +898,21 @@ function CouponCard({ coupon }: { coupon: CouponMapCoupon }) {
   );
 }
 
-function MapBackdrop() {
+function MapStatusOverlay({ status }: { status: MapProviderStatus }) {
+  const label = formatMapStatusLabel(status);
+
   return (
-    <svg
-      className="mapBackdrop"
-      viewBox="0 0 1200 800"
-      preserveAspectRatio="xMidYMid slice"
-      aria-hidden="true"
-    >
-      <rect width="1200" height="800" fill="#f0eee8" />
-      <g fill="#e5e1d5" stroke="#d9d4c5" strokeWidth="1.5">
-        <rect x="16" y="36" width="150" height="84" rx="8" />
-        <rect x="190" y="28" width="132" height="92" rx="8" />
-        <rect x="356" y="42" width="152" height="78" rx="8" />
-        <rect x="812" y="34" width="150" height="84" rx="8" />
-        <rect x="986" y="42" width="172" height="92" rx="8" />
-        <rect x="38" y="198" width="132" height="96" rx="8" />
-        <rect x="218" y="212" width="152" height="88" rx="8" />
-        <rect x="442" y="196" width="132" height="88" rx="8" />
-        <rect x="732" y="196" width="158" height="96" rx="8" />
-        <rect x="944" y="210" width="150" height="90" rx="8" />
-        <rect x="16" y="392" width="154" height="96" rx="8" />
-        <rect x="232" y="404" width="132" height="88" rx="8" />
-        <rect x="434" y="390" width="154" height="96" rx="8" />
-        <rect x="748" y="392" width="146" height="96" rx="8" />
-        <rect x="980" y="404" width="160" height="88" rx="8" />
-        <rect x="58" y="612" width="148" height="94" rx="8" />
-        <rect x="292" y="620" width="138" height="84" rx="8" />
-        <rect x="520" y="608" width="150" height="94" rx="8" />
-        <rect x="790" y="620" width="154" height="84" rx="8" />
-        <rect x="996" y="610" width="152" height="92" rx="8" />
-      </g>
-      <path
-        d="M180 0 C260 150 330 220 430 320 C560 448 650 570 710 800"
-        fill="none"
-        stroke="#cfe3b6"
-        strokeWidth="54"
-        strokeLinecap="round"
-      />
-      <path
-        d="M180 0 C260 150 330 220 430 320 C560 448 650 570 710 800"
-        fill="none"
-        stroke="#bcd59d"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <g fill="none">
-        <path d="M-40 166 L1240 166" stroke="#d8d2c0" strokeWidth="44" />
-        <path d="M-40 166 L1240 166" stroke="#ffffff" strokeWidth="34" />
-        <path d="M-40 520 L1240 520" stroke="#d8d2c0" strokeWidth="38" />
-        <path d="M-40 520 L1240 520" stroke="#ffffff" strokeWidth="30" />
-        <path d="M620 -40 L620 840" stroke="#d8d2c0" strokeWidth="42" />
-        <path d="M620 -40 L620 840" stroke="#ffffff" strokeWidth="32" />
-        <path d="M-40 760 C230 620 400 470 544 318 C720 132 920 60 1240 42" stroke="#d8d2c0" strokeWidth="34" />
-        <path d="M-40 760 C230 620 400 470 544 318 C720 132 920 60 1240 42" stroke="#ffffff" strokeWidth="26" />
-      </g>
-      <g stroke="#ffffff" strokeWidth="12">
-        <line x1="0" y1="316" x2="1200" y2="316" />
-        <line x1="0" y1="664" x2="1200" y2="664" />
-        <line x1="112" y1="0" x2="112" y2="800" />
-        <line x1="330" y1="0" x2="330" y2="800" />
-        <line x1="878" y1="0" x2="878" y2="800" />
-        <line x1="1092" y1="0" x2="1092" y2="800" />
-      </g>
-      <path
-        d="M-30 70 C140 80 250 130 376 222 C510 320 672 374 890 420 C990 442 1088 480 1230 540"
-        fill="none"
-        stroke="#00a84d"
-        strokeWidth="8"
-        strokeLinecap="round"
-      />
-      <g fill="#ffffff" stroke="#00a84d" strokeWidth="6">
-        <circle cx="370" cy="218" r="15" />
-        <circle cx="790" cy="398" r="15" />
-      </g>
-      <g fontFamily="Pretendard, system-ui, sans-serif" fontWeight="700" fill="#847a62">
-        <text x="180" y="110" fontSize="24">신촌동</text>
-        <text x="720" y="116" fontSize="24">연남동</text>
-        <text x="386" y="210" fontSize="24" fill="#1b7a3f">홍대입구역</text>
-        <text x="812" y="388" fontSize="24" fill="#1b7a3f">합정역</text>
-        <text x="174" y="646" fontSize="22" fill="#6fa856">경의선숲길</text>
-        <text x="894" y="634" fontSize="24">서교동</text>
-      </g>
-    </svg>
+    <div className={`mapStatus mapStatus-${status}`} role={status === 'loading' ? 'status' : 'note'}>
+      {status === 'loading' ? <span className="mapStatusSpinner" aria-hidden="true" /> : null}
+      <span>{label}</span>
+    </div>
   );
 }
 
-function LocationIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
-      <path
-        d="M9 1.6c-3 0-5.4 2.3-5.4 5.3 0 4.1 5.4 9.1 5.4 9.1s5.4-5 5.4-9.1c0-3-2.4-5.3-5.4-5.3z"
-        fill="currentColor"
-      />
-      <circle cx="9" cy="6.8" r="2" fill="#fff" />
-    </svg>
-  );
-}
-
-function LocateIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-      <circle cx="10" cy="10" r="4.1" stroke="currentColor" strokeWidth="1.8" />
-      <circle cx="10" cy="10" r="1.4" fill="currentColor" />
-      <path
-        d="M10 1.7v3M10 15.3v3M1.7 10h3M15.3 10h3"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
+function formatMapStatusLabel(status: MapProviderStatus): string {
+  if (status === 'missing-key') return '지도 키가 설정되지 않았습니다';
+  if (status === 'error') return '지도를 불러오지 못했습니다';
+  return '지도를 준비 중입니다';
 }
 
 function ArrowIcon() {
@@ -908,6 +922,20 @@ function ArrowIcon() {
         d="M3 8h9M8.6 4.2 12.5 8l-3.9 3.8"
         stroke="currentColor"
         strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function PanelToggleIcon() {
+  return (
+    <svg className="panelToggleIcon" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path
+        d="M7.5 4.5 12.5 10l-5 5.5"
+        stroke="currentColor"
+        strokeWidth="2.2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -955,7 +983,27 @@ const styles = `
     position: fixed;
     inset: 0;
     overflow: hidden;
-    background: #f0eee8;
+    background: #f3f2ee;
+  }
+
+  .mapCanvas::before {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.44), rgba(255,255,255,0) 42%),
+      #f3f2ee;
+    content: "";
+  }
+
+  .isMapLoading::after {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.58) 48%, transparent 66%);
+    content: "";
+    animation: mapLoadingSweep 1.8s ease-in-out infinite;
+    transform: translateX(-100%);
   }
 
   .providerMap {
@@ -974,19 +1022,39 @@ const styles = `
     pointer-events: auto;
   }
 
-  .mapBackdrop {
+  .mapStatus {
     position: absolute;
-    z-index: 0;
-    inset: 0;
-    display: block;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    transition: opacity .2s ease;
+    z-index: 6;
+    left: 50%;
+    top: 42%;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 40px;
+    transform: translate(-50%, -50%);
+    border: 1px solid rgba(21,21,26,.08);
+    border-radius: 999px;
+    padding: 0 14px;
+    background: rgba(255,255,255,.92);
+    color: #46464f;
+    font-size: 13px;
+    font-weight: 900;
+    box-shadow: 0 12px 30px rgba(20,20,30,.1);
+    white-space: nowrap;
   }
 
-  .hasProviderMap .mapBackdrop {
-    opacity: 0;
+  .mapStatus-error,
+  .mapStatus-missing-key {
+    color: #5b5b63;
+  }
+
+  .mapStatusSpinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(245,64,44,.22);
+    border-top-color: #f5402c;
+    border-radius: 50%;
+    animation: mapStatusSpin .7s linear infinite;
   }
 
   .mapSoftLayer {
@@ -999,76 +1067,22 @@ const styles = `
     pointer-events: none;
   }
 
-  .topControls {
-    position: fixed;
-    z-index: 40;
-    top: 18px;
-    left: 18px;
-    display: flex;
-    gap: 8px;
-    width: min(420px, calc(100vw - 36px));
+  @keyframes mapLoadingSweep {
+    to {
+      transform: translateX(100%);
+    }
   }
 
-  .locationBar,
-  .iconButton {
-    border: 1px solid rgba(21,21,26,.06);
-    background: rgba(255,255,255,.96);
-    box-shadow: 0 10px 28px rgba(20,20,30,.12);
-  }
-
-  .locationBar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-    height: 48px;
-    flex: 1;
-    border-radius: 8px;
-    padding: 0 14px;
-    color: #f5402c;
-  }
-
-  .locationBar div {
-    min-width: 0;
-  }
-
-  .locationBar p {
-    color: #15151a;
-    font-size: 15px;
-    font-weight: 800;
-    letter-spacing: 0;
-  }
-
-  .locationBar span {
-    display: block;
-    overflow: hidden;
-    color: #777780;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .iconButton {
-    display: grid;
-    place-items: center;
-    width: 48px;
-    height: 48px;
-    flex: 0 0 auto;
-    border-radius: 8px;
-    color: #15151a;
-    cursor: pointer;
-  }
-
-  .iconButton[aria-busy="true"] {
-    color: #f5402c;
+  @keyframes mapStatusSpin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   .notice {
     position: fixed;
     z-index: 50;
-    top: 74px;
+    top: 18px;
     left: 18px;
     width: min(420px, calc(100vw - 36px));
     border: 1px solid #f5d565;
@@ -1212,8 +1226,8 @@ const styles = `
 
   .marker:focus-visible,
   .storeCard:focus-visible,
-  .iconButton:focus-visible,
-  .openAppButton:focus-visible {
+  .openAppButton:focus-visible,
+  .panelToggle:focus-visible {
     outline: 3px solid rgba(46,118,255,.32);
     outline-offset: 3px;
   }
@@ -1241,20 +1255,68 @@ const styles = `
     font-size: 18px;
   }
 
-  .couponPanel {
+  .panelDock {
     position: fixed;
     z-index: 35;
     top: 22px;
     right: 22px;
     bottom: 22px;
+    width: min(420px, calc(100vw - 76px));
+    pointer-events: none;
+    transition: transform .22s ease;
+  }
+
+  .panelDock.isPanelClosed {
+    transform: translateX(calc(100% + 22px));
+  }
+
+  .panelToggle {
+    position: absolute;
+    z-index: 3;
+    top: 50%;
+    left: -46px;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 52px;
+    transform: translateY(-50%);
+    border: 1px solid rgba(21,21,26,.08);
+    border-radius: 8px;
+    background: rgba(255,255,255,.96);
+    color: #15151a;
+    box-shadow: 0 12px 28px rgba(20,20,30,.16);
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .panelToggleIcon {
+    transition: transform .22s ease;
+  }
+
+  .panelDock.isPanelClosed .panelToggleIcon {
+    transform: rotate(180deg);
+  }
+
+  .couponPanel {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
     display: flex;
-    width: min(420px, calc(100vw - 44px));
+    width: 100%;
     flex-direction: column;
     overflow: hidden;
     border: 1px solid rgba(21,21,26,.08);
     border-radius: 8px;
     background: rgba(255,255,255,.97);
     box-shadow: 0 24px 60px rgba(20,20,30,.22);
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity .16s ease;
+  }
+
+  .panelDock.isPanelClosed .couponPanel {
+    opacity: 0;
+    pointer-events: none;
   }
 
   .sheetHandle {
@@ -1602,25 +1664,46 @@ const styles = `
   }
 
   @media (max-width: 760px) {
-    .topControls {
+    .notice {
       top: max(14px, env(safe-area-inset-top));
       left: 14px;
       width: calc(100vw - 28px);
     }
 
-    .notice {
-      top: calc(max(14px, env(safe-area-inset-top)) + 58px);
-      left: 14px;
-      width: calc(100vw - 28px);
-    }
-
-    .couponPanel {
+    .panelDock {
       top: auto;
       right: 0;
       bottom: 0;
       left: 0;
-      width: 100%;
+      width: auto;
       height: min(58dvh, 470px);
+    }
+
+    .panelDock.isPanelClosed {
+      transform: translateY(100%);
+    }
+
+    .panelToggle {
+      top: -56px;
+      right: 14px;
+      left: auto;
+      width: 48px;
+      height: 48px;
+      transform: none;
+    }
+
+    .panelDock.isPanelOpen .panelToggleIcon {
+      transform: rotate(90deg);
+    }
+
+    .panelDock.isPanelClosed .panelToggleIcon {
+      transform: rotate(-90deg);
+    }
+
+    .couponPanel {
+      inset: 0;
+      width: 100%;
+      height: 100%;
       border-right: 0;
       border-bottom: 0;
       border-left: 0;

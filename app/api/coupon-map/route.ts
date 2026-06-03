@@ -34,12 +34,19 @@ export async function GET(request: Request) {
   const message =
     state.message ?? (view.stores.length === 0 ? formatNearbyEmptyMessage(radiusMeters) : null);
 
-  return NextResponse.json({
-    view,
-    status,
-    message,
-    radiusMeters,
-  });
+  return NextResponse.json(
+    {
+      view,
+      status,
+      message,
+      radiusMeters,
+    },
+    {
+      headers: {
+        'Cache-Control': 'private, max-age=60, stale-while-revalidate=240',
+      },
+    }
+  );
 }
 
 function parseNumberParam(value: string | null): number | null {

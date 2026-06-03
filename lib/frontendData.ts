@@ -335,7 +335,11 @@ function getBrandInitial(value: string): string {
   const trimmed = value.trim();
   if (!trimmed) return '?';
   const asciiWords = trimmed.match(/[A-Za-z0-9]+/g);
-  if (asciiWords?.[0]) return asciiWords[0].slice(0, 2).toUpperCase();
+  const firstAsciiWord = asciiWords?.[0];
+  if (firstAsciiWord) {
+    const upper = firstAsciiWord.toUpperCase();
+    return upper.length <= 3 ? upper : upper.slice(0, 2);
+  }
   return Array.from(trimmed).slice(0, 2).join('');
 }
 

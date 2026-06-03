@@ -78,6 +78,19 @@ describe('buildCouponMapView', () => {
     expect(view.stores[0].bestCoupon.validLabel).toBe('오늘까지');
   });
 
+  it('keeps short all-caps brand tokens readable in map badges', () => {
+    const view = buildCouponMapView(
+      {
+        brands: [makeBrand({ name: 'KFC' })],
+        stores: [makeStore()],
+        coupons: [makeCoupon()],
+      },
+      NOW
+    );
+
+    expect(view.stores[0].brandInitial).toBe('KFC');
+  });
+
   it('summarizes rich raw_payload fields for coupon detail display', () => {
     const view = buildCouponMapView(
       {

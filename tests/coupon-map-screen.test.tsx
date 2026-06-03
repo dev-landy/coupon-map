@@ -163,6 +163,24 @@ describe('CouponMapScreen', () => {
     expect(detail.getAttribute('data-selected-store-id')).toBe('hongdae');
   });
 
+  it('collapses and reopens the coupon panel', () => {
+    render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+
+    fireEvent.click(screen.getByRole('button', { name: '쿠폰 패널 닫기' }));
+
+    const openPanelButton = screen.getByRole('button', { name: '쿠폰 패널 열기' });
+    expect(openPanelButton.getAttribute('aria-expanded')).toBe('false');
+    expect(screen.queryByTestId('selected-store-detail')).toBeNull();
+
+    fireEvent.click(screen.getByRole('button', { name: '버거킹 강남점 3,000원' }));
+
+    const closePanelButton = screen.getByRole('button', { name: '쿠폰 패널 닫기' });
+    expect(closePanelButton.getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByTestId('selected-store-detail').getAttribute('data-selected-store-id')).toBe(
+      'gangnam'
+    );
+  });
+
   it('keeps the empty state visible when there are no stores', () => {
     render(
       <CouponMapScreen
@@ -175,6 +193,13 @@ describe('CouponMapScreen', () => {
     expect(screen.getByText('Supabase에 표시 가능한 쿠폰 데이터가 없습니다.')).toBeTruthy();
     expect(screen.getByText('표시할 쿠폰이 없습니다')).toBeTruthy();
     expect(screen.queryByTestId('selected-store-detail')).toBeNull();
+  });
+
+  it('does not render the old illustrated map fallback before the map provider is ready', () => {
+    const { container } = render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+
+    expect(container.querySelector('.mapBackdrop')).toBeNull();
+    expect(container.querySelector('.mapStatus')).toBeTruthy();
   });
 
   it('reloads coupon data when the browser reports a moved location', async () => {
