@@ -1,0 +1,805 @@
+brand_source,brand_external_id,source,external_id,name,lat,lng,address
+burgerking-kr-adb,burgerking,official-web,00000567,버거킹 가락시장역점,37.4936947,127.121636,서울특별시 송파구 중대로 118
+burgerking-kr-adb,burgerking,official-web,00000342,버거킹 가산이앤씨7점,37.4800579058,126.8870987418,서울특별시 금천구 디지털로9길 46
+burgerking-kr-adb,burgerking,official-web,00000454,버거킹 가양역점,37.5616037,126.8532854,서울특별시 강서구 양천로 476
+burgerking-kr-adb,burgerking,official-web,00000315,버거킹 가재울뉴타운점,37.5708141022,126.9127073134,서울특별시 서대문구 수색로 56
+burgerking-kr-adb,burgerking,official-web,00000187,버거킹 강남대로점,37.4990209,127.0276559,서울특별시 강남구 강남대로 406
+burgerking-kr-adb,burgerking,official-web,00000429,버거킹 강남도곡점,37.48488,127.0419322,서울특별시 강남구 논현로 172
+burgerking-kr-adb,burgerking,official-web,00000009,버거킹 강남NC점,37.5098628752,127.0071934462,서울특별시 서초구 잠원로 69
+burgerking-kr-adb,burgerking,official-web,00000418,버거킹 강동구청점,37.5296075,127.1228378,서울특별시 강동구 성내로 22
+burgerking-kr-adb,burgerking,official-web,00000287,버거킹 강릉교동SK점,37.7643791349,128.8744504669,강원도 강릉시 하슬라로 159
+burgerking-kr-adb,burgerking,official-web,00000628,버거킹 강릉임당점,37.75560200812467,128.89725056478528,강원특별자치도 강릉시 경강로 2109
+burgerking-kr-adb,burgerking,official-web,00000350,버거킹 개봉점,37.4905635,126.8557103,서울특별시 구로구 개봉로 55
+burgerking-kr-adb,burgerking,official-web,00000335,버거킹 거여역점,37.4930964198,127.1465189543,서울특별시 송파구 오금로 519
+burgerking-kr-adb,burgerking,official-web,00010048,버거킹 거제고현점,34.8892180965,128.6210111923,경상남도 거제시 서문로5길 6
+burgerking-kr-adb,burgerking,official-web,00010079,버거킹 거제수월점,34.8916626559,128.6395319537,경상남도 거제시 수양로 471
+burgerking-kr-adb,burgerking,official-web,00010084,버거킹 거제옥포점,34.889760114385346,128.69290755908983,경상남도 거제시 옥포로 161
+burgerking-kr-adb,burgerking,official-web,00000604,버거킹 건대스타시티점,37.5385583,127.0729962,서울특별시 광진구 아차산로 272 스타시티몰 시티존
+burgerking-kr-adb,burgerking,official-web,00000421,버거킹 건대입구역점,37.5408305,127.0690816,서울특별시 광진구 아차산로 229
+burgerking-kr-adb,burgerking,official-web,00000638,버거킹 검단신도시점,37.592178456634215,126.71049209718821,인천광역시 서구 원당대로 983
+burgerking-kr-adb,burgerking,official-web,00000610,버거킹 경기광주쌍령점,37.3985065,127.2745224,경기도 광주시 경충대로 1436
+burgerking-kr-adb,burgerking,official-web,00000485,버거킹 경기광주태전점,37.3805067,127.2311346,경기도 광주시 태봉로 145-2
+burgerking-kr-adb,burgerking,official-web,00010090,버거킹 경기양평점,37.4906791355,127.4917143094,경기도 양평군 양평읍 양평시장길 18번길 1
+burgerking-kr-adb,burgerking,official-web,00010125,버거킹 경남거창점,35.688471,127.9054728,경상남도 거창군 거창읍 거열로 106
+burgerking-kr-adb,burgerking,official-web,00010114,버거킹 경남삼천포점,34.9421049,128.0862801,경상남도 사천시 주공로 41
+burgerking-kr-adb,burgerking,official-web,00000274,버거킹 경대병원역SK점,35.862627,128.6032204,대구광역시 중구 달구벌대로 2194
+burgerking-kr-adb,burgerking,official-web,00010100,버거킹 경북도청점,36.5759685531,128.493389274,경상북도 안동시 검무로 4-8
+burgerking-kr-adb,burgerking,official-web,00010044,버거킹 경북상주점,36.4154564,128.1587841,경상북도 상주시 중앙로 186-2
+burgerking-kr-adb,burgerking,official-web,00010096,버거킹 경북영주가흥점,36.8148972,128.6049254,경상북도 영주시 대동로 24
+burgerking-kr-adb,burgerking,official-web,00010127,버거킹 경북왜관점,35.9824782,128.3990308,"경상북도 칠곡군 왜관읍 중앙로 86, 1층"
+burgerking-kr-adb,burgerking,official-web,00010030,버거킹 경산사동점,35.8113345,128.7539153,경상북도 경산시 백자로 55
+burgerking-kr-adb,burgerking,official-web,00010145,버거킹 경산중방DT점,35.8283577,128.7364283,경상북도 경산시 경안로 235
+burgerking-kr-adb,burgerking,official-web,00000383,버거킹 경산진량DT점,35.87515860205697,128.81676162069942,경상북도 경산시 진량읍 다문로 53
+burgerking-kr-adb,burgerking,official-web,00010157,버거킹 경산하양점,35.90995525025749,128.81485535398863,경상북도 경산시 하양읍 하양로 50
+burgerking-kr-adb,burgerking,official-web,00010057,버거킹 경주보문점,35.834557,129.289868,경상북도 경주시 엑스포로 80
+burgerking-kr-adb,burgerking,official-web,00000486,버거킹 경주용강DT점,35.8806963,129.2297501,경상북도 경주시 산업로 4494
+burgerking-kr-adb,burgerking,official-web,00000463,버거킹 경주터미널FS점,35.8379412,129.2030693,경상북도 경주시 강변로 158-3
+burgerking-kr-adb,burgerking,official-web,00000491,버거킹 경희대점,37.5918385,127.0521165,서울특별시 동대문구 경희대로 1-1
+burgerking-kr-adb,burgerking,official-web,00010131,버거킹 계룡엄사점,36.2900412,127.2444348,충청남도 계룡시 엄사면 계룡대로 524
+burgerking-kr-adb,burgerking,official-web,00000407,버거킹 고양덕양FS점,37.71299,126.9081353,경기도 고양시 덕양구 호국로 1821
+burgerking-kr-adb,burgerking,official-web,00000453,버거킹 고양덕이DT점,37.6933602,126.7598128,경기도 고양시 일산서구 경의로 850
+burgerking-kr-adb,burgerking,official-web,00000476,버거킹 고양삼송점,37.6644313,126.891118,경기도 고양시 권율대로 907
+burgerking-kr-adb,burgerking,official-web,00000614,버거킹 고양서정마을점,37.617630647783415,126.8463378793484,경기도 고양시 덕양구 중앙로 439
+burgerking-kr-adb,burgerking,official-web,00000257,버거킹 고양터미널점,37.6431777371,126.7896627969,경기도 고양시 일산동구 중앙로 1036
+burgerking-kr-adb,burgerking,official-web,00000503,버거킹 고양행신역점,37.6132354,126.8337261,경기도 고양시 덕양구 충장로 3
+burgerking-kr-adb,burgerking,official-web,00000591,버거킹 고양향동점,37.5992292,126.8927452,경기도 고양시 덕양구 향기로 101
+burgerking-kr-adb,burgerking,official-web,00000326,버거킹 공덕역점,37.5470005411,126.9537580588,서울특별시 마포구 마포대로 144
+burgerking-kr-adb,burgerking,official-web,00000334,버거킹 공릉역점,37.6266938,127.0721192,서울특별시 노원구 동일로 1085
+burgerking-kr-adb,burgerking,official-web,00000586,버거킹 공주신관DT점,36.4750471,127.1416155,충청남도 공주시 일신역길 12 충청남도 공주시 일신역길 12
+burgerking-kr-adb,burgerking,official-web,00000230,버거킹 과천중앙점,37.4283068535,126.9910021382,경기도 과천시 중앙로 129
+burgerking-kr-adb,burgerking,official-web,00000269,버거킹 광교아브뉴프랑점,37.2902340273,127.0498735718,경기도 수원시 영통구 센트럴타운로 85
+burgerking-kr-adb,burgerking,official-web,00000361,버거킹 광명소하DT점,37.4345958382,126.8792034531,경기도 광명시 오리로 361
+burgerking-kr-adb,burgerking,official-web,00000617,버거킹 광명역점,37.420105602410544,126.88366798122445,경기도 광명시 신기로 21
+burgerking-kr-adb,burgerking,official-web,00000541,버거킹 광명철산점,37.4760713,126.8659802,경기도 광명시 오리로 870
+burgerking-kr-adb,burgerking,official-web,00010071,버거킹 광양중동점,34.9361317067,127.6977158419,전라남도 광양시 중마중앙로 65
+burgerking-kr-adb,burgerking,official-web,00010075,버거킹 광양LF스퀘어점,34.9626559238,127.5663146932,전라남도 광양시 광양읍 순광로 466 LF스퀘어
+burgerking-kr-adb,burgerking,official-web,00010036,버거킹 광주경안점,37.4101879,127.2594585,경기도 광주시 경안로 10
+burgerking-kr-adb,burgerking,official-web,00000581,버거킹 광주두암점,35.1786431,126.9289146,광주광역시 북구 동문대로 181
+burgerking-kr-adb,burgerking,official-web,00010004,버거킹 광주봉선점,35.1228357,126.914829,광주광역시 남구 봉선로 180
+burgerking-kr-adb,burgerking,official-web,00000594,버거킹 광주상무점,35.1567856,126.8477842,광주광역시 서구 치평로 106
+burgerking-kr-adb,burgerking,official-web,00010033,버거킹 광주수완점,35.1904303708,126.82560541,광주광역시 광산구 장신로 142
+burgerking-kr-adb,burgerking,official-web,00000378,버거킹 광주수완DT점,35.20353389378798,126.81922566415336,광주광역시 광산구 임방울대로 499
+burgerking-kr-adb,burgerking,official-web,00010128,버거킹 광주신창점,35.1924801,126.8374111,광주광역시 광산구 신창로 82
+burgerking-kr-adb,burgerking,official-web,00000510,버거킹 광주운암점,35.1785712,126.8760364,광주광역시 북구 북문대로 101
+burgerking-kr-adb,burgerking,official-web,00010024,버거킹 광주월계점,35.2146169,126.8432897,광주광역시 광산구 첨단중앙로 104
+burgerking-kr-adb,burgerking,official-web,00010061,버거킹 광주일곡점,35.2033538,126.8980676,광주광역시 북구 설죽로 495
+burgerking-kr-adb,burgerking,official-web,00000344,버거킹 광주주월에스오일점,35.1317604219,126.8915665447,광주광역시 남구 회재로 1190
+burgerking-kr-adb,burgerking,official-web,00010158,버거킹 광주진월점,35.12023487721112,126.89865131795553,광주광역시 남구 서문대로 683
+burgerking-kr-adb,burgerking,official-web,00010046,버거킹 광주첨단2지구점,35.206545,126.8632654,광주광역시 북구 첨단연신로91번길 10
+burgerking-kr-adb,burgerking,official-web,00000494,버거킹 광주충장점,35.1471592,126.9181626,광주광역시 동구 충장로 101-4
+burgerking-kr-adb,burgerking,official-web,00010116,버거킹 광주하남점,35.1628953,126.8116598,광주광역시 광산구 풍영철길로 15
+burgerking-kr-adb,burgerking,official-web,00000655,버거킹 광주화정점,35.15661904210975,126.88279224521708,광주광역시 서구 죽봉대로 37
+burgerking-kr-adb,burgerking,official-web,00010118,버거킹 광주효천2지구점,35.101812,126.8883664,광주광역시 남구 효우2로 34
+burgerking-kr-adb,burgerking,official-web,00000306,버거킹 교대역점,37.4936767428,127.0126966321,서울특별시 서초구 서초대로 283
+burgerking-kr-adb,burgerking,official-web,00000648,버거킹 구로거리공원점,37.504436875764476,126.88724126690617,서울특별시 구로구 공원로 91
+burgerking-kr-adb,burgerking,official-web,00000316,버거킹 구로구청점,37.4948404,126.8886891,서울특별시 구로구 가마산로 250
+burgerking-kr-adb,burgerking,official-web,00000633,버거킹 구로전화국사거리점,37.48008539461283,126.9038072930663,서울특별시 관악구 남부순환로 1377
+burgerking-kr-adb,burgerking,official-web,00000228,버거킹 구로점,37.4825399,126.9002463,서울특별시 구로구 시흥대로 551
+burgerking-kr-adb,burgerking,official-web,00000466,버거킹 구리갈매점,37.6310929,127.1165641,경기도 구리시 산마루로 24
+burgerking-kr-adb,burgerking,official-web,00000560,버거킹 구리인창점,37.6042407,127.139861,경기도 구리시 건원대로33번길 4
+burgerking-kr-adb,burgerking,official-web,00000286,버거킹 구리SK점,37.6002832785,127.1370988701,경기도 구리시 경춘로 196
+burgerking-kr-adb,burgerking,official-web,00000355,버거킹 구미도량DT점,36.1381436914,128.3177805452,경상북도 구미시 야은로 320
+burgerking-kr-adb,burgerking,official-web,00010119,버거킹 구미산동점,36.1547331,128.4317353,경상북도 구미시 산동읍 신당1로2길 7
+burgerking-kr-adb,burgerking,official-web,00010138,버거킹 구미상모사곡점,36.0973083,128.3572057,경상북도 구미시 상사서로 18길 4
+burgerking-kr-adb,burgerking,official-web,00000332,버거킹 구미시청FS점,36.117424538,128.3431035645,경상북도 구미시 송정대로 40
+burgerking-kr-adb,burgerking,official-web,00010098,버거킹 구미신평점,36.1232048352,128.3623776615,경상북도 구미시 구미대로 409
+burgerking-kr-adb,burgerking,official-web,00010055,버거킹 구미인의점,36.1068789,128.4211507,경상북도 구미시 인동중앙로 16
+burgerking-kr-adb,burgerking,official-web,00000458,버거킹 구의점,37.5397064,127.0939346,서울특별시 광진구 아차산로 466
+burgerking-kr-adb,burgerking,official-web,00000002,버거킹 국제점,37.5281742219,126.9675220252,서울특별시 용산구 한강대로 92
+burgerking-kr-adb,burgerking,official-web,00010147,버거킹 군산대점,35.9469298,126.6855199,전라북도 군산시 대학로 543
+burgerking-kr-adb,burgerking,official-web,00010041,버거킹 군산수송점,35.9631449,126.7160865,전라북도 군산시 월명로 216
+burgerking-kr-adb,burgerking,official-web,00000345,버거킹 군산조촌DT점,35.9664501276,126.7352740532,전라북도 군산시 번영로 143
+burgerking-kr-adb,burgerking,official-web,00000354,버거킹 군자능동점,37.5522322045,127.076538112,서울특별시 광진구 능동로 245
+burgerking-kr-adb,burgerking,official-web,00000587,버거킹 군자역점,37.5564985,127.0821439,서울특별시 광진구 천호대로 575
+burgerking-kr-adb,burgerking,official-web,00000616,버거킹 금천구청입구삼거리점,37.45732089431187,126.89917341983264,서울특별시 금천구 시흥대로 265
+burgerking-kr-adb,burgerking,official-web,00000564,버거킹 금천독산점,37.4712638,126.8977957,서울특별시 금천구 시흥대로 421
+burgerking-kr-adb,burgerking,official-web,00000258,버거킹 금촌역점,37.7648788254,126.7747190586,경기도 파주시 중앙로 328
+burgerking-kr-adb,burgerking,official-web,00000297,버거킹 길동사거리점,37.5343893117,127.1391414175,서울특별시 강동구 양재대로 1440
+burgerking-kr-adb,burgerking,official-web,00010110,버거킹 김천교동DT점,36.134452,128.0951016,경상북도 김천시 대학로 75(교동)
+burgerking-kr-adb,burgerking,official-web,00010067,버거킹 김천혁신도시점,36.1169722,128.1834221,경상북도 김천시 혁신3로 17
+burgerking-kr-adb,burgerking,official-web,00010155,버거킹 김포걸포점,37.6328769,126.7042364,경기도 김포시 걸포2로 23
+burgerking-kr-adb,burgerking,official-web,00000457,버거킹 김포구래점,37.6460034,126.6268837,경기도 김포시 김포한강4로 513
+burgerking-kr-adb,burgerking,official-web,00000584,버거킹 김포장기점,37.6447358,126.6685057,경기도 김포시 김포한강4로 118
+burgerking-kr-adb,burgerking,official-web,00000475,버거킹 김포풍무역점,37.6113568,126.7312446,경기도 김포시 유현로 234
+burgerking-kr-adb,burgerking,official-web,00000341,버거킹 김포한강GS점,37.6417682969,126.647511262,경기도 김포시 김포한강3로 400
+burgerking-kr-adb,burgerking,official-web,00010050,버거킹 김포현대아울렛,37.5972374892,126.7852355497,경기도 김포시 고촌읍 아라육로 152번길 100
+burgerking-kr-adb,burgerking,official-web,00000537,버거킹 김해공항DT점,35.1763944,128.9583651,부산광역시 강서구 공항로 779
+burgerking-kr-adb,burgerking,official-web,00000519,버거킹 김해구산DT점,35.2546655,128.8667821,경상남도 김해시 김해대로 1928
+burgerking-kr-adb,burgerking,official-web,00000395,버거킹 김해내외점,35.23022409595186,128.86375761041575,경상남도 김해시 함박로 102
+burgerking-kr-adb,burgerking,official-web,00010070,버거킹 김해아이스퀘어몰점,35.225852393,128.8841862976,경상남도 김해시 김해대로 2352
+burgerking-kr-adb,burgerking,official-web,00000358,버거킹 김해장유DT점,35.1884633144,128.8054471858,경상남도 김해시 반룡로 70
+burgerking-kr-adb,burgerking,official-web,00000536,버거킹 김해진영FS점,35.305792,128.7322387,경상남도 김해시 진영읍 김해대로 386-5
+burgerking-kr-adb,burgerking,official-web,00010056,버거킹 나주빛가람점,35.0215717,126.785331,전라남도 나주시 전력로 2
+burgerking-kr-adb,burgerking,official-web,00000337,버거킹 낙성대점,37.4766355936,126.9637366697,서울특별시 관악구 남부순환로 1934
+burgerking-kr-adb,burgerking,official-web,00000469,버거킹 남양주다산지금점,37.6012393,127.1735477,경기도 남양주시 다산지금로 132
+burgerking-kr-adb,burgerking,official-web,00000605,버거킹 남양주별내신안점,37.6501206,127.1128974,경기도 남양주시 별내5로5번길 7
+burgerking-kr-adb,burgerking,official-web,00000445,버거킹 남양주별내오일뱅크점,37.6557868,127.1293589,경기도 남양주시 송산로 149
+burgerking-kr-adb,burgerking,official-web,00000627,버거킹 남양주오남점,37.6843046,127.21185,경기도 남양주시 오남읍 진건오남로 566
+burgerking-kr-adb,burgerking,official-web,00000390,버거킹 남양주진접FS점,37.71064794565927,127.1848078371736,경기도 남양주시 진접읍 해밀예당1로 13
+burgerking-kr-adb,burgerking,official-web,00000565,버거킹 남양주평내점,37.6491325,127.2368308,경기도 남양주시 경춘로 1298
+burgerking-kr-adb,burgerking,official-web,00000365,버거킹 남양주화도DT점,37.65545819429155,127.28197492501131,경기도 남양주시 화도읍 경춘로 1718
+burgerking-kr-adb,burgerking,official-web,00000480,버거킹 내발산점,37.55317204176322,126.83673659585976,서울특별시 강서구 강서로 308
+burgerking-kr-adb,burgerking,official-web,00000637,버거킹 노량진역점,37.51355019817314,126.94303209401971,서울특별시 동작구 노량진로 154-1
+burgerking-kr-adb,burgerking,official-web,00000410,버거킹 노원역점,37.6535305,127.0586717,서울특별시 노원구 노해로 456
+burgerking-kr-adb,burgerking,official-web,00000398,버거킹 녹번대성GS점,37.6040784,126.9352716,서울특별시 은평구 통일로 642
+burgerking-kr-adb,burgerking,official-web,00010129,버거킹 논산건양대점,36.1794048,127.109517,충청남도 논산시 대학로 104
+burgerking-kr-adb,burgerking,official-web,00000595,버거킹 당곡역점,37.4906059,126.9270994,서울특별시 관악구 보라매로 13
+burgerking-kr-adb,burgerking,official-web,00010045,버거킹 당진읍내점,36.8943756854,126.6295723639,충청남도 당진시 당진중앙1로 95
+burgerking-kr-adb,burgerking,official-web,00010146,버거킹 대구남산역점,35.856231920944914,128.58352472170964,대구광역시 남구 명덕로 122
+burgerking-kr-adb,burgerking,official-web,00010104,버거킹 대구대명FS점,35.8397496,128.5675436,대구광역시 남구 대명로 89
+burgerking-kr-adb,burgerking,official-web,00010078,버거킹 대구대점,35.904537694,128.842814453,경상북도 경산시 대구대로 201
+burgerking-kr-adb,burgerking,official-web,00010139,버거킹 대구대현점,35.8821171,128.6100235,대구광역시 북구 대현로 102
+burgerking-kr-adb,burgerking,official-web,00000652,버거킹 대구도원점,35.80865950477959,128.53568702935434,대구광역시 달서구 도원로 12
+burgerking-kr-adb,burgerking,official-web,00000651,버거킹 대구두류점,35.86020416627433,128.55841898318727,대구광역시 서구 달구벌대로 1769-7
+burgerking-kr-adb,burgerking,official-web,00000092,버거킹 대구만촌점,35.8570410155,128.6487131859,대구광역시 수성구 달구벌대로 2622
+burgerking-kr-adb,burgerking,official-web,00000372,버거킹 대구산격DT점,35.90053429076513,128.61523176851188,대구광역시 북구 검단로 29
+burgerking-kr-adb,burgerking,official-web,00000322,버거킹 대구삼성창조캠퍼스점,35.883688163,128.5959763042,대구광역시 북구 호암로 51
+burgerking-kr-adb,burgerking,official-web,00000440,버거킹 대구서재FS점,35.8694585,128.496596,대구광역시 달성군 다사읍 서재로 66
+burgerking-kr-adb,burgerking,official-web,00000312,버거킹 대구성서이마트점,35.8533295694,128.5101701882,대구광역시 달서구 이곡동로 24
+burgerking-kr-adb,burgerking,official-web,00000622,버거킹 대구수성점,35.858883507853136,128.61715550819915,대구광역시 수성구 들안로 325
+burgerking-kr-adb,burgerking,official-web,00000663,버거킹 대구신매점,35.839877520546366,128.7072586955601,대구광역시 수성구 달구벌대로 3206
+burgerking-kr-adb,burgerking,official-web,00000509,버거킹 대구신서혁신도시DT점,35.8784926,128.7272353,대구광역시 동구 이노밸리로 277
+burgerking-kr-adb,burgerking,official-web,00010123,버거킹 대구연경점,35.9423807,128.616052,대구광역시 북구 동화천로 229
+burgerking-kr-adb,burgerking,official-web,00000566,버거킹 대구월성점,35.8246183,128.5269727,대구광역시 달서구 조암로 29
+burgerking-kr-adb,burgerking,official-web,00000451,버거킹 대구월촌역FS점,35.8239328,128.5462328,대구광역시 달서구 월배로 320
+burgerking-kr-adb,burgerking,official-web,00010059,버거킹 대구율하점,35.8664014,128.6960714,대구광역시 동구 안심로22길 10
+burgerking-kr-adb,burgerking,official-web,00010107,버거킹 대구이시아폴리스점,35.9206687,128.6359096,대구광역시 동구 팔공로 49길 51
+burgerking-kr-adb,burgerking,official-web,00010017,버거킹 대구죽전네거리DT,35.8495270764,128.5351664857,대구광역시 달서구 달구벌대로 1536
+burgerking-kr-adb,burgerking,official-web,00000384,버거킹 대구중앙로점,35.86853588775503,128.5939762277822,대구광역시 중구 중앙대로 398
+burgerking-kr-adb,burgerking,official-web,00010073,버거킹 대구지산점,35.8227619,128.637626,대구광역시 수성구 지범로 159
+burgerking-kr-adb,burgerking,official-web,00010091,버거킹 대구칠곡3지구점,35.9438862,128.5587504,대구광역시 북구 팔거천동로 224
+burgerking-kr-adb,burgerking,official-web,00000630,버거킹 대구태전점,35.93252943834629,128.54812183460845,대구광역시 북구 칠곡중앙대로 411
+burgerking-kr-adb,burgerking,official-web,00010064,버거킹 대구테크노폴리스점,35.692139,128.4573906,대구광역시 달성군 현풍면 테크노중앙대로 243
+burgerking-kr-adb,burgerking,official-web,00000320,버거킹 대구평리DT점,35.87153561070116,128.56348291343173,대구광역시 서구 국채보상로 298
+burgerking-kr-adb,burgerking,official-web,00010132,버거킹 대구화원점,35.8011148,128.4925561,대구광역시 달성군 화원읍 성화로 2
+burgerking-kr-adb,burgerking,official-web,00000623,버거킹 대구효신네거리점,35.87177841041165,128.63519874459024,대구광역시 수성구 화랑로 76
+burgerking-kr-adb,burgerking,official-web,00000583,버거킹 대전가오점,36.3066737,127.4560317,대전광역시 동구 은어송로 63
+burgerking-kr-adb,burgerking,official-web,00000393,버거킹 대전관저점,36.299292523826125,127.33896845269916,대전광역시 서구 구봉로 147번길 68-12
+burgerking-kr-adb,burgerking,official-web,00010006,버거킹 대전관평점,36.4252862,127.3897464,대전광역시 유성구 테크노4로 105
+burgerking-kr-adb,burgerking,official-web,00000447,버거킹 대전노은역점,36.3751035,127.3191307,대전광역시 유성구 은구비남로33번길 61
+burgerking-kr-adb,burgerking,official-web,00000508,버거킹 대전대동DT점,36.3249586,127.4459107,대전광역시 동구 계족로 120
+burgerking-kr-adb,burgerking,official-web,00010156,버거킹 대전도마점,36.3125494,127.3797473,대전광역시 서구 계백로 1426
+burgerking-kr-adb,burgerking,official-web,00010042,버거킹 대전도안점,36.3318089,127.3386219,대전광역시 서구 동서대로 682
+burgerking-kr-adb,burgerking,official-web,00000409,버거킹 대전둔산1점,36.3505317,127.3774762,대전광역시 서구 대덕대로 193
+burgerking-kr-adb,burgerking,official-web,00010141,버거킹 대전문지점,36.3948165,127.4052089,대전광역시 유성구 문지로 311-32
+burgerking-kr-adb,burgerking,official-web,00000255,버거킹 대전반석DT점,36.3907847362,127.316216926,대전광역시 유성구 북유성대로 288
+burgerking-kr-adb,burgerking,official-web,00010028,버거킹 대전시청점,36.3498712,127.3898448,대전광역시 서구 문예로 35
+burgerking-kr-adb,burgerking,official-web,00000658,버거킹 대전신탄진점,36.44914659557142,127.42069653338694,대전광역시 대덕구 대덕대로 1554
+burgerking-kr-adb,burgerking,official-web,00000330,버거킹 대전용두DT점,36.3251035884,127.4099233423,대전광역시 중구 계룡로 853
+burgerking-kr-adb,burgerking,official-web,00000437,버거킹 대전용문역점,36.3390074,127.3919162,대전광역시 서구 계룡로 630
+burgerking-kr-adb,burgerking,official-web,00000359,버거킹 대전월평점,36.3624439542,127.3773168456,대전광역시 서구 월평북로 81
+burgerking-kr-adb,burgerking,official-web,00000387,버거킹 대전유성온천역점,36.354291396993354,127.34217468935789,대전광역시 유성구 대학로 8
+burgerking-kr-adb,burgerking,official-web,00000284,버거킹 대전터미널DT점,36.3481376,127.4349228,대전광역시 동구 동서대로 1664
+burgerking-kr-adb,burgerking,official-web,00010111,버거킹 대전현대아울렛점,36.4234369,127.3985168,"대전광역시 유성구 테크노중앙로 123,지상3층3202-2호"
+burgerking-kr-adb,burgerking,official-web,00000022,버거킹 대치점,37.4986937546,127.0593167322,서울특별시 강남구 도곡로 447
+burgerking-kr-adb,burgerking,official-web,00000459,버거킹 동김해DT점,35.2275151,128.9000746,경상남도 김해시 김해대로 2499
+burgerking-kr-adb,burgerking,official-web,00000563,버거킹 동대문구청점,37.5758074,127.0385901,서울특별시 동대문구 고산자로 406
+burgerking-kr-adb,burgerking,official-web,00000533,버거킹 동대문중학교사거리점,37.5734071,127.0534648,서울특별시 동대문구 답십리로41길 33
+burgerking-kr-adb,burgerking,official-web,00000278,버거킹 동두천DT점,37.890007,127.0564772,경기도 동두천시 평화로2261번길 2
+burgerking-kr-adb,burgerking,official-web,00000347,버거킹 동탄2신도시SK점,37.2086364431,127.1079173973,경기도 화성시 동탄순환대로 731
+burgerking-kr-adb,burgerking,official-web,00000520,버거킹 동탄목동점,37.1821552,127.1229707,경기도 화성시 동탄신리천로 406
+burgerking-kr-adb,burgerking,official-web,00000575,버거킹 동탄역CGV점,37.2022262,127.097959,경기도 화성시 동탄대로 537
+burgerking-kr-adb,burgerking,official-web,00000289,버거킹 동탄점,37.2023241779,127.0715829914,경기도 화성시 동탄반석로 156
+burgerking-kr-adb,burgerking,official-web,00000464,버거킹 동탄호수공원레이크꼬모점,37.1720762,127.104078,경기도 화성시 동탄대로 181
+burgerking-kr-adb,burgerking,official-web,00000667,버거킹 동해시청점,37.52289491640073,129.11341039730254,강원도 동해시 천곡로 76
+burgerking-kr-adb,burgerking,official-web,00000391,버거킹 둔촌GS FS점,37.52453422376118,127.13442157252155,서울특별시 강동구 양재대로 1323
+burgerking-kr-adb,burgerking,official-web,00000490,버거킹 등촌역점,37.5502213,126.8670783,서울특별시 강서구 공항대로 549
+burgerking-kr-adb,burgerking,official-web,00000611,버거킹 마곡원그로브몰점,37.56135454482687,126.82684174793084,"서울특별시 강서구 공항대로 165, 원그로브몰 B동 지하1층"
+burgerking-kr-adb,burgerking,official-web,00000375,버거킹 마곡점,37.55997871446434,126.83380170926371,서울특별시 강서구 마곡동로 56
+burgerking-kr-adb,burgerking,official-web,00000446,버거킹 마산회원FS점,35.2208916,128.5742884,경상남도 창원시 마산회원구 315대로 522
+burgerking-kr-adb,burgerking,official-web,00000488,버거킹 마포구청역점,37.5613848,126.9049244,서울특별시 마포구 월드컵로 155
+burgerking-kr-adb,burgerking,official-web,00000461,버거킹 망우점,37.5986769,127.0965557,서울특별시 중랑구 망우로 400
+burgerking-kr-adb,burgerking,official-web,00000363,버거킹 먹골역점,37.6099163323,127.0781872978,서울특별시 중랑구 동일로 890
+burgerking-kr-adb,burgerking,official-web,00000498,버거킹 면목역점,37.5882095,127.0879653,서울특별시 중랑구 겸재로 180
+burgerking-kr-adb,burgerking,official-web,00010039,버거킹 목포하당점,34.803180508798995,126.42688644940199,전라남도 목포시 비파로 50
+burgerking-kr-adb,burgerking,official-web,00000380,버거킹 문정역점,37.48455358630912,127.12230609148229,서울특별시 송파구 법원로 8길 13
+burgerking-kr-adb,burgerking,official-web,00000259,버거킹 문정점,37.4880581,127.1317394,서울특별시 송파구 송이로 239
+burgerking-kr-adb,burgerking,official-web,00000532,버거킹 미사역파라곤스퀘어점,37.5639612,127.1936001,경기도 하남시 미사강변동로 100-1
+burgerking-kr-adb,burgerking,official-web,00000657,버거킹 미아사거리역점,37.61367372822246,127.03037507327524,서울특별시 강북구 도봉로 52
+burgerking-kr-adb,burgerking,official-web,00000328,버거킹 미아역점,37.6256397,127.0268143,서울특별시 강북구 도봉로 188
+burgerking-kr-adb,burgerking,official-web,00010151,버거킹 밀양삼문FS점,35.4850957,128.7512722,경상남도 밀양시 밀양대로 1790
+burgerking-kr-adb,burgerking,official-web,00000366,버거킹 박석고개SK점,37.6272857513,126.9193974605,서울특별시 은평구 통일로 945
+burgerking-kr-adb,burgerking,official-web,00000275,버거킹 반포고속터미널점,37.5064354739,127.0068357234,서울특별시 서초구 신반포로 194
+burgerking-kr-adb,burgerking,official-web,00000406,버거킹 방배점,37.4852681,126.994873,서울특별시 서초구 방배로 127
+burgerking-kr-adb,burgerking,official-web,00010038,버거킹 방배카페골목점,37.4970246929,126.9856336645,서울특별시 서초구 방배중앙로 200
+burgerking-kr-adb,burgerking,official-web,00000428,버거킹 배곧아브뉴프랑점,37.3677079,126.7284674,경기도 시흥시 서울대학로 264번길 35
+burgerking-kr-adb,burgerking,official-web,00010115,버거킹 보령동대점,36.3472386,126.6054726,충청남도 보령시 한내로 16
+burgerking-kr-adb,burgerking,official-web,00000514,버거킹 부산개금점,35.152869,129.0250076,부산광역시 부산진구 가야대로 484-1
+burgerking-kr-adb,burgerking,official-web,00000599,버거킹 부산경성대점,35.1369934,129.0983236,부산광역시 남구 수영로 295
+burgerking-kr-adb,burgerking,official-web,00010083,버거킹 부산괴정역점,35.0995731,128.9937219,부산광역시 사하구 사하로 200
+burgerking-kr-adb,burgerking,official-web,00000572,버거킹 부산구서점,35.2468795,129.0890477,부산광역시 금정구 구서로 20
+burgerking-kr-adb,burgerking,official-web,00000525,버거킹 부산구평DT점,35.086282,128.9889929,부산광역시 사하구 을숙도대로 767
+burgerking-kr-adb,burgerking,official-web,00000462,버거킹 부산기장DT점,35.2424817,129.2202472,부산광역시 기장군 기장읍 기장대로 531
+burgerking-kr-adb,burgerking,official-web,00010150,버거킹 부산대신FS점,35.11363038395444,129.0135259527637,부산광역시 서구 망양로33번길 3
+burgerking-kr-adb,burgerking,official-web,00000392,버거킹 부산대점,35.230486367021264,129.08662207912425,부산광역시 금정구 금정로 66
+burgerking-kr-adb,burgerking,official-web,00000626,버거킹 부산덕천점,35.210690532853945,129.00702485435804,부산광역시 북구 만덕대로 17
+burgerking-kr-adb,burgerking,official-web,00000504,버거킹 부산명지DT점,35.0948394,128.9228096,부산광역시 강서구 명지국제6로 218
+burgerking-kr-adb,burgerking,official-web,00010154,버거킹 부산백양대로DT점,35.1680695,128.9892286,부산광역시 사상구 백양대로 682
+burgerking-kr-adb,burgerking,official-web,00000512,버거킹 부산사직점,35.1956668,129.0593627,부산광역시 동래구 사직로 58
+burgerking-kr-adb,burgerking,official-web,00000412,버거킹 부산서면일번가점,35.15492837283194,129.0579636809438,부산광역시 부산진구 서면로 48
+burgerking-kr-adb,burgerking,official-web,00000325,버거킹 부산서부터미널점,35.1631462,128.9809858,부산광역시 사상구 사상로 201
+burgerking-kr-adb,burgerking,official-web,00000484,버거킹 부산센텀시티점,35.1714366,129.1314178,부산광역시 해운대구 센텀동로 25
+burgerking-kr-adb,burgerking,official-web,00000333,버거킹 부산센텀오일뱅크점,35.1818812845,129.1235580006,부산광역시 해운대구 해운대로 179
+burgerking-kr-adb,burgerking,official-web,00000521,버거킹 부산수안역점,35.2029149,129.0809893,부산광역시 동래구 충렬대로 194
+burgerking-kr-adb,burgerking,official-web,00000523,버거킹 부산신평DT점,35.085098,128.9671914,부산광역시 사하구 을숙도대로 564
+burgerking-kr-adb,burgerking,official-web,00010097,버거킹 부산안락DT점,35.1998365,129.0931623,부산광역시 동래구 충렬대로 311
+burgerking-kr-adb,burgerking,official-web,00000374,버거킹 부산양정점,35.170479461498694,129.06966999306962,부산광역시 부산진구 중앙대로 900
+burgerking-kr-adb,burgerking,official-web,00000601,버거킹 부산연산DT점,35.1907272,129.0900337,부산광역시 연제구 과정로 352
+burgerking-kr-adb,burgerking,official-web,00000308,버거킹 부산연산RFS점,35.1850169251,129.0803962318,부산광역시 연제구 중앙대로 1087
+burgerking-kr-adb,burgerking,official-web,00000528,버거킹 부산영도DT점,35.0945291,129.0473876,부산광역시 영도구 태종로 173
+burgerking-kr-adb,burgerking,official-web,00000534,버거킹 부산외대점,35.2657589,129.085711,부산광역시 금정구 금샘로 478
+burgerking-kr-adb,burgerking,official-web,00000294,버거킹 부산용호분포SK점,35.1221180362,129.1119495581,부산광역시 남구 용호로 116
+burgerking-kr-adb,burgerking,official-web,00000349,버거킹 부산정관DT점,35.3272121831,129.1762887255,부산광역시 기장군 정관읍 용수로 48
+burgerking-kr-adb,burgerking,official-web,00000460,버거킹 부산주례점,35.1504101,129.0051412,부산광역시 사상구 가야대로 298
+burgerking-kr-adb,burgerking,official-web,00000501,버거킹 부산하단역점,35.106624,128.967813,부산광역시 사하구 낙동남로 1427
+burgerking-kr-adb,burgerking,official-web,00000438,버거킹 부산화명점,35.2343701,129.0129811,부산광역시 북구 화명대로 44
+burgerking-kr-adb,burgerking,official-web,00000397,버거킹 부천북부역점,37.486695012047136,126.78281159838245,경기도 부천시 부천로 25
+burgerking-kr-adb,burgerking,official-web,00000279,버거킹 부천세이브존점,37.5063924403,126.7541359699,경기도 부천시 원미구 길주로 105
+burgerking-kr-adb,burgerking,official-web,00000650,버거킹 부천소사점,37.47932662000832,126.79576079797687,경기도 부천시 소사구 소사로 236
+burgerking-kr-adb,burgerking,official-web,00000641,버거킹 부천시청역점,37.50456165300726,126.76716228006782,경기도 부천시 원미구 길주로 221
+burgerking-kr-adb,burgerking,official-web,00000621,버거킹 부천역곡점,37.48448859822146,126.8117354675739,경기도 부천시 소사구 경인로 509
+burgerking-kr-adb,burgerking,official-web,00000452,버거킹 부천옥길점,37.4673099,126.8229137,경기도 부천시 옥길로 118
+burgerking-kr-adb,burgerking,official-web,00000270,버거킹 부천원종점,37.51963629158282,126.80464169837389,경기도 부천시 오정구 소사로 713
+burgerking-kr-adb,burgerking,official-web,00000272,버거킹 부천중동점,37.4982314668,126.7769971968,경기도 부천시 신흥로 163
+burgerking-kr-adb,burgerking,official-web,00000389,버거킹 부평시장역점,37.4995605,126.7224707,인천광역시 부평구 부평대로 90
+burgerking-kr-adb,burgerking,official-web,00000653,버거킹 부평역남부점,37.487223293136,126.72593778438949,인천광역시 부평구 경인로 956
+burgerking-kr-adb,burgerking,official-web,00000559,버거킹 부평역점,37.4919374,126.7228284,인천광역시 부평구 부평대로 5
+burgerking-kr-adb,burgerking,official-web,00000032,버거킹 분당상록점,37.3631684,127.1144393,경기도 성남시 분당구 정자로 88
+burgerking-kr-adb,burgerking,official-web,00000180,버거킹 분당서현점,37.3845216,127.1221786,경기도 성남시 분당구 분당로53번길 19
+burgerking-kr-adb,burgerking,official-web,00000205,버거킹 분당야탑점,37.4108570581,127.1298400333,경기도 성남시 분당구 성남대로916번길 11
+burgerking-kr-adb,burgerking,official-web,00000351,버거킹 분당차병원점,37.40965304426368,127.12598365974945,경기도 성남시 분당구 야탑로 64
+burgerking-kr-adb,burgerking,official-web,00000506,버거킹 불광점,37.6123464,126.9286789,서울특별시 은평구 통일로 750
+burgerking-kr-adb,burgerking,official-web,00000143,버거킹 비발디파크점,37.652336805,127.6873328729,강원도 홍천군 서면 한치골길 262
+burgerking-kr-adb,burgerking,official-web,00000262,버거킹 사당역점,37.4784813521,126.9813636536,서울특별시 동작구 동작대로 21
+burgerking-kr-adb,burgerking,official-web,00000640,버거킹 산본역점,37.35835651562752,126.93025955403151,경기도 군포시 광정로 59
+burgerking-kr-adb,burgerking,official-web,00000256,버거킹 산본점,37.36425068293961,126.93039717582799,경기도 군포시 산본로 382
+burgerking-kr-adb,burgerking,official-web,00000245,버거킹 삼산SK점,37.5164892143,126.7318419734,인천광역시 부평구 장제로 347
+burgerking-kr-adb,burgerking,official-web,00000482,버거킹 삼성중앙역점,37.5128872,127.0538726,서울특별시 강남구 봉은사로 502
+burgerking-kr-adb,burgerking,official-web,00000290,버거킹 상록수역점,37.3013879,126.8658778,경기도 안산시 상록구 용신로 394
+burgerking-kr-adb,burgerking,official-web,00000642,버거킹 상암DMC점,37.58193343672698,126.88971291367426,서울특별시 마포구 월드컵북로54길 25
+burgerking-kr-adb,burgerking,official-web,00000324,버거킹 서교동사거리점,37.5527047388,126.9186856652,서울특별시 마포구 양화로 100
+burgerking-kr-adb,burgerking,official-web,00000644,버거킹 서귀포시청점,33.253294987873986,126.5605489948089,제주특별자치도 서귀포시 일주동로 8684
+burgerking-kr-adb,burgerking,official-web,00000539,버거킹 서김해DT점,35.212708,128.8451172,경상남도 김해시 서김해산단안길 100
+burgerking-kr-adb,burgerking,official-web,00000430,버거킹 서대문역점,37.563112,126.9694401,서울특별시 중구 통일로 86
+burgerking-kr-adb,burgerking,official-web,00010080,버거킹 서산호수공원점,36.7726003,126.4511899,충청남도 서산시 호수공원6로 72
+burgerking-kr-adb,burgerking,official-web,00000190,버거킹 서수원이마트점,37.28271618914028,126.97080019484741,경기도 수원시 권선구 수인로 291
+burgerking-kr-adb,burgerking,official-web,00000441,버거킹 서울대입구역점,37.4813393,126.9496075,서울특별시 관악구 남부순환로 1796
+burgerking-kr-adb,burgerking,official-web,00000634,버거킹 서울역점,37.55483771349384,126.9718120082412,서울특별시 용산구 청파로 378
+burgerking-kr-adb,burgerking,official-web,00010068,버거킹 석관점,37.6085901042,127.0596213448,서울특별시 성북구 돌곶이로 50
+burgerking-kr-adb,burgerking,official-web,00000201,버거킹 석촌점,37.5065967983,127.1063859654,서울특별시 송파구 송파대로 448
+burgerking-kr-adb,burgerking,official-web,00000198,버거킹 선릉역점,37.5032033832,127.0493137037,서울특별시 강남구 선릉로 429
+burgerking-kr-adb,burgerking,official-web,00000472,버거킹 성남신흥점,37.442481,127.1505979,경기도 성남시 수정구 산성대로 305
+burgerking-kr-adb,burgerking,official-web,00000196,버거킹 성남이마트점,37.4442863,127.141411,경기도 성남시 수정구 수정로 201
+burgerking-kr-adb,burgerking,official-web,00000582,버거킹 성남중원구청사거리점,37.4295378,127.1376229,경기도 성남시 중원구 제일로 22
+burgerking-kr-adb,burgerking,official-web,00000656,버거킹 성남태평점,37.44081241917825,127.13091803671233,경기도 성남시 수정구 수정로 95
+burgerking-kr-adb,burgerking,official-web,00000557,버거킹 성복역점,37.31408203586681,127.07972963954704,경기도 용인시 수지구 성복2로 52
+burgerking-kr-adb,burgerking,official-web,00000493,버거킹 성신여대입구역점,37.5935068,127.0184118,서울특별시 성북구 동소문로 120
+burgerking-kr-adb,burgerking,official-web,00000467,버거킹 세종고운점,36.512236,127.2426592,세종특별자치시 보듬3로 154
+burgerking-kr-adb,burgerking,official-web,00010106,버거킹 세종반곡점,36.4905685,127.302849,세종특별자치시 한누리대로 1948
+burgerking-kr-adb,burgerking,official-web,00000497,버거킹 세종조치원DT점,36.6037258,127.2893038,세종특별자치시 세종로 2425
+burgerking-kr-adb,burgerking,official-web,00010053,버거킹 세종행복새롬점,36.4819582755,127.2539392968,세종특별자치시 어울로 77세종
+burgerking-kr-adb,burgerking,official-web,00000299,버거킹 속초DT점,38.1893018804,128.5907063328,강원도 속초시 동해대로 4059
+burgerking-kr-adb,burgerking,official-web,00000422,버거킹 송내역점,37.4891583,126.7524351,경기도 부천시 부일로 203
+burgerking-kr-adb,burgerking,official-web,00000531,버거킹 송도타임스페이스점,37.3832893,126.6422608,인천광역시 연수구 하모니로 158
+burgerking-kr-adb,burgerking,official-web,00000295,버거킹 송도현대아울렛점,37.3816297376,126.6579189638,인천광역시 연수구 송도국제대로 123
+burgerking-kr-adb,burgerking,official-web,00000500,버거킹 송산그린시티점,37.285504,126.8166243,경기도 화성시 수노을2로 7
+burgerking-kr-adb,burgerking,official-web,00000516,버거킹 송정역점,37.5610338,126.8107236,서울특별시 강서구 공항대로 32
+burgerking-kr-adb,burgerking,official-web,00000593,버거킹 송파나루역점,37.5104529,127.1127386,서울특별시 송파구 백제고분로 446
+burgerking-kr-adb,burgerking,official-web,00000109,버거킹 수서점,37.4873181732,127.1031067143,서울특별시 강남구 광평로 280
+burgerking-kr-adb,burgerking,official-web,00000547,버거킹 수원권선점,37.25062701413334,127.02287810830929,경기도 수원시 권선구 덕영대로1201번길 34
+burgerking-kr-adb,burgerking,official-web,00000273,버거킹 수원망포점,37.23804592843791,127.05791845958598,경기도 수원시 영통구 영통로 108
+burgerking-kr-adb,burgerking,official-web,00010025,버거킹 수원매탄점,37.258093424838194,127.04569773371809,경기도 수원시 영통구 효원로 400
+burgerking-kr-adb,burgerking,official-web,00000549,버거킹 수원시청역점,37.26308088350653,127.0321112429641,경기도 수원시 팔달구 권광로 173
+burgerking-kr-adb,burgerking,official-web,00000136,버거킹 수원역사점,37.266048086851626,127.00067136666658,경기도 수원시 팔달구 덕영대로 924
+burgerking-kr-adb,burgerking,official-web,00000301,버거킹 수원영통점,37.2559345442,127.0747358431,경기도 수원시 영통구 봉영로 1623
+burgerking-kr-adb,burgerking,official-web,00000377,버거킹 수원인계DT점,37.27085813339235,127.02768139723057,경기도 수원시 팔달구 경수대로 501
+burgerking-kr-adb,burgerking,official-web,00000570,버거킹 수원정자사거리점,37.2909007818379,127.00287780312532,경기도 수원시 장안구 장안로 73
+burgerking-kr-adb,burgerking,official-web,00010065,버거킹 수원정자점,37.3096554856,126.9847443999,경기도 수원시 장안구 이목로 24-3
+burgerking-kr-adb,burgerking,official-web,00000436,버거킹 수원호매실SK점,37.26708904643369,126.96191926572972,경기도 수원시 권선구 서수원로 453
+burgerking-kr-adb,burgerking,official-web,00000424,버거킹 수유역점,37.6361131,127.024184,서울특별시 강북구 도봉로 314
+burgerking-kr-adb,burgerking,official-web,00000311,버거킹 수지구청역점,37.3243176834,127.0973641554,경기도 용인시 수지구 풍덕천로 145
+burgerking-kr-adb,burgerking,official-web,00000250,버거킹 수지GS점,37.339335469,127.1023533745,경기도 용인시 수지구 신수로 781
+burgerking-kr-adb,burgerking,official-web,00010040,버거킹 순천법원점,34.9696766,127.5228207,전라남도 순천시 왕지로 8-1
+burgerking-kr-adb,burgerking,official-web,00010137,버거킹 순천신대점,34.9342317,127.547219,전라남도 순천시 해룡면 향매로 71
+burgerking-kr-adb,burgerking,official-web,00000340,버거킹 스타필드고양점,37.6469763082,126.8947784062,경기도 고양시 덕양구 고양대로 1955
+burgerking-kr-adb,burgerking,official-web,00000524,버거킹 시흥능곡역점,37.3710435,126.8073771,경기도 시흥시 능곡번영길 22
+burgerking-kr-adb,burgerking,official-web,00000585,버거킹 시흥대야점,37.4509004,126.795071,경기도 시흥시 은계중앙로 374
+burgerking-kr-adb,burgerking,official-web,00000348,버거킹 시흥목감SK점,37.3791739236,126.8549855951,경기도 시흥시 동서로 996
+burgerking-kr-adb,burgerking,official-web,00000471,버거킹 시흥은계점,37.4374767,126.8016257,경기도 시흥시 은계번영길 9
+burgerking-kr-adb,burgerking,official-web,00000619,버거킹 시흥장현점,37.37810361595375,126.78869279310948,경기도 시흥시 황고개로 531
+burgerking-kr-adb,burgerking,official-web,00000432,버거킹 시흥정왕점,37.3446662,126.7378056,경기도 시흥시 중심상가로 201-11
+burgerking-kr-adb,burgerking,official-web,00000487,버거킹 신길점,37.5126727,126.9171424,서울특별시 영등포구 도신로 237
+burgerking-kr-adb,burgerking,official-web,00000479,버거킹 신논현역점,37.5049634,127.0250571,서울특별시 강남구 봉은사로 105
+burgerking-kr-adb,burgerking,official-web,00000303,버거킹 신당역점,37.5657960248,127.0166252022,서울특별시 중구 다산로 258
+burgerking-kr-adb,burgerking,official-web,00000402,버거킹 신대방삼거리역점,37.4999121,126.9299862,서울특별시 동작구 상도로 83
+burgerking-kr-adb,burgerking,official-web,00000483,버거킹 신림미림여고입구점,37.47162592451346,126.93349174877301,서울특별시 관악구 신림로 141
+burgerking-kr-adb,burgerking,official-web,00000266,버거킹 신림역점,37.48256227691214,126.93008349701799,서울특별시 관악구 신림로 318
+burgerking-kr-adb,burgerking,official-web,00000396,버거킹 신설동역점,37.5761346723325,127.02352845643172,서울특별시 동대문구 보문로 6
+burgerking-kr-adb,burgerking,official-web,00000660,버거킹 신월남부점,37.51668012783531,126.83923446583894,서울특별시 양천구 남부순환로 584
+burgerking-kr-adb,burgerking,official-web,00000356,버거킹 신월점,37.5390578392,126.8289556158,서울특별시 양천구 화곡로 64
+burgerking-kr-adb,burgerking,official-web,00000465,버거킹 신정네거리역점,37.5207853,126.852237,서울특별시 양천구 중앙로 275
+burgerking-kr-adb,burgerking,official-web,00000470,버거킹 신촌1점,37.5562107,126.9393157,서울특별시 서대문구 신촌로 121
+burgerking-kr-adb,burgerking,official-web,00000645,버거킹 쌍문역점,37.64701873292119,127.03342168145667,서울특별시 도봉구 도봉로 461
+burgerking-kr-adb,burgerking,official-web,00000067,버거킹 쌍문점,37.6587126844,127.0353725363,서울특별시 도봉구 도당로 6
+burgerking-kr-adb,burgerking,official-web,00010140,버거킹 아산둔포점,36.9189531,127.0574255,충청남도 아산시 둔포면 중앙공원로 52
+burgerking-kr-adb,burgerking,official-web,00000544,버거킹 아산배방DT점,36.7705814,127.0663154,충청남도 아산시 배방읍 배방로 183
+burgerking-kr-adb,burgerking,official-web,00000649,버거킹 아산용화DT점,36.7709024,127.011137,충청남도 아산시 남부로 274
+burgerking-kr-adb,burgerking,official-web,00000130,버거킹 아주대병원점,37.2794612,127.0476837,경기도 수원시 영통구 월드컵로 164
+burgerking-kr-adb,burgerking,official-web,00000511,버거킹 아주대삼거리점,37.2746465,127.0452362,경기도 수원시 영통구 중부대로 267
+burgerking-kr-adb,burgerking,official-web,00000555,버거킹 아차산역점,37.5520228,127.0901281,서울특별시 광진구 천호대로 661
+burgerking-kr-adb,burgerking,official-web,00010093,버거킹 안동옥동점,36.5636554,128.7019249,경상북도 안동시 경북대로 381
+burgerking-kr-adb,burgerking,official-web,00010015,버거킹 안동중앙점,36.5647198,128.7312877,경상북도 안동시 문화광장길 40-6
+burgerking-kr-adb,burgerking,official-web,00010052,버거킹 안산고잔점,37.3101697473,126.8307343975,경기도 안산시 단원구 광덕대로 154
+burgerking-kr-adb,burgerking,official-web,00000554,버거킹 안산선부역점,37.3362614,126.8095917,경기도 안산시 단원구 선부광장로 23
+burgerking-kr-adb,burgerking,official-web,00000339,버거킹 안산중앙역점,37.3171272136,126.8395634891,경기도 안산시 단원구 중앙대로 927
+burgerking-kr-adb,burgerking,official-web,00000625,버거킹 안산한대앞역점,37.30939633235313,126.85158076917529,경기도 안산시 상록구 양지편로 38
+burgerking-kr-adb,burgerking,official-web,00000434,버거킹 안성공도DT점,37.0041881,127.1799642,경기도 안성시 공도읍 서동대로 4294
+burgerking-kr-adb,burgerking,official-web,00000579,버거킹 안성아양DT점,37.010815,127.2577102,경기도 안성시 아양2로 92
+burgerking-kr-adb,burgerking,official-web,00000327,버거킹 안암오거리점,37.583038642,127.0291234555,서울특별시 성북구 안암로 73
+burgerking-kr-adb,burgerking,official-web,00000371,버거킹 안양관양점,37.40277915043615,126.95765527972549,경기도 안양시 동안구 관악대로 312
+burgerking-kr-adb,burgerking,official-web,00000664,버거킹 안양중앙시장점,37.39887839770003,126.91899401102748,경기도 안양시 만안구 병목안로 15
+burgerking-kr-adb,burgerking,official-web,00000522,버거킹 안양호계점,37.3716298,126.9582585,경기도 안양시 동안구 경수대로 548
+burgerking-kr-adb,burgerking,official-web,00000662,버거킹 암사역점,37.55213218931343,127.12846038797632,서울특별시 강동구 올림픽로 796
+burgerking-kr-adb,burgerking,official-web,00000343,버거킹 약수역점,37.5562748764,127.0117520515,서울특별시 중구 다산로 142
+burgerking-kr-adb,burgerking,official-web,00000448,버거킹 양산물금DT점,35.3095301,128.9866063,경상남도 양산시 물금읍 황산로 372
+burgerking-kr-adb,burgerking,official-web,00010142,버거킹 양산사송점,35.3173292,129.0650811,경상남도 양산시 동면 삼송로 101
+burgerking-kr-adb,burgerking,official-web,00000382,버거킹 양산웅상DT점,35.405551974295264,129.1640191504265,경상남도 양산시 웅상대로 1204
+burgerking-kr-adb,burgerking,official-web,00000577,버거킹 양산터미널점,35.3355354,129.0282801,경상남도 양산시 양산역2길 9
+burgerking-kr-adb,burgerking,official-web,00000026,버거킹 양재점,37.483307215,127.0344258652,서울특별시 서초구 강남대로 221
+burgerking-kr-adb,burgerking,official-web,00000401,버거킹 양주고읍DT점,37.8041107,127.0804986,경기도 양주시 고덕로 363
+burgerking-kr-adb,burgerking,official-web,00000413,버거킹 양주덕정FS점,37.8391856,127.0623668,경기도 양주시 독바위로 24
+burgerking-kr-adb,burgerking,official-web,00000558,버거킹 양주옥정점,37.8185628,127.0934253,경기도 양주시 회천남로 80
+burgerking-kr-adb,burgerking,official-web,00000427,버거킹 양평점,37.5254958,126.8913574,서울특별시 영등포구 선유로 130
+burgerking-kr-adb,burgerking,official-web,00010037,버거킹 여수웅천점,34.7469122687,127.6709425199,전라남도 여수시 예울마루로 37-15
+burgerking-kr-adb,burgerking,official-web,00000668,버거킹 여주교동점,37.27793948842864,127.63785213440121,경기도 여주시 세종로 223
+burgerking-kr-adb,burgerking,official-web,00010105,버거킹 연산토곡SKDT점,35.1822673,129.1074648,부산광역시 연제구 과정로 120 부흥주유소
+burgerking-kr-adb,burgerking,official-web,00000246,버거킹 연세로점,37.557894703029945,126.9366978099806,서울특별시 서대문구 연세로 25
+burgerking-kr-adb,burgerking,official-web,00010007,버거킹 연희점,37.56670730961709,126.93052445318057,서울특별시 서대문구 연희로 97
+burgerking-kr-adb,burgerking,official-web,00000416,버거킹 염창역점,37.5465353,126.8747144,서울특별시 양천구 공항대로 630
+burgerking-kr-adb,burgerking,official-web,00000313,버거킹 영등포KT점,37.5268467809,126.9051743303,서울특별시 영등포구 영중로 119
+burgerking-kr-adb,burgerking,official-web,00000292,버거킹 영종하늘도시DT점,37.4893163,126.5582082,인천광역시 중구 자연대로 55
+burgerking-kr-adb,burgerking,official-web,00000545,버거킹 영천DT점,35.975902,128.9540619,경상북도 영천시 조교동 695-2
+burgerking-kr-adb,burgerking,official-web,00000631,버거킹 오목교점,37.52246675681174,126.87478986669261,서울특별시 양천구 신목로 88
+burgerking-kr-adb,burgerking,official-web,00000574,버거킹 오목천역점,37.2427463,126.9636079,경기도 수원시 권선구 삼천병마로 1566번길 11
+burgerking-kr-adb,burgerking,official-web,00010043,버거킹 오산궐동점,37.1592893751,127.059311695,경기도 오산시 궐동 궐리사로 61
+burgerking-kr-adb,burgerking,official-web,00000368,버거킹 오산세교에스오일점,37.18152356182919,127.05224796505473,경기도 오산시 경기대로 692
+burgerking-kr-adb,burgerking,official-web,00000296,버거킹 오산원동FS점,37.14589091302244,127.07381893254025,경기도 오산시 경기대로 238
+burgerking-kr-adb,burgerking,official-web,00000154,버거킹 오션월드점,37.652336805,127.6873328729,강원도 홍천군 서면 한치골길 262
+burgerking-kr-adb,burgerking,official-web,00010021,버거킹 오창호수공원점,36.7137885206,127.4279215004,충청북도 청원군 오창읍 중심상업로 31-18
+burgerking-kr-adb,burgerking,official-web,00000352,버거킹 왕십리센트라스점,37.564669126,127.0292611826,서울특별시 성동구 왕십리로 410
+burgerking-kr-adb,burgerking,official-web,00000188,버거킹 용산이마트점,37.5297736038,126.9647427471,서울특별시 용산구 한강대로23길 55
+burgerking-kr-adb,burgerking,official-web,00010012,버거킹 용인동백점,37.2764796207,127.1522860198,경기도 용인시 기흥구 동백5로 23
+burgerking-kr-adb,burgerking,official-web,00000288,버거킹 용인신갈점,37.2719907973,127.1078589305,경기도 용인시 기흥구 중부대로 375
+burgerking-kr-adb,burgerking,official-web,00000607,버거킹 용인언남점,37.2923488,127.1222605,경기도 용인시 기흥구 구성로 124
+burgerking-kr-adb,burgerking,official-web,00010133,버거킹 울산구영DT점,35.5686252,129.2440668,울산광역시 울주군 범서읍 구영로 159
+burgerking-kr-adb,burgerking,official-web,00010152,버거킹 울산국가정원점,35.5521981,129.301963,울산광역시 중구 태화로 240
+burgerking-kr-adb,burgerking,official-web,00000298,버거킹 울산동구오일뱅크점,35.5326010301,129.4322384859,울산광역시 동구 방어진순환도로 1025
+burgerking-kr-adb,burgerking,official-web,00000304,버거킹 울산무거점,35.5486925897,129.2624127449,울산광역시 남구 대학로 157
+burgerking-kr-adb,burgerking,official-web,00000449,버거킹 울산북구청DT점,35.5863315,129.3585588,울산광역시 북구 안기번득길 23
+burgerking-kr-adb,burgerking,official-web,00000529,버거킹 울산삼산점,35.5401591,129.3374286,울산광역시 남구 삼산로277번길 8
+burgerking-kr-adb,burgerking,official-web,00000468,버거킹 울산성남점,35.5543668,129.3208289,울산광역시 중구 만남의거리 15
+burgerking-kr-adb,burgerking,official-web,00010102,버거킹 울산신정FS점,35.5412417,129.3053894,울산광역시 남구 봉월로 97
+burgerking-kr-adb,burgerking,official-web,00000474,버거킹 울산옥동점,35.5349913,129.2890015,울산광역시 남구 문수로 326
+burgerking-kr-adb,burgerking,official-web,00000280,버거킹 울산우정SK점,35.5595073417,129.2966096117,울산광역시 중구 북부순환도로 323
+burgerking-kr-adb,burgerking,official-web,00000620,버거킹 울산일산점,35.497642148101704,129.42815494744175,울산광역시 동구 방어진순환도로 626
+burgerking-kr-adb,burgerking,official-web,00000492,버거킹 울산호계DT점,35.6332087,129.3456044,울산광역시 북구 산업로 1426
+burgerking-kr-adb,burgerking,official-web,00010101,버거킹 원광대점,35.9642365194,126.9579621312,전라북도 익산시 무왕로 893
+burgerking-kr-adb,burgerking,official-web,00000612,버거킹 원당성사캠퍼스점,37.65389285038233,126.84069697346108,"경기도 고양시 덕양구 고양대로 1415, 창조혁신캠퍼스"
+burgerking-kr-adb,burgerking,official-web,00010117,버거킹 원주기업도시점,37.374198,127.8727546,강원도 원주시 지정면 신지정로 211
+burgerking-kr-adb,burgerking,official-web,00000419,버거킹 원주명륜오일뱅크점,37.3296635,127.9452484,강원도 원주시 남원로 505
+burgerking-kr-adb,burgerking,official-web,00010035,버거킹 원주무실점,37.3341469726,127.9312347555,강원도 원주시 능라동길 61
+burgerking-kr-adb,burgerking,official-web,00000661,버거킹 원흥역점,37.65120490250684,126.87416377346713,경기도 고양시 덕양구 권율대로 685
+burgerking-kr-adb,burgerking,official-web,00000596,버거킹 위례광장점,37.4713622,127.1428108,경기도 성남시 수정구 위례광장로 328 경기도 성남시 수정구 위례광장로 328
+burgerking-kr-adb,burgerking,official-web,00000379,버거킹 위례신도시GS점,37.4753528,127.1322885,서울특별시 송파구 위례중앙로43
+burgerking-kr-adb,burgerking,official-web,00000376,버거킹 의정부민락점,37.74545152973826,127.09411903699764,경기도 의정부시 천보로 68
+burgerking-kr-adb,burgerking,official-web,00000580,버거킹 의정부발곡역점,37.7267562,127.0537435,경기도 의정부시 회룡로 181
+burgerking-kr-adb,burgerking,official-web,00000417,버거킹 의정부서부역점,37.7387916,127.0434126,경기도 의정부시 신흥로 252
+burgerking-kr-adb,burgerking,official-web,00000215,버거킹 의정부신세계점,37.737991323,127.0458794509,경기도 의정부시 평화로 525
+burgerking-kr-adb,burgerking,official-web,00000425,버거킹 의정부용현DT점,37.7308685,127.0834302,경기도 의정부시 시민로 462
+burgerking-kr-adb,burgerking,official-web,00000329,버거킹 의정부DT점,37.7440772,127.0527453,경기도 의정부시 호국로1336번길 1
+burgerking-kr-adb,burgerking,official-web,00000264,버거킹 이천CGV점,37.279644013,127.4441569061,경기도 이천시 중리천로 58
+burgerking-kr-adb,burgerking,official-web,00010126,버거킹 익산모현FS점,35.9475115,126.9399436,전라북도 익산시 배산로 16길 2
+burgerking-kr-adb,burgerking,official-web,00010124,버거킹 익산부송점,35.9598949,126.9890428,전라북도 익산시 무왕로 1195
+burgerking-kr-adb,burgerking,official-web,00010159,버거킹 익산영등점,35.9588135690265,126.97003401564494,전북특별자치도 익산시 무왕로 1017.
+burgerking-kr-adb,burgerking,official-web,00000635,버거킹 인덕원역점,37.40084160550612,126.97633231092206,경기도 안양시 동안구 흥안대로 525
+burgerking-kr-adb,burgerking,official-web,00000618,버거킹 인천간석사거리점,37.46060133498043,126.72035677681558,인천광역시 남동구 호구포로 878
+burgerking-kr-adb,burgerking,official-web,00000364,버거킹 인천검단점,37.6015180620918,126.65677877884154,인천광역시 서구 검단로 470
+burgerking-kr-adb,burgerking,official-web,00000598,버거킹 인천검암점,37.5650885,126.675683,인천광역시 서구 승학로 504
+burgerking-kr-adb,burgerking,official-web,00000629,버거킹 인천계산점,37.54316822529166,126.72604517429274,인천광역시 계양구 경명대로 1074
+burgerking-kr-adb,burgerking,official-web,00000314,버거킹 인천계양구청점,37.539482546,126.7349595012,인천광역시 계양구 장제로 804
+burgerking-kr-adb,burgerking,official-web,00000613,버거킹 인천공항T1교통센터점,37.44794018599512,126.45206398967723,"인천 중구 공항로 271, 인천공항교통센터 B1"
+burgerking-kr-adb,burgerking,official-web,00000589,버거킹 인천공항T2교통센터점,37.4784017,126.4250057,인천광역시 중구 제2터미널대로 446 지하1층
+burgerking-kr-adb,burgerking,official-web,00000318,버거킹 인천구월아시아드SK점,37.4471734634,126.718103496,인천광역시 남동구 호구포로 725
+burgerking-kr-adb,burgerking,official-web,00000556,버거킹 인천구월점,37.4435334,126.7023931,인천광역시 남동구 인하로 501
+burgerking-kr-adb,burgerking,official-web,00000282,버거킹 인천논현점,37.3975387891,126.7275185635,인천광역시 남동구 논고개로 61
+burgerking-kr-adb,burgerking,official-web,00000489,버거킹 인천도화점,37.4702444,126.6652006,인천광역시 미추홀구 숙골로88번길 12
+burgerking-kr-adb,burgerking,official-web,00000381,버거킹 인천만수역점,37.454713710441496,126.73230681015276,인천광역시 남동구 구월로 376
+burgerking-kr-adb,burgerking,official-web,00000665,버거킹 인천산곡역점,37.50809464441834,126.70260264550848,인천광역시 부평구 길주로364번길 9
+burgerking-kr-adb,burgerking,official-web,00000456,버거킹 인천서창SK점,37.4246503,126.7566715,인천광역시 남동구 서창방산로 112
+burgerking-kr-adb,burgerking,official-web,00010018,버거킹 인천송도센트럴파크점,37.3951272,126.640408,"인천광역시 연수구 센트럴로 194 B동 1층 118호, 119호, 120호, 134호"
+burgerking-kr-adb,burgerking,official-web,00000265,버거킹 인천송도DT점,37.3839323023,126.6602661597,인천광역시 연수구 송도과학로 13
+burgerking-kr-adb,burgerking,official-web,00000615,버거킹 인천숭의역점,37.4612077,126.6391077,인천광역시 미추홀구 인주대로 5
+burgerking-kr-adb,burgerking,official-web,00000550,버거킹 인천신현점,37.5184643,126.6726009,인천광역시 서구 가정로 375
+burgerking-kr-adb,burgerking,official-web,00010060,버거킹 인천연수점,37.4153076,126.6775195,인천광역시 연수구 용담로 111
+burgerking-kr-adb,burgerking,official-web,00010103,버거킹 인천연수HP점,37.4059982,126.6836221,인천광역시 연수구 청능대로 210 지하1층(동춘동 홈플러스연수점)
+burgerking-kr-adb,burgerking,official-web,00000435,버거킹 인천완정역점,37.5939907,126.6736942,인천광역시 서구 원당대로 651
+burgerking-kr-adb,burgerking,official-web,00000548,버거킹 인천운서역점,37.4935101,126.4917303,인천광역시 중구 신도시남로142번길 6
+burgerking-kr-adb,burgerking,official-web,00000251,버거킹 인천작전점,37.5271162749,126.7219978104,인천광역시 계양구 계양대로 37
+burgerking-kr-adb,burgerking,official-web,00000442,버거킹 인천주안점,37.4644046,126.6801619,인천광역시 미추홀구 주안로 86
+burgerking-kr-adb,burgerking,official-web,00000305,버거킹 인천청라점,37.533922,126.6502845,인천광역시 서구 중봉대로 610
+burgerking-kr-adb,burgerking,official-web,00000576,버거킹 인천청라호수공원점,37.5320158,126.6401609,인천광역시 서구 크리스탈로74번길 31
+burgerking-kr-adb,burgerking,official-web,00000643,버거킹 인천학익점,37.44241751325514,126.66493327083288,인천광역시 미추홀구 소성로 150
+burgerking-kr-adb,burgerking,official-web,00000481,버거킹 인하대역점,37.4477929,126.6492579,인천광역시 미추홀구 독배로 309
+burgerking-kr-adb,burgerking,official-web,00000120,버거킹 일산마두점,37.6520879915,126.776669367,경기도 고양시 일산동구 장백로 194
+burgerking-kr-adb,burgerking,official-web,00000569,버거킹 일산백마학원가점,37.6565982,126.7892104,경기도 고양시 일산동구 일산로 226
+burgerking-kr-adb,burgerking,official-web,00000646,버거킹 일산산들마을사거리점,37.68238125863843,126.77824429141512,경기도 고양시 일산동구 고봉로 260
+burgerking-kr-adb,burgerking,official-web,00000603,버거킹 일산풍산역점,37.6732464,126.7863338,경기도 고양시 일산동구 중산로 3
+burgerking-kr-adb,burgerking,official-web,00000148,버거킹 일산호수공원점,37.659861474733376,126.77074179901982,경기도 고양시 일산동구 중앙로1275번길 38-10
+burgerking-kr-adb,burgerking,official-web,00000281,버거킹 일산화정오일뱅크점,37.6307282,126.8303567,경기도 고양시 덕양구 화중로 38
+burgerking-kr-adb,burgerking,official-web,00000338,버거킹 장안SK점,37.5702088,127.0650477,서울특별시 동대문구 한천로 100
+burgerking-kr-adb,burgerking,official-web,00000600,버거킹 장한평역점,37.5635272,127.066368,서울특별시 동대문구 장한로 26
+burgerking-kr-adb,burgerking,official-web,00000285,버거킹 전남대후문점,35.1741881,126.9129468,광주광역시 북구 우치로 76
+burgerking-kr-adb,burgerking,official-web,00010010,버거킹 전남도청점,34.812221625,126.4597706891,전라남도 무안군 삼향읍 남악3로 71
+burgerking-kr-adb,burgerking,official-web,00010087,버거킹 전북대점,35.8427245,127.1289671,"전라북도 전주시 덕진구 권삼득로 295, 105호"
+burgerking-kr-adb,burgerking,official-web,00010016,버거킹 전북도청점,35.8186340189,127.1064737395,전라북도 전주시 완산구 효자로 194
+burgerking-kr-adb,burgerking,official-web,00010135,버거킹 전북부안점,35.7230905,126.7376941,전라북도 부안군 부안읍 오리정로 142
+burgerking-kr-adb,burgerking,official-web,00000386,버거킹 전주만성DT점,35.85064908272547,127.08021396581208,전라북도 전주시 덕진구 온고을로 441
+burgerking-kr-adb,burgerking,official-web,00000553,버거킹 전주삼천DT점,35.7920435,127.1134244,전라북도 전주시 완산구 장승배기로 4
+burgerking-kr-adb,burgerking,official-web,00000263,버거킹 전주서신대광SK점,35.8303234265,127.1161311614,전라북도 전주시 완산구 서신로 56
+burgerking-kr-adb,burgerking,official-web,00000404,버거킹 전주송천DT점,35.8697614,127.1345822,전라북도 전주시 덕진구 동부대로 1030
+burgerking-kr-adb,burgerking,official-web,00000496,버거킹 전주인후DT점,35.8379972,127.1606828,전라북도 전주시 덕진구 안덕원로 307
+burgerking-kr-adb,burgerking,official-web,00010069,버거킹 전주중앙점,35.8222453128,127.1452587795,전라북도 전주시 완산구 팔달로 225
+burgerking-kr-adb,burgerking,official-web,00010076,버거킹 정읍중앙점,35.5678092,126.850404,전라북도 정읍시 남북로 28
+burgerking-kr-adb,burgerking,official-web,00000527,버거킹 제주노형점,33.48699833508647,126.4816424125326,제주특별자치도 제주시 도령로 20
+burgerking-kr-adb,burgerking,official-web,00000552,버거킹 제주민속오일장DT점,33.4931405,126.4798301,제주특별자치도 제주시 일주서로 7800
+burgerking-kr-adb,burgerking,official-web,00010153,버거킹 제주세화점,33.5223084,126.8529198,제주특별자치도 제주시 구좌읍 일주동로 3126
+burgerking-kr-adb,burgerking,official-web,00000602,버거킹 제주애월DT점,33.4695578,126.3638239,제주특별자치도 제주시 애월읍 일주서로 6654
+burgerking-kr-adb,burgerking,official-web,00000538,버거킹 제주함덕DT점,33.5362691,126.6669462,제주특별자치도 제주시 조천읍 일주동로 1186
+burgerking-kr-adb,burgerking,official-web,00000551,버거킹 제주화북DT점,33.5175891,126.562691,제주특별자치도 제주시 일주동로 158
+burgerking-kr-adb,burgerking,official-web,00010122,버거킹 제천CGV점,37.1235087,128.2216166,충청북도 제천시 장평천로 27-13(강제동)
+burgerking-kr-adb,burgerking,official-web,00000160,버거킹 종로구청점,37.57251860377618,126.98039358769296,서울특별시 종로구 삼봉로 57
+burgerking-kr-adb,burgerking,official-web,00000027,버거킹 종로점,37.5699587,126.9881077,서울특별시 종로구 종로 94
+burgerking-kr-adb,burgerking,official-web,00000357,버거킹 종암점,37.6010031,127.033173,서울특별시 성북구 종암로 123
+burgerking-kr-adb,burgerking,official-web,00000433,버거킹 종합운동장사거리점,37.5115631,127.0792026,서울특별시 송파구 올림픽로 76
+burgerking-kr-adb,burgerking,official-web,00000373,버거킹 주엽역점,37.67039500746555,126.75971214474413,경기도 고양시 일산서구 중앙로 1443
+burgerking-kr-adb,burgerking,official-web,00000222,버거킹 죽전DT점,37.3313215933,127.1085394678,경기도 용인시 수지구 용구대로 2751
+burgerking-kr-adb,burgerking,official-web,00000590,버거킹 중랑역점,37.5930848,127.074771,서울특별시 중랑구 망우로30길 3
+burgerking-kr-adb,burgerking,official-web,00010049,버거킹 지산리조트점,37.2190006803,127.3420573361,경기도 이천시 마장면 지산로 267
+burgerking-kr-adb,burgerking,official-web,00010082,버거킹 진주경상대점,35.1546133,128.1072443,경상남도 진주시 진주대로 540
+burgerking-kr-adb,burgerking,official-web,00000450,버거킹 진주평거점,35.1744545,128.0608209,경상남도 진주시 진양호로 221
+burgerking-kr-adb,burgerking,official-web,00000546,버거킹 진주하대DT점,35.1913039,128.1163998,경상남도 진주시 대신로 345
+burgerking-kr-adb,burgerking,official-web,00010066,버거킹 진주혁신도시점,35.1762154508,128.1485617462,경상남도 진주시 사들로 97
+burgerking-kr-adb,burgerking,official-web,00000542,버거킹 진해신항DT점,35.0865227,128.8147261,경상남도 창원시 진해구 신항4로 41-31
+burgerking-kr-adb,burgerking,official-web,00000507,버거킹 진해자은DT점,35.145726,128.7068685,경상남도 창원시 진해구 진해대로 940
+burgerking-kr-adb,burgerking,official-web,00000405,버거킹 진해충무DT점,35.1526821,128.6634435,경상남도 창원시 진해구 충장로 103
+burgerking-kr-adb,burgerking,official-web,00000238,버거킹 차병원사거리점,37.5074617005,127.0333964264,서울특별시 강남구 봉은사로 179
+burgerking-kr-adb,burgerking,official-web,00000426,버거킹 창동역점,37.6527753,127.0513676,서울특별시 도봉구 노해로 389
+burgerking-kr-adb,burgerking,official-web,00000420,버거킹 창원광장점,35.2273788,128.6794586,경상남도 창원시 성산구 용지로133번길 3
+burgerking-kr-adb,burgerking,official-web,00000336,버거킹 창원상남FS점,35.2227504733,128.6871523641,경상남도 창원시 성산구 마디미로3번길 18
+burgerking-kr-adb,burgerking,official-web,00000636,버거킹 창원유니시티점,35.25788981014966,128.62750225511903,경상남도 창원시 의창구 중동북로 23
+burgerking-kr-adb,burgerking,official-web,00010005,버거킹 천안두정점,36.8340587,127.133195,충청남도 천안시 서북구 두정로 147
+burgerking-kr-adb,burgerking,official-web,00000403,버거킹 천안불당점,36.8162122,127.1090966,충청남도 천안시 서북구 불당25로 176
+burgerking-kr-adb,burgerking,official-web,00010113,버거킹 천안성성점,36.8397164,127.1296475,충청남도 천안시 서북구 성성8로 2-11
+burgerking-kr-adb,burgerking,official-web,00010149,버거킹 천안신방DT점,36.7857399,127.1281607,충청남도 천안시 동남구 남부대로 92-1
+burgerking-kr-adb,burgerking,official-web,00010019,버거킹 천안쌍용대로DT점,36.8056827,127.1327998,충청남도 천안시 동남구 쌍용대로 94
+burgerking-kr-adb,burgerking,official-web,00000478,버거킹 천안원성DT점,36.8037971,127.1585973,충청남도 천안시 동남구 충절로 170
+burgerking-kr-adb,burgerking,official-web,00000639,버거킹 천호역점,37.537586218164414,127.1256847704619,서울특별시 강동구 천호대로 1024
+burgerking-kr-adb,burgerking,official-web,00000106,버거킹 청담점,37.5243049057,127.0397254302,서울특별시 강남구 선릉로 812
+burgerking-kr-adb,burgerking,official-web,00010134,버거킹 청주동남점,36.6171648,127.5173168,충청북도 청주시 상당구 중고개로141번길 11-9
+burgerking-kr-adb,burgerking,official-web,00000561,버거킹 청주분평DT점,36.6048749,127.4791248,충청북도 청주시 서원구 청남로 1918
+burgerking-kr-adb,burgerking,official-web,00010034,버거킹 청주산남점,36.6114754958,127.468883164,충청북도 청주시 서원구 산남로 48
+burgerking-kr-adb,burgerking,official-web,00000439,버거킹 청주예술의전당오일뱅크점,36.6431732,127.4683734,충청북도 청주시 흥덕구 직지대로 677
+burgerking-kr-adb,burgerking,official-web,00010108,버거킹 청주오송점,36.6314086,127.3287551,충청북도 청주시 흥덕구 오송읍 오송생명로 178
+burgerking-kr-adb,burgerking,official-web,00010032,버거킹 청주율량점,36.67184303967985,127.4964261409451,충청북도 청주시 청원구 충청대로 176
+burgerking-kr-adb,burgerking,official-web,00000276,버거킹 청주터미널점,36.6267828065,127.4319925085,충청북도 청주시 흥덕구 풍산로 15
+burgerking-kr-adb,burgerking,official-web,00000300,버거킹 춘천거두GS점,37.8557941016,127.7503363249,강원도 춘천시 동내면 춘천순환로 59
+burgerking-kr-adb,burgerking,official-web,00000431,버거킹 춘천온의점,37.8677575,127.7204261,강원도 춘천시 방송길 98-1
+burgerking-kr-adb,burgerking,official-web,00000573,버거킹 춘천후평점,37.8798527,127.7502911,강원도 춘천시 후석로 322
+burgerking-kr-adb,burgerking,official-web,00010099,버거킹 충남대병원DT점,36.5167265,127.2583861,세종특별자치시 보듬5로 6
+burgerking-kr-adb,burgerking,official-web,00010094,버거킹 충남도청점,36.6593868351,126.6789880743,충청남도 홍성군 청사로174번길 2
+burgerking-kr-adb,burgerking,official-web,00000235,버거킹 충무로역점,37.5613353869,126.9958122562,서울특별시 중구 퇴계로 216
+burgerking-kr-adb,burgerking,official-web,00010008,버거킹 충북대점,36.6341870754,127.4607020446,충청북도 청주시 서원구 1순환로 665-1
+burgerking-kr-adb,burgerking,official-web,00010092,버거킹 충북진천점,36.8547483931,127.4423231587,충청북도 진천군 진천읍 상산로 73
+burgerking-kr-adb,burgerking,official-web,00010120,버거킹 충북혁신도시점,36.9079661,127.5427782,충청북도 음성군 맹동면 대하2가길 11
+burgerking-kr-adb,burgerking,official-web,00010054,버거킹 충주연수점,36.9868423,127.9417929,충청북도 충주시 연수동산로 47
+burgerking-kr-adb,burgerking,official-web,00010136,버거킹 충주호암FS점,36.9530128,127.934615,충청북도 충주시 사천개6길 4(호암동)
+burgerking-kr-adb,burgerking,official-web,00010143,버거킹 탕정역점,36.7875386,127.086089,충청남도 아산시 탕정면 한들물빛5로 25
+burgerking-kr-adb,burgerking,official-web,00010130,버거킹 태안터미널점,36.7490114,126.3024977,충청남도 태안군 태안읍 동백로 291-3
+burgerking-kr-adb,burgerking,official-web,00000654,버거킹 파주다율점,37.73353141229769,126.73089066429196,경기도 파주시 해올2길 8
+burgerking-kr-adb,burgerking,official-web,00000578,버거킹 파주동패점,37.7097389,126.7233652,경기도 파주시 양지로 131
+burgerking-kr-adb,burgerking,official-web,00000568,버거킹 파주문산점,37.8551573,126.7860485,경기도 파주시 문산읍 문향로 36
+burgerking-kr-adb,burgerking,official-web,00000608,버거킹 파주봉일천점,37.7446673,126.8081673,경기도 파주시 조리읍 통일로 329
+burgerking-kr-adb,burgerking,official-web,00000455,버거킹 파주야당역점,37.7125733,126.7601659,경기도 파주시 소리천로8번길 36
+burgerking-kr-adb,burgerking,official-web,00000624,버거킹 파주운정역점,37.7282032303642,126.7613050691354,경기도 파주시 경의로 1242
+burgerking-kr-adb,burgerking,official-web,00000502,버거킹 파주운정점,37.712113,126.7451347,경기도 파주시 와석순환로 133
+burgerking-kr-adb,burgerking,official-web,00000588,버거킹 파주LG디스플레이점,37.815892,126.756809,경기도 파주시 월롱면 엘지로 245 경기도 파주시 월롱면 엘지로 245
+burgerking-kr-adb,burgerking,official-web,00000515,버거킹 판교유스페이스점,37.4004659,127.1068126,경기도 성남시 분당구 대왕판교로 660
+burgerking-kr-adb,burgerking,official-web,00000253,버거킹 평촌금성GS점,37.3961229,126.9661434,경기도 안양시 동안구 시민대로 325
+burgerking-kr-adb,burgerking,official-web,00000302,버거킹 평촌학원가점,37.3825325907,126.9612031013,경기도 안양시 동안구 평촌대로 112
+burgerking-kr-adb,burgerking,official-web,00010148,버거킹 평택고덕삼성점,37.040554,127.0515668,경기도 평택시 고덕여염9길 40
+burgerking-kr-adb,burgerking,official-web,00000477,버거킹 평택고덕신도시GS점,37.0477377,127.0473073,경기도 평택시 고덕면 고덕국제2로 54
+burgerking-kr-adb,burgerking,official-web,00000499,버거킹 평택로데오점,36.9912932,127.089611,경기도 평택시 평택로32번길 34
+burgerking-kr-adb,burgerking,official-web,00010063,버거킹 평택비전점,37.0013876912,127.111785105,경기도 평택시 비전2로 195
+burgerking-kr-adb,burgerking,official-web,00000307,버거킹 평택서정점,37.0674829946,127.0636974246,경기도 평택시 경기대로 1371
+burgerking-kr-adb,burgerking,official-web,00000543,버거킹 평택안중DT점,36.989809,126.9132579,경기도 평택시 안중읍 서동대로 1463
+burgerking-kr-adb,burgerking,official-web,00000597,버거킹 평택용죽점,36.9925896,127.12607,경기도 평택시 용죽5길 6-28
+burgerking-kr-adb,burgerking,official-web,00000415,버거킹 평택죽백DT점,37.0136059,127.1130921,경기도 평택시 만세로 1709
+burgerking-kr-adb,burgerking,official-web,00000535,버거킹 평택지제동삭점,37.017183,127.09411,경기도 평택시 지제동삭2로 181-26
+burgerking-kr-adb,burgerking,official-web,00010095,버거킹 평택청북점,37.019508,126.9153572,경기도 평택시 청북읍 청북남로 260
+burgerking-kr-adb,burgerking,official-web,00000666,버거킹 포천신읍점,37.88964331863626,127.19804935576214,경기도 포천시 호국로 1497
+burgerking-kr-adb,burgerking,official-web,00000473,버거킹 포천축석휴게소FS점,37.7813797,127.1197447,경기도 포천시 소흘읍 호국로 66
+burgerking-kr-adb,burgerking,official-web,00010020,버거킹 포항공대점,36.015659,129.322455,경상북도 포항시 남구 청암로 77
+burgerking-kr-adb,burgerking,official-web,00000540,버거킹 포항대도DT점,36.0109843,129.3647282,경상북도 포항시 남구 희망대로 843
+burgerking-kr-adb,burgerking,official-web,00000505,버거킹 포항두호DT점,36.0599693,129.374097,경상북도 포항시 북구 두호로 39
+burgerking-kr-adb,burgerking,official-web,00000319,버거킹 포항버스터미널점,36.0135076756,129.3510222981,경상북도 포항시 남구 중흥로 96
+burgerking-kr-adb,burgerking,official-web,00000267,버거킹 포항법원앞DT점,36.0874157008,129.3879262343,경상북도 포항시 북구 신덕로 257
+burgerking-kr-adb,burgerking,official-web,00000367,버거킹 포항철강단지SK점,36.0022004,129.3815624,경상북도 포항시 남구 대송로 290
+burgerking-kr-adb,burgerking,official-web,00000513,버거킹 하계점,37.6391058,127.0751285,서울특별시 노원구 노원로 236
+burgerking-kr-adb,burgerking,official-web,00000632,버거킹 하남감일점,37.508447500712165,127.1535785666155,경기도 하남시 감일중앙로 56
+burgerking-kr-adb,burgerking,official-web,00000443,버거킹 하남미사점,37.554348,127.1862171,경기도 하남시 미사강변대로 48
+burgerking-kr-adb,burgerking,official-web,00000606,버거킹 하남시청점,37.5404395,127.2150932,경기도 하남시 대청로 26
+burgerking-kr-adb,burgerking,official-web,00000161,버거킹 하남이마트점,37.552748751,127.2053704382,경기도 하남시 덕풍서로 70
+burgerking-kr-adb,burgerking,official-web,00010089,버거킹 한동대점,36.1023019859,129.3892650759,경상북도 포항시 북구 흥해읍 한동로 558
+burgerking-kr-adb,burgerking,official-web,00000317,버거킹 해운대신도시1점,35.168476112,129.1825316299,부산광역시 해운대구 좌동순환로 310
+burgerking-kr-adb,burgerking,official-web,00010088,버거킹 해운대우동점,35.1632516,129.1412036,부산광역시 해운대구 해운대로452번길 16
+burgerking-kr-adb,burgerking,official-web,00000362,버거킹 혜화역점,37.58352514754791,127.00215110115805,서울특별시 종로구 동숭길 148
+burgerking-kr-adb,burgerking,official-web,00010051,버거킹 호남대점,35.1488347644,126.7696072228,광주광역시 광산구 어등대로 418-1
+burgerking-kr-adb,burgerking,official-web,00000331,버거킹 홍제역점,37.589962619,126.9432196281,서울특별시 서대문구 통일로 464
+burgerking-kr-adb,burgerking,official-web,00000526,버거킹 화곡역점,37.5405706,126.8376195,서울특별시 강서구 화곡로 146
+burgerking-kr-adb,burgerking,official-web,00000495,버거킹 화랑대역점,37.6219901,127.0866513,서울특별시 노원구 노원로 3
+burgerking-kr-adb,burgerking,official-web,00000309,버거킹 화성능동FS점,37.2119487671,127.0556081277,경기도 화성시 동탄지성로 190
+burgerking-kr-adb,burgerking,official-web,00000444,버거킹 화성병점점,37.2135429,127.0401325,경기도 화성시 효행로 1032
+burgerking-kr-adb,burgerking,official-web,00000609,버거킹 화성봉담2지구점,37.227509,126.9455248,경기도 화성시 봉담읍 상리중심상가길 28-18
+burgerking-kr-adb,burgerking,official-web,00000414,버거킹 화성봉담점,37.2135656,126.9748364,경기도 화성시 봉담읍 와우로 80
+burgerking-kr-adb,burgerking,official-web,00000423,버거킹 화성시청점,37.2009814,126.8260478,경기도 화성시 남양읍 시청로 113
+burgerking-kr-adb,burgerking,official-web,00000517,버거킹 화성안녕DT점,37.2023196,127.000007,경기도 화성시 효행로 618
+burgerking-kr-adb,burgerking,official-web,00000518,버거킹 화성향남DT점,37.1223404,126.9137655,경기도 화성시 향남읍 상신하길로 388
+burgerking-kr-adb,burgerking,official-web,00000411,버거킹 회현역점,37.5583361,126.9784215,서울특별시 중구 퇴계로 52
+kfc-kr-adb,kfc,official-web,1410833,KFC 가산디지털,37.4819130872905,126.881581110867,서울 금천구 가산디지털1로 186 (가산동) 제이플라츠빌딩 지상 1층 110-1호
+kfc-kr-adb,kfc,official-web,1420951,KFC 가정역,37.5242524636212,126.670117744395,"인천 서구 가정로 437 (가정동, 루원시티 SK Leaders' VIEW) 지2층 B207, B208, B209호"
+kfc-kr-adb,kfc,official-web,1410589,KFC 간석HP,37.4695876807099,126.689107821779,인천 남동구 경원대로 971 (간석동) 홈플러스 2층
+kfc-kr-adb,kfc,official-web,1410712,KFC 강남고속터미널,37.50654540385,127.004868141536,서울 서초구 신반포로 189 (잠원동) 반포쇼핑타운 4동 1층
+kfc-kr-adb,kfc,official-web,1410326,KFC 강남구청역 (구: 삼성동),37.5169930955233,127.04178907453,서울 강남구 학동로 402 (삼성동) 천마빌딩 103호
+kfc-kr-adb,kfc,official-web,1410845,KFC 강남역,37.4989378679742,127.026075156794,서울 서초구 서초대로77길 15 (서초동) 6
+kfc-kr-adb,kfc,official-web,1410612,KFC 개롱역,37.4975927810188,127.135121781578,서울 송파구 오금로 404 (가락동)
+kfc-kr-adb,kfc,official-web,1420934,KFC 건대입구역,37.5404985583829,127.069747255704,서울 광진구 아차산로 237 (화양동) 1층
+kfc-kr-adb,kfc,official-web,2420009,KFC 검단아라,37.5939172752267,126.711868939177,"인천 서구 이음5로 36 (원당동) 111호, 112호, 113호"
+kfc-kr-adb,kfc,official-web,1410846,KFC 검단역,37.6026004980209,126.657426885404,인천 서구 완정로 172 (마전동)
+kfc-kr-adb,kfc,official-web,1410848,KFC 경성대부경대,35.1374998452167,129.101551369343,부산 남구 수영로 324 (대연동) 리마크빌대연 주상복합 1층
+kfc-kr-adb,kfc,official-web,1410725,KFC 계산동,37.5430485388663,126.723035805222,인천 계양구 계양대로 214 (계산동) 에이스타운 1층
+kfc-kr-adb,kfc,official-web,1420882,KFC 고대안암,37.5866593622136,127.029166984176,서울 성북구 개운사길 5 (안암동5가)
+kfc-kr-adb,kfc,official-web,1420971,KFC 고척아이파크몰,37.4991318775075,126.857590075507,"서울 구로구 경인로43길 49 (고척동, 고척아이파크) 1층"
+kfc-kr-adb,kfc,official-web,1420978,KFC 공덕역,37.5432615358216,126.947218429437,서울 마포구 독막로 314 (염리동) 1층
+kfc-kr-adb,kfc,official-web,1410653,KFC 관양1,37.4025761945378,126.95653533782,경기 안양시 동안구 관악대로 302 (관양동)
+kfc-kr-adb,kfc,official-web,1420980,KFC 광안리,35.1485927053623,129.114506185438,부산 수영구 광안해변로 153 (광안동) 비치세븐빌딩 1층
+kfc-kr-adb,kfc,official-web,1410722,KFC 광장동,37.5415780693025,127.094914025322,서울 광진구 광나루로 604 (구의동) 진넥스베르디엠 101호
+kfc-kr-adb,kfc,official-web,2420025,KFC 광주경안,37.4101707185544,127.258305128244,경기 광주시 중앙로 118 (경안동) 지1층~1층
+kfc-kr-adb,kfc,official-web,1420974,KFC 광주상무DI,35.1461857076761,126.848368987495,광주 서구 상무대로 778 (마륵동) 1층
+kfc-kr-adb,kfc,official-web,1410791,KFC 광주수완,35.190406314927,126.825050103141,광주 광산구 장신로 136 (수완동)
+kfc-kr-adb,kfc,official-web,1410787,KFC 광주용봉DT,35.1835913446087,126.899028498283,광주 북구 설죽로 270 (용봉동)
+kfc-kr-adb,kfc,official-web,1420973,KFC 광주첨단,35.2172043010014,126.844106938759,광주 광산구 임방울대로 784 (월계동) 1층 101호
+kfc-kr-adb,kfc,official-web,1420895,KFC 광주충장로,35.147069424446,126.917010832509,광주 동구 충장로안길 38 (황금동)
+kfc-kr-adb,kfc,official-web,2420012,KFC 광주태전,37.3813307185282,127.231126076668,"경기 광주시 태봉로 145-7 (태전동) 101호, 102호, 103호"
+kfc-kr-adb,kfc,official-web,1420900,KFC 광주터미널유스퀘어,35.1605756425809,126.879873116288,광주 서구 무진대로 904 (광천동)
+kfc-kr-adb,kfc,official-web,1410328,KFC 광화문,37.5715397635526,126.975947864994,서울 종로구 세종대로23길 7 (세종로)
+kfc-kr-adb,kfc,official-web,1410766,KFC 구로디지털2,37.4849270383011,126.896538036905,서울 구로구 디지털로 300 (구로동) 1층
+kfc-kr-adb,kfc,official-web,1410856,KFC 구리돌다리,37.6007746003816,127.139853135215,경기 구리시 경춘로 221 (인창동)
+kfc-kr-adb,kfc,official-web,1410832,KFC 구미옥계,36.1381742570623,128.420836423353,경북 구미시 산호대로29길 20-7 (옥계동)
+kfc-kr-adb,kfc,official-web,2420020,KFC 군산롯데마트,35.9647795458124,126.716395451512,전북특별자치도 군산시 수송로 185 (수송동) 롯데마트 1층
+kfc-kr-adb,kfc,official-web,1410534,KFC 김포,37.6188618032525,126.717828180375,경기 김포시 돌문로 43 (사우동) 1층
+kfc-kr-adb,kfc,official-web,1420921,KFC 김포장기역,37.6439380030221,126.668382235772,경기 김포시 김포한강4로 113 (장기동) 신한프라자 1층
+kfc-kr-adb,kfc,official-web,1410813,KFC 김포한강,37.6457072203675,126.627804882194,경기 김포시 김포한강7로 93 (구래동)
+kfc-kr-adb,kfc,official-web,1410784,KFC 김해내동,35.2378718337023,128.866955908874,경남 김해시 내외중앙로 89 (내동)
+kfc-kr-adb,kfc,official-web,1420958,KFC 김해장유,35.2008418189063,128.812115772135,"경남 김해시 장유로 270 (부곡동) 107호, 108호, 109호, 110호"
+kfc-kr-adb,kfc,official-web,1420935,KFC 까치산역,37.5311063652026,126.846691735763,"서울 강서구 강서로 43-17 (화곡동) 1층, M101호"
+kfc-kr-adb,kfc,official-web,2420029,KFC 남양주마석,37.6452309692085,127.303968186318,경기 남양주시 화도읍 창현로 65 1~2층
+kfc-kr-adb,kfc,official-web,1410450,KFC 내당동,35.8554983140779,128.550175200669,대구 서구 달구벌대로 1689 (내당동)
+kfc-kr-adb,kfc,official-web,1410849,KFC 노량진역,37.5158026675555,126.948359181242,서울 동작구 노량진로 151 (노량진동) 맞이방 광장1층
+kfc-kr-adb,kfc,official-web,1420891,KFC 노원역,37.6535750451494,127.060380855012,서울 노원구 동일로 1401 (상계동)
+kfc-kr-adb,kfc,official-web,1420944,KFC 단대오거리,37.4443992909753,127.156608812732,경기 성남시 중원구 산성대로364번길 2 (중앙동) 1~2층
+kfc-kr-adb,kfc,official-web,1410841,KFC 당산역,37.5344675357409,126.901645865014,서울 영등포구 양평로 46 (당산동6가)
+kfc-kr-adb,kfc,official-web,1410484,KFC 대구문화동,35.8704348078906,128.597101001974,대구 중구 국채보상로 608 (문화동)
+kfc-kr-adb,kfc,official-web,1420946,KFC 대구범어,35.85918936565,128.636863349392,대구 수성구 달구벌대로 2507 (범어동)
+kfc-kr-adb,kfc,official-web,1410747,KFC 대구시지,35.8408532289955,128.706529861514,대구 수성구 달구벌대로 3197 (매호동)
+kfc-kr-adb,kfc,official-web,2420004,KFC 대구신암,35.8818481221842,128.626335709061,"대구 동구 동대구로 590 (신암동, 동대구역화성파크드림아파트) 동대구역화성파크드림 303동 109호"
+kfc-kr-adb,kfc,official-web,2420032,KFC 대구용산,35.8508037429598,128.520213909297,대구 달서구 달구벌대로 1393 (용산동) 제1동 1~2층
+kfc-kr-adb,kfc,official-web,2420006,KFC 대구평리,35.8688898611119,128.555653086051,대구 서구 서대구로 122 (평리동) 1층
+kfc-kr-adb,kfc,official-web,2420013,KFC 대전관저,36.2985711712256,127.33793374806,"대전 서구 관저로 142 (관저동) 116호,117호,118호"
+kfc-kr-adb,kfc,official-web,1410656,KFC 대전시청역,36.3515433300581,127.387434193934,대전 서구 둔산로 121 (둔산동) 1층
+kfc-kr-adb,kfc,official-web,1420938,KFC 대전터미널,36.3506309908553,127.437604370174,대전 동구 동서대로1695번길 22 (용전동) 1층
+kfc-kr-adb,kfc,official-web,1410697,KFC 대치동,37.4998968060867,127.062919582761,서울 강남구 도곡로 517 (대치동) 서연빌딩 1층
+kfc-kr-adb,kfc,official-web,1410315,KFC 대학로,37.5818758763205,127.002292683609,서울 종로구 대학로 120 (동숭동)
+kfc-kr-adb,kfc,official-web,1410838,KFC 독산동,37.4643333023941,126.902702232196,서울 금천구 독산로 195 (독산동)
+kfc-kr-adb,kfc,official-web,1410628,KFC 돈암동,37.5921211201845,127.017647172383,서울 성북구 동소문로20나길 18 (동선동1가)
+kfc-kr-adb,kfc,official-web,1410818,KFC 동인천이마트,37.4665513085898,126.629174282372,인천 중구 인중로 134 (신생동) 동인천이마트 1층 푸드코트 內
+kfc-kr-adb,kfc,official-web,1410742,KFC 동탄,37.2045186774952,127.07278351769,경기 화성시 동탄지성로 11 (반송동)
+kfc-kr-adb,kfc,official-web,1420948,KFC 동탄역,37.1994994520556,127.096725458554,"경기 화성시 동탄역로 150 (오산동, 동탄역 롯데캐슬) B동 1층 111호~113호"
+kfc-kr-adb,kfc,official-web,2410008,KFC 동탄호수공원,37.1720762292297,127.104078001389,"경기 화성시 동탄대로 181 (송동, 동탄린스트라우스더레이크) A동 127,128,129,130호"
+kfc-kr-adb,kfc,official-web,1410349,KFC 둔촌동,37.5299402743035,127.137592257707,서울 강동구 양재대로 1390 (둔촌동)
+kfc-kr-adb,kfc,official-web,1420931,KFC 마곡나루,37.5673140391214,126.827554917518,"서울 강서구 마곡중앙5로 6 (마곡동) 1층 103,104,130호"
+kfc-kr-adb,kfc,official-web,1420903,KFC 마두역,37.6530944894733,126.77662816349,경기 고양시 일산동구 중앙로 1193 (장항동)
+kfc-kr-adb,kfc,official-web,1410530,KFC 망우동,37.5989670149032,127.097595683719,서울 중랑구 망우로 410 (망우동)
+kfc-kr-adb,kfc,official-web,1420884,KFC 먹골역,37.6115670192576,127.078073728968,"서울 중랑구 공릉로 8 (묵동, 대길빌딩)"
+kfc-kr-adb,kfc,official-web,1420940,KFC 면목역,37.588655215938,127.087781697905,서울 중랑구 겸재로 181 (면목동) 1층
+kfc-kr-adb,kfc,official-web,1420898,KFC 명일DI점,37.5529554759722,127.14380071197,서울 강동구 양재대로 1651 (명일동)
+kfc-kr-adb,kfc,official-web,1410873,KFC 명지대,37.578298832731,126.922365625805,서울 서대문구 거북골로 53 (남가좌동)
+kfc-kr-adb,kfc,official-web,1410925,KFC 목동점,37.5248304019543,126.87002254331,"서울 양천구 오목로 300 (목동, 현대하이페리온2) 하이페리온 206동 112,113,120호"
+kfc-kr-adb,kfc,official-web,2420018,KFC 목포평화,34.7994475911713,126.43121184288,전남 목포시 통일대로 60 (상동) 1
+kfc-kr-adb,kfc,official-web,1410932,KFC 문정역,37.4846614982049,127.120933640924,서울 송파구 송파대로 167 (문정동) B동 135호
+kfc-kr-adb,kfc,official-web,1420892,KFC 미사역,37.5637312032917,127.191741670397,경기 하남시 미사강변동로 95 (망월동)
+kfc-kr-adb,kfc,official-web,1410911,KFC 미아사거리역,37.6132003445189,127.030761752597,서울 강북구 도봉로10길 12 (미아동)
+kfc-kr-adb,kfc,official-web,1420952,KFC 밀양,35.4835501938573,128.7525718642,경남 밀양시 밀양대로 1770 (삼문동) 1층
+kfc-kr-adb,kfc,official-web,1420881,KFC 발산역,37.5589663547183,126.837818288246,서울 강서구 공항대로 271 (마곡동) 마곡동 723-2
+kfc-kr-adb,kfc,official-web,1420985,KFC 방배역,37.4834556925679,126.99597908077,서울 서초구 방배로 105 (방배동) 디엠타워 2관 1층
+kfc-kr-adb,kfc,official-web,1420960,KFC 방학역,37.6678210038142,127.045527699838,"서울 도봉구 도봉로150마길 34 (방학동, 도봉 롯데캐슬 골든파크) 201동 134~137호"
+kfc-kr-adb,kfc,official-web,1420949,KFC 범계역,37.3903476649624,126.951781493886,경기 안양시 동안구 동안로 128 (호계동) 1층
+kfc-kr-adb,kfc,official-web,1420886,KFC 범어네거리,35.8581242066809,128.625237165588,대구 수성구 동대구로 311 (범어동) 범어애플타워 1층
+kfc-kr-adb,kfc,official-web,2420011,KFC 별내북부,37.6670314102702,127.116470809314,경기 남양주시 덕송2로10번길 27-6 (별내동) 1층
+kfc-kr-adb,kfc,official-web,1420941,KFC 별내역,37.6459185263235,127.125688043791,경기 남양주시 별내중앙로 30 (별내동) 별내로데오몰 1층 101호
+kfc-kr-adb,kfc,official-web,1420563,KFC 보라매,37.4919541191175,126.924968681319,"서울 동작구 보라매로5가길 7 (신대방동, 캐릭터 그린빌)"
+kfc-kr-adb,kfc,official-web,1410768,KFC 봉천역,37.4825393126509,126.943044704477,서울 관악구 남부순환로 1735 (봉천동)
+kfc-kr-adb,kfc,official-web,1410796,KFC 부산구서DT,35.2472749753547,129.092877884062,부산 금정구 중앙대로 1824 (구서동)
+kfc-kr-adb,kfc,official-web,2420019,KFC 부산남포,35.0983988855193,129.029692425997,부산 중구 구덕로 54-1 (남포동5가) 1층
+kfc-kr-adb,kfc,official-web,2420010,KFC 부산명지,35.0979175220885,128.917887088008,"부산 강서구 명지국제8로 230 (명지동) 1층 106호,107호"
+kfc-kr-adb,kfc,official-web,1410736,KFC 부산서면,35.1536038279515,129.058845743574,부산 부산진구 중앙대로 681-1 (부전동)
+kfc-kr-adb,kfc,official-web,1410795,KFC 부산장산역,35.1723414059392,129.176556744039,부산 해운대구 세실로 86 (좌동)
+kfc-kr-adb,kfc,official-web,1420947,KFC 부천상동,37.5063231783485,126.754885137904,경기 부천시 원미구 길주로 111 (상동) 센타프라자 108호
+kfc-kr-adb,kfc,official-web,1410488,KFC 부천역,37.4840382748897,126.782648899659,경기 부천시 부천로 1 (심곡본동) 지하1층
+kfc-kr-adb,kfc,official-web,1420864,KFC 부천중동,37.5019308904448,126.774099287356,경기 부천시 중동로254번길 95 (중동)
+kfc-kr-adb,kfc,official-web,1410516,KFC 부평역,37.4895676659869,126.72335064425,인천 부평구 광장로 16 (부평동) 지상
+kfc-kr-adb,kfc,official-web,1420863,KFC 사상역,35.1629608754113,128.984602276617,부산 사상구 사상로 200 (괘법동)
+kfc-kr-adb,kfc,official-web,1420880,KFC 산본역,37.3596775290425,126.932044751427,경기 군포시 산본로323번길 16-14 (산본동) 2층
+kfc-kr-adb,kfc,official-web,1420939,KFC 상도역,37.5035615082018,126.947899965916,"서울 동작구 양녕로 259 (상도1동) 1,2,3층"
+kfc-kr-adb,kfc,official-web,1420917,KFC 상수역,37.5485560282385,126.923441090646,서울 마포구 와우산로 48 (상수동)
+kfc-kr-adb,kfc,official-web,1410857,KFC 상암DMC,37.5794283422818,126.889782954548,서울 마포구 월드컵북로 396 (상암동) 1층
+kfc-kr-adb,kfc,official-web,1410690,KFC 상인네거리,35.8194937104234,128.538013703412,대구 달서구 월배로 227 (상인동)
+kfc-kr-adb,kfc,official-web,2420022,KFC 서산,36.7774477082697,126.449559285568,충남 서산시 안견로 308 (읍내동) 1층
+kfc-kr-adb,kfc,official-web,1420923,KFC 서울교대S,37.4906233610491,127.013923323459,서울 서초구 서초중앙로 99 (서초동)
+kfc-kr-adb,kfc,official-web,1410749,KFC 서울대입구역,37.4810685270606,126.951140541282,서울 관악구 남부순환로 1810 (봉천동)
+kfc-kr-adb,kfc,official-web,1410360,KFC 서초동,37.485018595965,127.015025591396,서울 서초구 효령로 283 (서초동)
+kfc-kr-adb,kfc,official-web,1410708,KFC 서초우성,37.49272886702,127.028349723754,서울 서초구 사임당로 171 (서초동) EWR빌딩 1층
+kfc-kr-adb,kfc,official-web,1410483,KFC 서현역,37.3845236910216,127.122175726323,경기 성남시 분당구 분당로53번길 19 (서현동)
+kfc-kr-adb,kfc,official-web,1420902,KFC 석계역,37.6155547536985,127.063913961862,서울 노원구 석계로1길 14 (월계동)
+kfc-kr-adb,kfc,official-web,1410715,KFC 석촌역,37.5045912862017,127.106846702056,서울 송파구 백제고분로 364 (석촌동) 대준빌딩 1 층
+kfc-kr-adb,kfc,official-web,1420852,KFC 성남태평,37.4437875099663,127.140471799251,경기 성남시 수정구 수정로 185 (태평동) 1층
+kfc-kr-adb,kfc,official-web,1420950,KFC 세종나성,36.4878226052568,127.256740076769,"세종특별자치시 한누리대로 265 (나성동) 명동프라자 1층 105,106,107호"
+kfc-kr-adb,kfc,official-web,1410737,KFC 세종대,37.5472181340881,127.073584917584,서울 광진구 광나루로 396 (화양동)
+kfc-kr-adb,kfc,official-web,1410783,KFC 세종이마트,36.4708996466069,127.250982490572,세종특별자치시 금송로 687 (가람동)
+kfc-kr-adb,kfc,official-web,1420910,KFC 속초DI,38.1898387327758,128.586635310805,강원 속초시 동해대로 4096 (조양동) 788-23
+kfc-kr-adb,kfc,official-web,1420909,KFC 수영역,35.1673549428065,129.116126367501,"부산 수영구 수영로 700 (광안동, 베스테이 센트럴뷰)"
+kfc-kr-adb,kfc,official-web,1420962,KFC 수원망포,37.2417467906529,127.054997411875,경기 수원시 영통구 영통로 157 (망포동) 스타프라움 A동 112~115호
+kfc-kr-adb,kfc,official-web,1420977,KFC 수원성균관대,37.2979293235252,126.97199107897,경기 수원시 장안구 서부로2126번길 10 (율전동) 1층
+kfc-kr-adb,kfc,official-web,1420861,KFC 수원역광장,37.2677807847017,127.001860346007,경기 수원시 팔달구 향교로 5 (매산로1가) 2층
+kfc-kr-adb,kfc,official-web,1410626,KFC 수원역사1,37.2655920786365,127.000179930083,경기 수원시 팔달구 덕영대로 924 (매산로1가) AK프라자 3층
+kfc-kr-adb,kfc,official-web,1410779,KFC 수원인계DT,37.267902879539,127.028142104947,경기 수원시 팔달구 인계로 98 (인계동)
+kfc-kr-adb,kfc,official-web,1420968,KFC 수원장안DT,37.3054080339875,127.003520411852,경기 수원시 장안구 경수대로 992 (송죽동)
+kfc-kr-adb,kfc,official-web,1420959,KFC 수원호매실,37.2748512929492,126.953643839836,경기 수원시 권선구 금곡로 213 (금곡동) 103~104호
+kfc-kr-adb,kfc,official-web,1410929,KFC 수유역,37.6369305402999,127.02328159303,"서울 강북구 도봉로 315 (수유동, 에피소드 수유 838)"
+kfc-kr-adb,kfc,official-web,1420899,KFC 숙대입구,37.5447583877858,126.971683656137,서울 용산구 한강대로 297 (갈월동)
+kfc-kr-adb,kfc,official-web,1420945,KFC 시청역,37.5635491216557,126.97604290682,"서울 중구 서소문로 136 (태평로2가) 외 3필지, 1층 일부, 2층"
+kfc-kr-adb,kfc,official-web,1420956,KFC 시흥능곡,37.3697188828238,126.809414069089,경기 시흥시 승지로59번길 6 (능곡동) 1층 B103~B106호
+kfc-kr-adb,kfc,official-web,1420936,KFC 시흥배곧,37.3682047072201,126.728938399307,"경기 시흥시 서울대학로278번길 34 (배곧동) 옐로우동 111, 112, 113호"
+kfc-kr-adb,kfc,official-web,1420955,KFC 시흥신천,37.4408681722776,126.784962641977,경기 시흥시 수인로 3366 (신천동) 삼영아트빌 1층
+kfc-kr-adb,kfc,official-web,1420937,KFC 시흥은계,37.4370981790032,126.801620713753,"경기 시흥시 은계번영길 7 (은행동) 104, 105, 106호"
+kfc-kr-adb,kfc,official-web,1420957,KFC 시흥정왕,37.3448995109252,126.736437302844,"경기 시흥시 중심상가3길 14 (정왕동) 이화프라자 1층 101,102,104,105호"
+kfc-kr-adb,kfc,official-web,1410926,KFC 신금호역,37.5543370975437,127.019853934056,서울 성동구 무수막길 97 (금호동2가) 서울 성동구 무수막길 97 (금호동2가) 1층
+kfc-kr-adb,kfc,official-web,1420887,KFC 신림역,37.4825754320038,126.930252917369,"서울 관악구 신림로 318 (신림동, 청암두산위브센티움)"
+kfc-kr-adb,kfc,official-web,1420918,KFC 신사역,37.5173531693456,127.023380583993,서울 강남구 도산대로 134 (논현동) 페이토빌딩
+kfc-kr-adb,kfc,official-web,1420964,KFC 신용산,37.5269056148241,126.966566172294,서울 용산구 서빙고로 17 (한강로3가) 용산센트럴파크 D몰 (104동)
+kfc-kr-adb,kfc,official-web,1420896,KFC 신정네거리역,37.5209251971625,126.852250412499,서울 양천구 중앙로 277 (신정동)
+kfc-kr-adb,kfc,official-web,1410847,KFC 신촌역,37.556000258611,126.935189216315,서울 서대문구 신촌로 79 (창천동)
+kfc-kr-adb,kfc,official-web,2420001,KFC 아산터미널,36.7848546182924,127.015221623721,"충남 아산시 번영로 223 (모종동) 1층 (102,103,104호)"
+kfc-kr-adb,kfc,official-web,1410706,KFC 아주대,37.2782274752289,127.043549003112,경기 수원시 팔달구 아주로 37 (우만동) 아록빌딩 1층
+kfc-kr-adb,kfc,official-web,1420916,KFC 안산고잔,37.3101707387957,126.83073462084,경기 안산시 단원구 광덕대로 154 (고잔동)
+kfc-kr-adb,kfc,official-web,1420942,KFC 안산상록수,37.3019327398289,126.864759839384,"경기 안산시 상록구 용신로 383 (본오동) 삼우프라자 103~104호, 105호 일부"
+kfc-kr-adb,kfc,official-web,1420904,KFC 안산선부,37.3414187124417,126.815497306415,경기 안산시 단원구 달미로 64 (선부동)
+kfc-kr-adb,kfc,official-web,1410726,KFC 안산중앙,37.3180269775814,126.835165464242,경기 안산시 단원구 고잔1길 16 (고잔동)
+kfc-kr-adb,kfc,official-web,1420883,KFC 안성중앙로,37.0075228251732,127.270778306727,경기 안성시 중앙로 395 (대천동)
+kfc-kr-adb,kfc,official-web,1420865,KFC 안양일번가,37.4002463205302,126.922234914399,경기 안양시 만안구 장내로149번길 51 (안양동)
+kfc-kr-adb,kfc,official-web,1420927,KFC 압구정로데오,37.5283378978473,127.037467975824,서울 강남구 압구정로 328 (신사동) 서울 강남구 신사동 660-5
+kfc-kr-adb,kfc,official-web,1420877,KFC 야당역,37.7131570773604,126.759892016322,경기 파주시 경의로 1074 (야당동)
+kfc-kr-adb,kfc,official-web,1410751,KFC 야탑역,37.411159415091,127.129862807437,경기 성남시 분당구 성남대로916번길 7 (야탑동)
+kfc-kr-adb,kfc,official-web,2420030,KFC 양산물금,35.3211787119177,128.995669836484,경남 양산시 물금읍 황산로 527 1층 일부호
+kfc-kr-adb,kfc,official-web,1410373,KFC 양재동,37.484338107457,127.035178453308,서울 서초구 남부순환로350길 4 (양재동)
+kfc-kr-adb,kfc,official-web,1420967,KFC 양정역,35.1736116591112,129.070647936757,부산 부산진구 중앙대로 933 (양정동) 1층 102~104호
+kfc-kr-adb,kfc,official-web,2420031,KFC 양주옥정,37.8221930347581,127.092228992354,"경기 양주시 옥정로6길 8 (옥정동) 103, 104, 105호"
+kfc-kr-adb,kfc,official-web,1410721,KFC 여의도,37.5296625694125,126.920396387403,서울 영등포구 국회대로70길 15-1 (여의도동) 극동VIP빌딩 1층
+kfc-kr-adb,kfc,official-web,1420954,KFC 역곡역,37.484480147918,126.811118778565,"경기 부천시 소사구 경인로 505 (괴안동, 역곡하이뷰) 1층 103호"
+kfc-kr-adb,kfc,official-web,1410591,KFC 역삼역,37.501931889086,127.036089184436,서울 강남구 논현로 509 (역삼동) 지상1층2층
+kfc-kr-adb,kfc,official-web,1410853,KFC 연신내역,37.6184286429111,126.920527024057,서울 은평구 연서로 226-1 (대조동)
+kfc-kr-adb,kfc,official-web,1410825,KFC 연제이마트,35.1761555005315,129.08131410094,부산 연제구 연수로 89 (연산동) 연제이마트 1층 푸드코트
+kfc-kr-adb,kfc,official-web,1420914,KFC 염창역,37.5472940163263,126.8742403248,서울 강서구 공항대로 625 (염창동) 1F
+kfc-kr-adb,kfc,official-web,1410629,KFC 영남대,35.8367414280101,128.754356926899,경북 경산시 대학로 292 (대동) 영남대학교 국제교류센터 102호
+kfc-kr-adb,kfc,official-web,1410693,KFC 영등포역,37.5156680341198,126.907665995469,서울 영등포구 경인로 846 (영등포동) 영등포역사3층
+kfc-kr-adb,kfc,official-web,1410556,KFC 영통씨네마,37.2529348715043,127.076304073786,경기 수원시 영통구 청명남로 40 (영통동) 영통시네마 1층
+kfc-kr-adb,kfc,official-web,1410769,KFC 오산DT,37.1367427593603,127.073516274206,경기 오산시 경기대로 136 (원동)
+kfc-kr-adb,kfc,official-web,1410666,KFC 왕십리역사,37.5614417528647,127.038394194396,서울 성동구 왕십리광장로 17 (행당동) 왕십리민자역사 지상1층 C-02호
+kfc-kr-adb,kfc,official-web,1410677,KFC 용산아이파크몰,37.5297718014452,126.964741503485,서울 용산구 한강대로23길 55 (한강로3가) 아이파크몰 6층
+kfc-kr-adb,kfc,official-web,1410789,KFC 용인명지DT,37.2354382221935,127.193728464908,경기 용인시 처인구 중부대로 1339 (역북동)
+kfc-kr-adb,kfc,official-web,1410773,KFC 용인보정,37.3202905987566,127.114671037476,경기 용인시 기흥구 죽전로 52 (보정동)
+kfc-kr-adb,kfc,official-web,1420963,KFC 용인상현역,37.2979057417457,127.069811253556,"경기 용인시 수지구 광교중앙로 314 (상현동) 세현빌딩 1층 101,102,103호"
+kfc-kr-adb,kfc,official-web,1420840,KFC 용인수지,37.3224649934756,127.095131931326,경기 용인시 수지구 풍덕천로 118 (풍덕천동) 초석프라자 1F
+kfc-kr-adb,kfc,official-web,1410781,KFC 용인에버랜드,37.294066695953,127.202128029885,경기 용인시 처인구 포곡읍 에버랜드로 199 에버랜드리조트 內 버거카페 스타라이트
+kfc-kr-adb,kfc,official-web,1410504,KFC 울산현대,35.5399075706697,129.335115949222,울산 남구 삼산중로 71 (달동)
+kfc-kr-adb,kfc,official-web,2420014,KFC 원당역,37.6537831910422,126.841400997902,"경기 고양시 덕양구 고양대로 1415 (성사동) 1층 B114(일부), B115호"
+kfc-kr-adb,kfc,official-web,1410830,KFC 원주단계DT,37.34801561968,127.934385008724,강원 원주시 북원로 2266 (단계동) KFC원주단계DT
+kfc-kr-adb,kfc,official-web,1420894,KFC 위례중앙,37.4730513390026,127.141262948182,경기 성남시 수정구 위례광장로 104 (창곡동)
+kfc-kr-adb,kfc,official-web,1420885,KFC 유성온천,36.3542834305462,127.341273465117,대전 유성구 대학로 3 (봉명동)
+kfc-kr-adb,kfc,official-web,1410686,KFC 은행동1,36.329000476826,127.429073169638,대전 중구 대종로488번길 54 (은행동)
+kfc-kr-adb,kfc,official-web,1410870,KFC 응암,37.6006299316031,126.921965672213,서울 은평구 은평로 127 (응암동)
+kfc-kr-adb,kfc,official-web,1420915,KFC 의정부민락,37.7452180712739,127.094478868679,경기 의정부시 천보로 64 (민락동)
+kfc-kr-adb,kfc,official-web,1410637,KFC 의정부엔터,37.7379768684042,127.044093275039,경기 의정부시 시민로 80 (의정부동) 센트럴타워빌딩 1층(의정부동)
+kfc-kr-adb,kfc,official-web,1410837,KFC 의정부HP,37.7521637153577,127.071001320782,경기 의정부시 청사로 38 (금오동) 홈플러스
+kfc-kr-adb,kfc,official-web,1410850,KFC 이수역,37.4867629041126,126.982679310439,서울 서초구 동작대로 114 (방배동) (재)원불교 유문빌딩 1층
+kfc-kr-adb,kfc,official-web,2420007,KFC 익산롯데마트,35.9592581655197,126.97424621545,전북특별자치도 익산시 무왕로 1053 (영등동) 롯데마트 1층
+kfc-kr-adb,kfc,official-web,2410026,KFC 인스파이어,37.4655300794822,126.389117686755,인천 중구 공항문화로 127 (운서동) 인스파이어 1층 R-17호
+kfc-kr-adb,kfc,official-web,1410930,KFC 인천공항T1,37.458350712273,126.427699293474,인천 중구 공항로 272 (운서동) 인천국제공항 제1여객터미널 면세동3층
+kfc-kr-adb,kfc,official-web,1410759,KFC 인천구월,37.45224368437,126.708322599153,"인천 남동구 남동대로 784 (구월동) 1,2층"
+kfc-kr-adb,kfc,official-web,1420976,KFC 인천구월로데오,37.4441998088875,126.702176512104,인천 남동구 인하로 497-22 (구월동) 1층
+kfc-kr-adb,kfc,official-web,1410807,KFC 인천논현,37.3975373516636,126.727520375664,인천 남동구 논고개로 61 (논현동)
+kfc-kr-adb,kfc,official-web,1420961,KFC 인천서창,37.4232117444705,126.751138406187,"인천 남동구 서창남로 40 (서창동) 1층 일부102,103,104호"
+kfc-kr-adb,kfc,official-web,1420906,KFC 인천송도,37.3950129305947,126.645679204961,인천 연수구 해돋이로 168-2 (송도동)
+kfc-kr-adb,kfc,official-web,1410719,KFC 인천스퀘어원,37.4059981630337,126.683622060373,인천 연수구 청능대로 210 (동춘동) SQUARE 1 외부광장동 1층
+kfc-kr-adb,kfc,official-web,2420016,KFC 인천영종,37.4863269428838,126.560066132343,"인천 중구 하늘달빛로 90-27 (중산동) 1층 111호, 112호"
+kfc-kr-adb,kfc,official-web,1410753,KFC 인천청라,37.5321062929823,126.652037940567,인천 서구 중봉대로586번길 19 (연희동)
+kfc-kr-adb,kfc,official-web,1410860,KFC 인하대,37.4514466682619,126.657269121333,인천 미추홀구 인하로77번길 8 (용현동) 1층
+kfc-kr-adb,kfc,official-web,2420002,KFC 일산탄현,37.6952127333096,126.76201157783,"경기 고양시 일산서구 일현로 97-11 (탄현동, 일산 위브더제니스) 상가동 169호"
+kfc-kr-adb,kfc,official-web,2420023,KFC 일산풍동,37.6699966531917,126.809919635753,"경기 고양시 일산동구 원중1길 56 (식사동) 유니온스퀘어 104,105,106호"
+kfc-kr-adb,kfc,official-web,1410831,KFC 일산후곡,37.6789913532968,126.764101060823,경기 고양시 일산서구 일산로 577 (일산동) 문화촌상가 1층
+kfc-kr-adb,kfc,official-web,1410913,KFC 잠실롯데월드,37.5113096112036,127.098141751177,서울 송파구 올림픽로 240 (잠실동) 롯데월드 웰빙센터 1층 09호
+kfc-kr-adb,kfc,official-web,1420933,KFC 잠실새내,37.5114638312604,127.081212794079,서울 송파구 올림픽로 96 (잠실동) 104호
+kfc-kr-adb,kfc,official-web,1410521,KFC 잠실야구장,37.5161987797456,127.075940589715,서울 송파구 올림픽로 25 (잠실동) 종합운동장 잠실야구장 내
+kfc-kr-adb,kfc,official-web,1420919,KFC 전농동,37.5754122818698,127.057924224892,서울 동대문구 전농로 118 (전농동)
+kfc-kr-adb,kfc,official-web,1410754,KFC 전북도청,35.8186157364702,127.106458887155,전북 전주시 완산구 효자로 194 (효자동3가) 로자벨시티 106호
+kfc-kr-adb,kfc,official-web,1420924,KFC 전주송천,35.8641550787719,127.122102894576,전북 전주시 덕진구 송천중앙로 192 (송천동2가)
+kfc-kr-adb,kfc,official-web,2420021,KFC 전주평화사거리,35.7956127266148,127.13338906119,전북특별자치도 전주시 완산구 장승배기로 188 (평화동1가) 101호
+kfc-kr-adb,kfc,official-web,1410733,KFC 정자역,37.3688224332226,127.107520764605,경기 성남시 분당구 느티로 27 (정자동)
+kfc-kr-adb,kfc,official-web,2420003,KFC 제주노형,33.484497219176,126.479775295979,제주특별자치도 제주시 노형14길 14 (노형동)
+kfc-kr-adb,kfc,official-web,2420005,KFC 제주삼화,33.5135263672391,126.58033791004,제주특별자치도 제주시 건주로 66 (도련일동) 피앤오빌딩 1층
+kfc-kr-adb,kfc,official-web,1420908,KFC 제주서귀포DI점,33.2537302966589,126.562140962903,제주특별자치도 서귀포시 일주동로 8668 (동홍동)
+kfc-kr-adb,kfc,official-web,1420907,KFC 제주시청,33.4947756320318,126.534134882628,제주특별자치도 제주시 중앙로 291 (이도이동)
+kfc-kr-adb,kfc,official-web,2420024,KFC 제주아라,33.4764595285225,126.544731177634,제주특별자치도 제주시 중앙로 523 (아라일동) 1층
+kfc-kr-adb,kfc,official-web,2420015,KFC 제주연동신라,33.4856276011618,126.487710165801,제주특별자치도 제주시 연동4길 2 (연동) 볼튼호텔 1층
+kfc-kr-adb,kfc,official-web,1420890,KFC 주엽점,37.6693126215225,126.762270788765,경기 고양시 일산서구 중앙로 1419 (주엽동)
+kfc-kr-adb,kfc,official-web,1410799,KFC 중계은행사거리,37.6479118263804,127.076251603698,서울 노원구 한글비석로 227 (중계동)
+kfc-kr-adb,kfc,official-web,1420897,KFC 진접,37.7112459531024,127.186171542711,경기 남양주시 진접읍 해밀예당1로 28
+kfc-kr-adb,kfc,official-web,1410797,KFC 진주이마트,35.1915896229893,128.077431920174,경남 진주시 진양호로 477 (인사동) 진주이마트 지하1층
+kfc-kr-adb,kfc,official-web,1420943,KFC 진해용원,35.1010554157452,128.81092743144,경남 창원시 진해구 용원서로31번길 20 (용원동) 1층
+kfc-kr-adb,kfc,official-web,1410922,KFC 창동역,37.6545399298261,127.049926290286,"서울 도봉구 마들로13길 61 (창동) 1층 108-4, 108-5호"
+kfc-kr-adb,kfc,official-web,1410575,KFC 창원상남동,35.2241077621567,128.685382698254,경남 창원시 성산구 원이대로 658 (상남동) 상남프라자1층 (상남동)
+kfc-kr-adb,kfc,official-web,2420017,KFC 창원유니시티,35.2581399667822,128.627158203479,경남 창원시 의창구 중동북로 23 (중동) 제이디윙스 빌딩 1층 106호 107호
+kfc-kr-adb,kfc,official-web,1420920,KFC 천안두정,36.8336631739663,127.134272983357,충남 천안시 서북구 두정로 156 (두정동) 충청남도 천안시 서북구 두정로 156
+kfc-kr-adb,kfc,official-web,2420028,KFC 천안신불당,36.8180817855209,127.109540565115,"충남 천안시 서북구 불당23로 73-8 (불당동) 1층 105, 106호"
+kfc-kr-adb,kfc,official-web,1410794,KFC 천안쌍용,36.7966653262054,127.128806252815,충남 천안시 서북구 충무로 205 (쌍용동)
+kfc-kr-adb,kfc,official-web,1420879,KFC 천안터미널,36.8193302097389,127.15784651678,충남 천안시 동남구 만남로 43 (신부동) 터미널(승차장) 내
+kfc-kr-adb,kfc,official-web,1410724,KFC 천호역,37.5364837592211,127.125824680269,서울 강동구 천호옛길 88 (성내동) G-lite빌딩 1층
+kfc-kr-adb,kfc,official-web,1410859,KFC 철산역,37.4766844267583,126.868690984147,경기 광명시 철산로 25 (철산동) 한영빌딩
+kfc-kr-adb,kfc,official-web,1410782,KFC 청계천,37.5693392529284,126.981377714314,서울 종로구 청계천로 35 (서린동) 관정빌딩 1층
+kfc-kr-adb,kfc,official-web,2420027,KFC 청구역,37.558442272308,127.013023379599,서울 중구 다산로 168 (신당동) 성원빌딩 1층
+kfc-kr-adb,kfc,official-web,1410732,KFC 청주메가폴리스,36.6266918992757,127.432236283554,충북 청주시 흥덕구 풍산로 15 (가경동) 메가폴리스 1층
+kfc-kr-adb,kfc,official-web,1420905,KFC 청주사창사거리,36.6343232567428,127.460043731811,충북 청주시 서원구 1순환로 664 (사창동)
+kfc-kr-adb,kfc,official-web,1410800,KFC 춘천석사,37.8526208951098,127.745362213206,강원 춘천시 영서로 2027 (석사동)
+kfc-kr-adb,kfc,official-web,1410714,KFC 춘천이마트,37.8639556118076,127.71728153076,강원 춘천시 경춘로 2341 (온의동) 이마트 춘천점 1층 푸드코트 內
+kfc-kr-adb,kfc,official-web,1410871,KFC 충무로역,37.5619106615735,126.995495084864,서울 중구 퇴계로 213 (충무로4가)
+kfc-kr-adb,kfc,official-web,1420878,KFC 칠곡3지구,35.9438791871523,128.563338860613,대구 북구 학정로 439 (동천동)
+kfc-kr-adb,kfc,official-web,1410875,KFC 침산네거리,35.8892590355724,128.591513949428,대구 북구 침산로 144 (침산동)
+kfc-kr-adb,kfc,official-web,1410776,KFC 코엑스MALL,37.5118239121138,127.059159043842,서울 강남구 영동대로 513 (삼성동) B1층 H102호
+kfc-kr-adb,kfc,official-web,1420901,KFC 파주금촌,37.7575542125677,126.773006384987,경기 파주시 번영로 1-1 (금촌동)
+kfc-kr-adb,kfc,official-web,1420893,KFC 파주문산,37.858356411959,126.785229925816,경기 파주시 문산읍 문향로 71
+kfc-kr-adb,kfc,official-web,1420888,KFC 파주운정DI,37.7226574830751,126.738395972353,경기 파주시 와석순환로 286 (목동동)
+kfc-kr-adb,kfc,official-web,1420953,KFC 평내호평,37.6541054561142,127.244118468644,경기 남양주시 늘을2로14번길 3 (호평동) 1층 102~103호
+kfc-kr-adb,kfc,official-web,1410414,KFC 평택,36.9932784403627,127.086860391632,경기 평택시 평택1로 13 (평택동)
+kfc-kr-adb,kfc,official-web,1410827,KFC 포항양덕DT,36.0766380670435,129.396319196664,경북 포항시 북구 새천년대로 1365 (장성동) KFC포항양덕DT
+kfc-kr-adb,kfc,official-web,1420866,KFC 포항터미널,36.0141558468973,129.350650412515,경북 포항시 남구 중흥로 99 (상도동)
+kfc-kr-adb,kfc,official-web,1420876,KFC 하남시청,37.5404449082744,127.21508822112,경기 하남시 대청로 26 (신장동)
+kfc-kr-adb,kfc,official-web,1420874,KFC 하단역,35.1065905416161,128.965205212191,부산 사하구 낙동남로 1403 (하단동) 1층
+kfc-kr-adb,kfc,official-web,1410524,KFC 하안동,37.4616895976579,126.880189262175,경기 광명시 하안로 289 (하안동)
+kfc-kr-adb,kfc,official-web,1420912,KFC 학동역2,37.5149944434401,127.033126051166,서울 강남구 학동로 219 (논현동)
+kfc-kr-adb,kfc,official-web,1410855,KFC 한국외대,37.5967350539561,127.060682416152,서울 동대문구 이문로 114 (이문동)
+kfc-kr-adb,kfc,official-web,1410775,KFC 한남순천향,37.5332099548457,127.004978714609,서울 용산구 대사관로 62 (한남동)
+kfc-kr-adb,kfc,official-web,1410869,KFC 행신역,37.6135312141777,126.83448935889,경기 고양시 덕양구 충장로 8 (행신동)
+kfc-kr-adb,kfc,official-web,1410501,KFC 홍익대,37.5561130617043,126.923446601456,서울 마포구 양화로 156 (동교동) LG팰리스빌딩
+kfc-kr-adb,kfc,official-web,1420928,KFC 화명역,35.2345732895561,129.011491608376,부산 북구 화명대로 32 (화명동) 부산시 북구 화명대로 32 1층
+kfc-kr-adb,kfc,official-web,1420965,KFC 화성병점,37.2135966334528,127.040428642289,경기 화성시 병점구 효행로 1035 (진안동) 명민빌딩 1층
+kfc-kr-adb,kfc,official-web,1410584,KFC 화정,37.6335431309803,126.831449215058,경기 고양시 덕양구 화신로272번길 57 (화정동)
+kfc-kr-adb,kfc,official-web,1410366,KFC 황금동,35.8442145291888,128.623785838388,대구 수성구 동대구로 155 (황금동)

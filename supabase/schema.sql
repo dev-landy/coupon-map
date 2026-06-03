@@ -1,0 +1,125 @@
+-- 쿠폰맵 (CouponMap) database schema
+-- Postgres / Supabase
+--
+-- Run order matters: brands first (referenced by stores and coupons).
+-- pgcrypto provides gen_random_uuid() on Supabase by default.
+
+create extension if not exists "pgcrypto";
+
+-- Brands: the franchise. Holds deep-link + fallback targets.
+create table if not exists brands (
+  id            uuid primary key default gen_random_uuid(),
+  source        text not null default 'manual',
+  external_id   text,
+  name          text not null,
+  app_scheme    text,          -- e.g. 'mybrandapp://' ; nullable (web-only brands)
+  store_url     text not null, -- web URL used as desktop / no-scheme fallback
+  app_store_url text,          -- App Store / Play Store URL for mobile fallback
+  updated_at    timestamptz not null default now(),
+  last_seen_at  timestamptz,
+  created_at    timestamptz not null default now()
+);
+
+-- Stores: physical locations belonging to a brand.
+create table if not exists stores (
+  id         uuid primary key default gen_random_uuid(),
+  brand_id   uuid not null references brands (id) on delete cascade,
+  source     text not null default 'manual',
+  external_id text,
+  name       text not null,
+  lat        double precision not null,
+  lng        double precision not null,
+  address    text,
+  updated_at timestamptz not null default now(),
+  last_seen_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+-- Coupons: discount offers tied to a brand (redeemed in the brand's own app).
+create table if not exists coupons (
+  id             uuid primary key default gen_random_uuid(),
+  brand_id       uuid not null references brands (id) on delete cascade,
+  source         text not null default 'manual',
+  external_id    text,
+  content_hash   text,
+  title          text not null,
+  discount_type  text not null check (discount_type in ('정액', '정률', '세트')),
+  discount_value numeric not null,
+  valid_until    date,
+  is_active      boolean not null default true,
+  raw_payload    jsonb,
+  updated_at     timestamptz not null default now(),
+  last_seen_at   timestamptz,
+  created_at     timestamptz not null default now()
+);
+
+-- Keep re-running this setup file useful for existing databases.
+alter table brands add column if not exists source text not null default 'manual';
+alter table brands add column if not exists external_id text;
+alter table brands add column if not exists updated_at timestamptz not null default now();
+alter table brands add column if not exists last_seen_at timestamptz;
+
+alter table stores add column if not exists source text not null default 'manual';
+alter table stores add column if not exists external_id text;
+alter table stores add column if not exists updated_at timestamptz not null default now();
+alter table stores add column if not exists last_seen_at timestamptz;
+
+alter table coupons add column if not exists source text not null default 'manual';
+alter table coupons add column if not exists external_id text;
+alter table coupons add column if not exists content_hash text;
+alter table coupons add column if not exists raw_payload jsonb;
+alter table coupons add column if not exists updated_at timestamptz not null default now();
+alter table coupons add column if not exists last_seen_at timestamptz;
+
+-- Public frontend reads. Supabase service_role keeps its default RLS bypass for ingest.
+alter table brands enable row level security;
+alter table stores enable row level security;
+alter table coupons enable row level security;
+
+drop policy if exists brands_select_anon_authenticated on brands;
+create policy brands_select_anon_authenticated
+  on brands
+  for select
+  to anon, authenticated
+  using (true);
+
+drop policy if exists stores_select_anon_authenticated on stores;
+create policy stores_select_anon_authenticated
+  on stores
+  for select
+  to anon, authenticated
+  using (true);
+
+drop policy if exists coupons_select_anon_authenticated on coupons;
+create policy coupons_select_anon_authenticated
+  on coupons
+  for select
+  to anon, authenticated
+  using (true);
+
+-- Browser clients read with anon/authenticated roles; RLS policies above limit
+-- them to SELECT-only access. Service-side crawler/import scripts use the
+-- service_role key for writes.
+grant usage on schema public to anon, authenticated, service_role;
+grant select on table brands, stores, coupons to anon, authenticated;
+grant all on table brands, stores, coupons to service_role;
+
+-- Indexes for the hot lookup paths (filter map stores/coupons by brand and active validity).
+create index if not exists idx_stores_brand_id on stores (brand_id);
+create index if not exists idx_coupons_brand_id on coupons (brand_id);
+create index if not exists idx_stores_brand_lat_lng
+  on stores (brand_id, lat, lng);
+create index if not exists idx_coupons_active_brand_valid_until
+  on coupons (brand_id, valid_until)
+  where is_active = true;
+drop index if exists idx_coupons_brand_source_content_hash;
+create unique index if not exists idx_coupons_brand_source_content_hash
+  on coupons (brand_id, source, content_hash);
+
+-- Upsert keys for crawler-managed data. Coupon content_hash supports fallback/change detection.
+create unique index if not exists idx_brands_source_external_id
+  on brands (source, external_id);
+create unique index if not exists idx_stores_brand_source_external_id
+  on stores (brand_id, source, external_id);
+create unique index if not exists idx_coupons_brand_source_external_id
+  on coupons (brand_id, source, external_id);

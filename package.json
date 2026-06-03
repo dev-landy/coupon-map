@@ -1,0 +1,41 @@
+{
+  "name": "coupon-map-v2",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "crawl:all": "node --experimental-strip-types scripts/crawl-all.ts",
+    "crawl:burgerking:adb": "node --experimental-strip-types scripts/crawl-burgerking-adb.ts",
+    "crawl:kfc:adb": "node --experimental-strip-types scripts/crawl-kfc-adb.ts",
+    "crawler:launchd:install": "bash scripts/install-crawler-launchd.sh",
+    "crawler:launchd:run": "bash scripts/run-crawler-launchd.sh",
+    "crawler:launchd:status": "bash scripts/status-crawler-launchd.sh",
+    "crawler:launchd:uninstall": "bash scripts/uninstall-crawler-launchd.sh",
+    "fetch:stores": "node --experimental-strip-types scripts/fetch-official-stores.ts",
+    "ingest": "node --experimental-strip-types scripts/ingest.ts",
+    "import:stores": "node --experimental-strip-types scripts/import-stores.ts",
+    "sync:stores": "node --experimental-strip-types scripts/sync-official-stores.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
+    "next": "^14.2.13",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.0.1",
+    "@types/node": "^22.5.5",
+    "@types/react": "^18.3.8",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "jsdom": "^25.0.1",
+    "typescript": "^5.6.2",
+    "vitest": "^2.1.1"
+  }
+}
