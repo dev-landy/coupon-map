@@ -10,11 +10,16 @@ vi.mock('../lib/deeplink', () => ({
 
 const { openBrandApp } = await import('../lib/deeplink');
 const originalGeolocation = navigator.geolocation;
+const originalMatchMedia = window.matchMedia;
 
 afterEach(() => {
   Object.defineProperty(navigator, 'geolocation', {
     configurable: true,
     value: originalGeolocation,
+  });
+  Object.defineProperty(window, 'matchMedia', {
+    configurable: true,
+    value: originalMatchMedia,
   });
   vi.unstubAllGlobals();
   vi.clearAllMocks();
@@ -67,6 +72,17 @@ const VIEW: CouponMapView = {
           facts: [],
           rankScore: 3_000_020,
         },
+        {
+          id: 'fries',
+          title: '감자튀김 1,000원 할인',
+          headline: '1,000원',
+          detail: '사이드 할인',
+          validLabel: 'D-3',
+          discountType: '정액',
+          appLink: 'mcdonaldskr://coupon/fries',
+          facts: [{ label: '주문', value: '앱 주문' }],
+          rankScore: 2_001_000,
+        },
       ],
     },
     {
@@ -116,9 +132,25 @@ const VIEW: CouponMapView = {
   totals: {
     brands: 2,
     stores: 2,
-    activeCoupons: 2,
+    activeCoupons: 3,
   },
 };
+
+function firePointer(
+  target: HTMLElement,
+  type: 'pointerdown' | 'pointermove' | 'pointerup',
+  pageY: number
+) {
+  const event = new Event(type, { bubbles: true, cancelable: true });
+  Object.defineProperties(event, {
+    button: { value: 0 },
+    clientY: { value: pageY },
+    pageY: { value: pageY },
+    pointerId: { value: 1 },
+    pointerType: { value: 'touch' },
+  });
+  fireEvent(target, event);
+}
 
 describe('CouponMapScreen', () => {
   it('shows rich coupon details and opens the selected coupon app link', () => {
@@ -135,6 +167,31 @@ describe('CouponMapScreen', () => {
       VIEW.stores[0].brand,
       undefined,
       'mcdonaldskr://coupon/bigmac'
+    );
+  });
+
+  it('lists nearby coupons and opens the selected coupon row app link', () => {
+    render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+
+    expect(screen.getByText('1km 내 쿠폰')).toBeTruthy();
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: '맥도날드 홍대점 감자튀김 1,000원 할인 1,000원',
+      })
+    );
+
+    const detail = screen.getByTestId('selected-store-detail');
+    expect(detail.getAttribute('data-selected-store-id')).toBe('hongdae');
+    expect(detail.getAttribute('data-selected-coupon-id')).toBe('fries');
+    expect(detail.querySelector('h2')?.textContent).toBe('감자튀김 1,000원 할인');
+
+    fireEvent.click(screen.getByRole('button', { name: '앱에서 열기' }));
+
+    expect(openBrandApp).toHaveBeenLastCalledWith(
+      VIEW.stores[0].brand,
+      undefined,
+      'mcdonaldskr://coupon/fries'
     );
   });
 
@@ -179,6 +236,43 @@ describe('CouponMapScreen', () => {
     expect(screen.getByTestId('selected-store-detail').getAttribute('data-selected-store-id')).toBe(
       'gangnam'
     );
+  });
+
+  it('lowers and restores the mobile coupon sheet from the drag handle', () => {
+    Object.defineProperty(window, 'matchMedia', {
+      configurable: true,
+      value: vi.fn((query: string) => ({
+        matches: query === '(max-width: 760px)',
+        media: query,
+        onchange: null,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })),
+    });
+
+    const { container } = render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+    const sheetDragArea = container.querySelector('.sheetDragArea') as HTMLElement;
+    const panelDock = container.querySelector('.panelDock') as HTMLElement;
+
+    firePointer(sheetDragArea, 'pointerdown', 120);
+    firePointer(sheetDragArea, 'pointermove', 240);
+
+    expect(panelDock.style.getPropertyValue('--sheet-drag-y')).toBe('120px');
+
+    firePointer(sheetDragArea, 'pointerup', 240);
+
+    expect(panelDock.className).toContain('isSheetLowered');
+    expect(panelDock.style.getPropertyValue('--sheet-base-y')).toBe('calc(100% - 124px)');
+    expect(panelDock.style.getPropertyValue('--sheet-drag-y')).toBe('0px');
+    expect(screen.getByTestId('selected-store-detail')).toBeTruthy();
+
+    firePointer(sheetDragArea, 'pointerdown', 240);
+    firePointer(sheetDragArea, 'pointerup', 240);
+
+    expect(panelDock.className).not.toContain('isSheetLowered');
   });
 
   it('keeps the empty state visible when there are no stores', () => {

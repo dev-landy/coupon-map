@@ -107,10 +107,31 @@ const MAP_RELOAD_DEBOUNCE_MS = 500;
 const MAP_PROGRAMMATIC_MOVE_SUPPRESSION_MS = 900;
 const COUPON_RELOAD_CACHE_TTL_MS = 2 * 60 * 1000;
 const COUPON_RELOAD_CACHE_MAX_ENTRIES = 40;
+const COUPON_SHEET_PEEK_HEIGHT_PX = 124;
+const COUPON_SHEET_DRAG_LIMIT_PX = 640;
+const COUPON_SHEET_DRAG_THRESHOLD_PX = 56;
 
 interface CachedCouponMapApiResponse {
   response: CouponMapApiResponse;
   expiresAt: number;
+}
+
+interface CouponListItem {
+  store: CouponMapStore;
+  coupon: CouponMapCoupon;
+  rowId?: string;
+  key: string;
+}
+
+interface SelectedCouponSelection {
+  storeId: string;
+  couponId: string;
+}
+
+interface CouponSheetDragState {
+  pointerId: number;
+  startY: number;
+  lastY: number;
 }
 
 export default function CouponMapScreen({ view, status, message }: CouponMapScreenProps) {
@@ -123,15 +144,21 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
   const hasUserMapInteractionRef = useRef(false);
   const activeRequestRef = useRef<AbortController | null>(null);
   const reloadCacheRef = useRef(new Map<string, CachedCouponMapApiResponse>());
+  const sheetDragRef = useRef<CouponSheetDragState | null>(null);
   const lastLoadedSearchRef = useRef({ center: DEFAULT_LOCATION, radiusMeters: DEFAULT_RADIUS_METERS });
   const [selectedStoreId, setSelectedStoreId] = useState<string | null>(
     view.stores[0]?.id ?? null
   );
+  const [selectedCouponSelection, setSelectedCouponSelection] =
+    useState<SelectedCouponSelection | null>(null);
   const [displayView, setDisplayView] = useState(view);
   const [loadStatus, setLoadStatus] = useState<CouponMapLoadStatus>(status);
   const [loadMessage, setLoadMessage] = useState<string | null>(message);
   const [searchRadiusMeters, setSearchRadiusMeters] = useState(DEFAULT_RADIUS_METERS);
   const [isCouponPanelOpen, setIsCouponPanelOpen] = useState(true);
+  const [isCouponSheetLowered, setIsCouponSheetLowered] = useState(false);
+  const [sheetDragY, setSheetDragY] = useState(0);
+  const [isSheetDragging, setIsSheetDragging] = useState(false);
   const [mapProviderStatus, setMapProviderStatus] = useState<MapProviderStatus>(
     KAKAO_MAP_APP_KEY ? 'loading' : 'missing-key'
   );
@@ -152,6 +179,30 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
       displayView.stores[0] ??
       null,
     [displayView.stores, selectedStoreId]
+  );
+  const selectedCoupon = useMemo(() => {
+    if (!selectedStore) return null;
+
+    if (selectedCouponSelection?.storeId === selectedStore.id) {
+      return (
+        selectedStore.coupons.find((coupon) => coupon.id === selectedCouponSelection.couponId) ??
+        selectedStore.bestCoupon
+      );
+    }
+
+    return selectedStore.bestCoupon;
+  }, [selectedCouponSelection, selectedStore]);
+  const couponListItems = useMemo<CouponListItem[]>(
+    () =>
+      displayView.stores.flatMap((store) =>
+        store.coupons.map((coupon, couponIndex) => ({
+          store,
+          coupon,
+          rowId: couponIndex === 0 ? `store-${store.id}` : undefined,
+          key: `${store.id}:${coupon.id}:${couponIndex}`,
+        }))
+      ),
+    [displayView.stores]
   );
   const activeStoreId = selectedStore?.id ?? null;
   const markerDataKey = useMemo(
@@ -378,13 +429,26 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
   useEffect(() => {
     if (displayView.stores.length === 0) {
       setSelectedStoreId(null);
+      setSelectedCouponSelection(null);
       return;
     }
 
     if (!displayView.stores.some((store) => store.id === selectedStoreId)) {
       setSelectedStoreId(displayView.stores[0].id);
+      setSelectedCouponSelection(null);
     }
   }, [displayView.stores, selectedStoreId]);
+
+  useEffect(() => {
+    if (!selectedCouponSelection) return;
+
+    const store = displayView.stores.find(
+      (candidate) => candidate.id === selectedCouponSelection.storeId
+    );
+    if (!store?.coupons.some((coupon) => coupon.id === selectedCouponSelection.couponId)) {
+      setSelectedCouponSelection(null);
+    }
+  }, [displayView.stores, selectedCouponSelection]);
 
   useEffect(() => {
     if (!KAKAO_MAP_APP_KEY) {
@@ -513,7 +577,9 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
   const selectStore = useCallback(
     (storeId: string) => {
       setSelectedStoreId(storeId);
+      setSelectedCouponSelection(null);
       setIsCouponPanelOpen(true);
+      setIsCouponSheetLowered(false);
 
       const store = displayView.stores.find((candidate) => candidate.id === storeId);
       const map = mapRef.current;
@@ -526,6 +592,80 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     },
     [displayView.stores, scheduleMarkerProjection, suppressViewportReload]
   );
+
+  const selectCoupon = useCallback(
+    (storeId: string, couponId: string) => {
+      selectStore(storeId);
+      setSelectedCouponSelection({ storeId, couponId });
+    },
+    [selectStore]
+  );
+
+  const toggleCouponPanel = useCallback(() => {
+    setIsCouponPanelOpen((isOpen) => {
+      const nextIsOpen = !isOpen;
+      if (nextIsOpen) setIsCouponSheetLowered(false);
+      return nextIsOpen;
+    });
+  }, []);
+
+  const startCouponSheetDrag = useCallback(
+    (event: React.PointerEvent<HTMLElement>) => {
+      if (!isCouponPanelOpen || !isMobileCouponSheet()) return;
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
+
+      const pointerY = getPointerY(event);
+      sheetDragRef.current = {
+        pointerId: event.pointerId,
+        startY: pointerY,
+        lastY: pointerY,
+      };
+      setIsSheetDragging(true);
+      setSheetDragY(0);
+      event.currentTarget.setPointerCapture?.(event.pointerId);
+      event.preventDefault();
+    },
+    [isCouponPanelOpen]
+  );
+
+  const moveCouponSheetDrag = useCallback((event: React.PointerEvent<HTMLElement>) => {
+    const drag = sheetDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+
+    const pointerY = getPointerY(event);
+    drag.lastY = pointerY;
+    const rawDragY = pointerY - drag.startY;
+    const nextDragY = isCouponSheetLowered
+      ? Math.max(-COUPON_SHEET_DRAG_LIMIT_PX, Math.min(0, rawDragY))
+      : Math.min(COUPON_SHEET_DRAG_LIMIT_PX, Math.max(0, rawDragY));
+    setSheetDragY(nextDragY);
+    if (nextDragY !== 0) event.preventDefault();
+  }, [isCouponSheetLowered]);
+
+  const finishCouponSheetDrag = useCallback((event: React.PointerEvent<HTMLElement>) => {
+    const drag = sheetDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+
+    const finalDragY = Math.max(0, drag.lastY - drag.startY);
+    const signedDragY = drag.lastY - drag.startY;
+    sheetDragRef.current = null;
+    setIsSheetDragging(false);
+    setSheetDragY(0);
+    event.currentTarget.releasePointerCapture?.(event.pointerId);
+
+    if (event.type === 'pointercancel') return;
+
+    if (isCouponSheetLowered) {
+      if (signedDragY <= -COUPON_SHEET_DRAG_THRESHOLD_PX || Math.abs(signedDragY) < 8) {
+        setIsCouponSheetLowered(false);
+      }
+      return;
+    }
+
+    if (finalDragY >= COUPON_SHEET_DRAG_THRESHOLD_PX) {
+      setIsCouponSheetLowered(true);
+    }
+  }, [isCouponSheetLowered]);
 
   return (
     <main className="appShell">
@@ -601,14 +741,24 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
         <p className={`notice ${loadStatus}`}>{loadMessage}</p>
       ) : null}
 
-      <div className={`panelDock ${isCouponPanelOpen ? 'isPanelOpen' : 'isPanelClosed'}`}>
+      <div
+        className={`panelDock ${isCouponPanelOpen ? 'isPanelOpen' : 'isPanelClosed'} ${isCouponSheetLowered ? 'isSheetLowered' : ''} ${isSheetDragging ? 'isSheetDragging' : ''}`}
+        style={
+          {
+            '--sheet-base-y': isCouponSheetLowered
+              ? `calc(100% - ${COUPON_SHEET_PEEK_HEIGHT_PX}px)`
+              : '0px',
+            '--sheet-drag-y': `${sheetDragY}px`,
+          } as React.CSSProperties
+        }
+      >
         <button
           type="button"
           className="panelToggle"
           aria-controls="coupon-panel"
           aria-expanded={isCouponPanelOpen}
           aria-label={panelToggleLabel}
-          onClick={() => setIsCouponPanelOpen((isOpen) => !isOpen)}
+          onClick={toggleCouponPanel}
         >
           <PanelToggleIcon />
         </button>
@@ -620,25 +770,34 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
         >
           {isCouponPanelOpen ? (
             <>
-              <div className="sheetHandle" aria-hidden="true" />
-              <div className="panelHeader">
-                <div>
-                  <p className="eyebrow">CouponMap</p>
-                  <h1>근처 쿠폰 매장</h1>
-                </div>
-                <div className="stats" aria-label="coupon summary">
-                  <span>{displayView.totals.brands} brands</span>
-                  <span>{displayView.totals.stores} stores</span>
-                  <span>{displayView.totals.activeCoupons} coupons</span>
+              <div
+                className="sheetDragArea"
+                onPointerDown={startCouponSheetDrag}
+                onPointerMove={moveCouponSheetDrag}
+                onPointerUp={finishCouponSheetDrag}
+                onPointerCancel={finishCouponSheetDrag}
+              >
+                <div className="sheetHandle" aria-hidden="true" />
+                <div className="panelHeader">
+                  <div>
+                    <p className="eyebrow">CouponMap</p>
+                    <h1>근처 쿠폰 매장</h1>
+                  </div>
+                  <div className="stats" aria-label="coupon summary">
+                    <span>{displayView.totals.brands} brands</span>
+                    <span>{displayView.totals.stores} stores</span>
+                    <span>{displayView.totals.activeCoupons} coupons</span>
+                  </div>
                 </div>
               </div>
 
-              {selectedStore ? (
+              {selectedStore && selectedCoupon ? (
                 <section
                   className="selectedDetail"
                   aria-live="polite"
                   data-testid="selected-store-detail"
                   data-selected-store-id={selectedStore.id}
+                  data-selected-coupon-id={selectedCoupon.id}
                 >
                   <div className="selectedHead">
                     <span className="brandLogo" style={{ background: selectedStore.brandColor }}>
@@ -646,15 +805,15 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
                     </span>
                     <div>
                       <p>{selectedStore.brandName}</p>
-                      <h2>{selectedStore.bestCoupon.title}</h2>
+                      <h2>{selectedCoupon.title}</h2>
                       <span>{selectedStore.name}</span>
                     </div>
-                    <strong>{selectedStore.bestCoupon.headline}</strong>
+                    <strong>{selectedCoupon.headline}</strong>
                   </div>
 
-                  {selectedStore.bestCoupon.facts.length > 0 ? (
+                  {selectedCoupon.facts.length > 0 ? (
                     <dl className="couponFacts" aria-label="coupon details">
-                      {selectedStore.bestCoupon.facts.map((fact) => (
+                      {selectedCoupon.facts.map((fact) => (
                         <div key={`${fact.label}-${fact.value}`}>
                           <dt>{fact.label}</dt>
                           <dd>{fact.value}</dd>
@@ -663,17 +822,11 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
                     </dl>
                   ) : null}
 
-                  <div className="couponCards" aria-label={`${selectedStore.brandName} coupons`}>
-                    {selectedStore.coupons.slice(0, 3).map((coupon) => (
-                      <CouponCard coupon={coupon} key={coupon.id} />
-                    ))}
-                  </div>
-
                   <button
                     type="button"
                     className="openAppButton"
                     onClick={() =>
-                      openBrandApp(selectedStore.brand, undefined, selectedStore.bestCoupon.appLink)
+                      openBrandApp(selectedStore.brand, undefined, selectedCoupon.appLink)
                     }
                   >
                     앱에서 열기
@@ -683,17 +836,21 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
               ) : null}
 
               <div className="sectionHeader">
-                <h2>{formatRadiusLabel(searchRadiusMeters)} 내 매장</h2>
-                <span>{displayView.stores.length}</span>
+                <h2>{formatRadiusLabel(searchRadiusMeters)} 내 쿠폰</h2>
+                <span>{couponListItems.length}</span>
               </div>
 
-              <div className="storeList">
-                {displayView.stores.map((store) => (
-                  <StoreCard
-                    key={store.id}
-                    store={store}
-                    isSelected={store.id === activeStoreId}
-                    onSelect={() => selectStore(store.id)}
+              <div className="couponList" aria-label="nearby coupon list">
+                {couponListItems.map((item) => (
+                  <CouponListRow
+                    key={item.key}
+                    rowId={item.rowId}
+                    store={item.store}
+                    coupon={item.coupon}
+                    isSelected={
+                      item.store.id === activeStoreId && item.coupon.id === selectedCoupon?.id
+                    }
+                    onSelect={() => selectCoupon(item.store.id, item.coupon.id)}
                   />
                 ))}
               </div>
@@ -821,9 +978,9 @@ function getMapPadding(isCouponPanelOpen: boolean): [number, number, number, num
     return isCouponPanelOpen ? [92, 460, 40, 32] : [92, 32, 40, 32];
   }
 
-  if (window.matchMedia('(max-width: 760px)').matches) {
+  if (isMobileCouponSheet()) {
     const bottomPanelPadding = isCouponPanelOpen
-      ? Math.min(Math.round(window.innerHeight * 0.58) + 28, 500)
+      ? Math.min(Math.round(window.innerHeight * 0.74) + 28, 660)
       : 24;
     return [96, 24, bottomPanelPadding, 24];
   }
@@ -831,70 +988,68 @@ function getMapPadding(isCouponPanelOpen: boolean): [number, number, number, num
   return isCouponPanelOpen ? [92, 460, 40, 32] : [92, 32, 40, 32];
 }
 
-function StoreCard({
+function isMobileCouponSheet(): boolean {
+  return (
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(max-width: 760px)').matches
+  );
+}
+
+function getPointerY(event: React.PointerEvent<HTMLElement>): number {
+  const candidates = [
+    event.pageY,
+    event.nativeEvent.pageY,
+    event.clientY,
+    event.nativeEvent.clientY,
+  ];
+  return candidates.find((value) => Number.isFinite(value)) ?? 0;
+}
+
+function CouponListRow({
+  rowId,
   store,
+  coupon,
   isSelected,
   onSelect,
 }: {
+  rowId?: string;
   store: CouponMapStore;
+  coupon: CouponMapCoupon;
   isSelected: boolean;
   onSelect: () => void;
 }) {
+  const locationLabel =
+    store.distanceMeters === undefined
+      ? store.address
+      : `${formatDistanceLabel(store.distanceMeters)} · ${store.address}`;
+
   return (
-    <article
-      className={`storeCard ${isSelected ? 'selected' : ''}`}
-      id={`store-${store.id}`}
-      role="button"
-      tabIndex={0}
+    <button
+      type="button"
+      className={`couponListRow ${isSelected ? 'selected' : ''}`}
+      id={rowId}
       aria-pressed={isSelected}
       aria-current={isSelected ? 'true' : undefined}
+      aria-label={`${store.brandName} ${store.name} ${coupon.title} ${coupon.headline}`}
       onClick={onSelect}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          onSelect();
-        }
-      }}
     >
       <div className="storeLogo" style={{ background: store.brandColor }}>
         {store.brandInitial}
       </div>
-      <div className="storeCopy">
-        <div className="storeTitle">
-          <h3>{store.brandName}</h3>
-          <span>{store.name}</span>
-        </div>
-        <p>{store.bestCoupon.detail}</p>
-        <address>
-          {store.distanceMeters === undefined
-            ? store.address
-            : `${formatDistanceLabel(store.distanceMeters)} · ${store.address}`}
-        </address>
-      </div>
-      <div className="storeDeal">
-        <small>최대</small>
-        <strong>{store.bestCoupon.headline}</strong>
-        <span>{store.coupons.length}개</span>
-      </div>
-    </article>
-  );
-}
-
-function CouponCard({ coupon }: { coupon: CouponMapCoupon }) {
-  return (
-    <article className="couponCard">
-      <div className="discountBlock">
-        <span>{coupon.discountType}</span>
-        <strong>{coupon.headline}</strong>
-      </div>
-      <div className="couponCopy">
-        <h3>{coupon.title}</h3>
-        <p>{coupon.detail}</p>
-        <div>
+      <div className="couponRowCopy">
+        <div className="couponRowTitle">
+          <h3>{coupon.title}</h3>
           <span>{coupon.validLabel}</span>
         </div>
+        <p>{coupon.detail}</p>
+        <address>{`${store.brandName} ${store.name} · ${locationLabel}`}</address>
       </div>
-    </article>
+      <div className="couponRowDeal">
+        <small>{coupon.discountType}</small>
+        <strong>{coupon.headline}</strong>
+      </div>
+    </button>
   );
 }
 
@@ -1202,7 +1357,7 @@ const styles = `
   }
 
   .pinDeal small,
-  .storeDeal small {
+  .couponRowDeal small {
     color: #9a9aa2;
     font-size: 10px;
     font-weight: 800;
@@ -1225,7 +1380,7 @@ const styles = `
   }
 
   .marker:focus-visible,
-  .storeCard:focus-visible,
+  .couponListRow:focus-visible,
   .openAppButton:focus-visible,
   .panelToggle:focus-visible {
     outline: 3px solid rgba(46,118,255,.32);
@@ -1317,6 +1472,14 @@ const styles = `
   .panelDock.isPanelClosed .couponPanel {
     opacity: 0;
     pointer-events: none;
+  }
+
+  .panelDock.isSheetDragging {
+    transition: none;
+  }
+
+  .sheetDragArea {
+    flex: 0 0 auto;
   }
 
   .sheetHandle {
@@ -1453,83 +1616,6 @@ const styles = `
     font-weight: 900;
   }
 
-  .couponCards {
-    display: grid;
-    gap: 8px;
-  }
-
-  .couponCard {
-    display: grid;
-    grid-template-columns: 78px minmax(0, 1fr);
-    gap: 10px;
-    min-height: 84px;
-    border: 1px solid #ececef;
-    border-radius: 8px;
-    padding: 10px;
-    background: #fff;
-  }
-
-  .discountBlock {
-    display: grid;
-    place-items: center;
-    align-content: center;
-    gap: 3px;
-    border-radius: 8px;
-    background: #fff1ee;
-    color: #f5402c;
-    text-align: center;
-  }
-
-  .discountBlock span {
-    font-size: 10px;
-    font-weight: 800;
-  }
-
-  .discountBlock strong {
-    font-size: 18px;
-    font-weight: 900;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .couponCopy {
-    display: grid;
-    align-content: center;
-    gap: 5px;
-    min-width: 0;
-  }
-
-  .couponCopy h3 {
-    overflow: hidden;
-    color: #15151a;
-    font-size: 14px;
-    line-height: 1.25;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .couponCopy p {
-    overflow: hidden;
-    color: #5b5b63;
-    font-size: 13px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .couponCopy div {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-  }
-
-  .couponCopy span {
-    border-radius: 6px;
-    padding: 2px 7px;
-    background: #fff1ee;
-    color: #f5402c;
-    font-size: 12px;
-    font-weight: 900;
-  }
-
   .openAppButton {
     display: flex;
     align-items: center;
@@ -1560,7 +1646,7 @@ const styles = `
     font-weight: 900;
   }
 
-  .storeList {
+  .couponList {
     display: grid;
     flex: 1;
     align-content: start;
@@ -1568,25 +1654,28 @@ const styles = `
     border-top: 1px solid #ececef;
   }
 
-  .storeList::-webkit-scrollbar {
+  .couponList::-webkit-scrollbar {
     width: 0;
     height: 0;
   }
 
-  .storeCard {
+  .couponListRow {
     display: grid;
     grid-template-columns: 42px minmax(0, 1fr) auto;
     gap: 12px;
     align-items: center;
+    width: 100%;
     border: 0;
     border-bottom: 1px solid #ececef;
     padding: 14px 18px;
     background: #fff;
+    color: inherit;
     cursor: pointer;
+    text-align: left;
     transition: background .16s ease, box-shadow .16s ease;
   }
 
-  .storeCard.selected {
+  .couponListRow.selected {
     background: #f7f7f5;
     box-shadow: inset 3px 0 0 #f5402c;
   }
@@ -1598,18 +1687,18 @@ const styles = `
     font-size: 13px;
   }
 
-  .storeCopy {
+  .couponRowCopy {
     min-width: 0;
   }
 
-  .storeTitle {
+  .couponRowTitle {
     display: flex;
     min-width: 0;
     align-items: baseline;
     gap: 6px;
   }
 
-  .storeTitle h3 {
+  .couponRowTitle h3 {
     overflow: hidden;
     color: #15151a;
     font-size: 15px;
@@ -1618,17 +1707,19 @@ const styles = `
     white-space: nowrap;
   }
 
-  .storeTitle span {
-    overflow: hidden;
-    color: #9a9aa2;
-    font-size: 12px;
-    font-weight: 700;
-    text-overflow: ellipsis;
+  .couponRowTitle span {
+    flex: 0 0 auto;
+    border-radius: 6px;
+    padding: 2px 6px;
+    background: #fff1ee;
+    color: #f5402c;
+    font-size: 11px;
+    font-weight: 900;
     white-space: nowrap;
   }
 
-  .storeCopy p,
-  .storeCopy address {
+  .couponRowCopy p,
+  .couponRowCopy address {
     overflow: hidden;
     color: #5b5b63;
     font-size: 12px;
@@ -1638,29 +1729,23 @@ const styles = `
     white-space: nowrap;
   }
 
-  .storeCopy p {
+  .couponRowCopy p {
     margin-top: 3px;
   }
 
-  .storeDeal {
+  .couponRowDeal {
     display: grid;
     justify-items: end;
     gap: 2px;
     min-width: 72px;
   }
 
-  .storeDeal strong {
+  .couponRowDeal strong {
     color: #f5402c;
     font-size: 18px;
     font-weight: 900;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
-  }
-
-  .storeDeal span {
-    color: #5b5b63;
-    font-size: 12px;
-    font-weight: 800;
   }
 
   @media (max-width: 760px) {
@@ -1676,14 +1761,29 @@ const styles = `
       bottom: 0;
       left: 0;
       width: auto;
-      height: min(58dvh, 470px);
+      height: min(74dvh, 620px);
+      max-height: calc(100dvh - 92px);
     }
 
     .panelDock.isPanelClosed {
       transform: translateY(100%);
     }
 
+    .panelDock.isPanelOpen {
+      transform: translateY(calc(var(--sheet-base-y, 0px) + var(--sheet-drag-y, 0px)));
+    }
+
+    .sheetDragArea {
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .panelDock.isSheetDragging .sheetDragArea {
+      cursor: grabbing;
+    }
+
     .panelToggle {
+      display: none;
       top: -56px;
       right: 14px;
       left: auto;
@@ -1757,8 +1857,7 @@ const styles = `
       font-size: 18px;
     }
 
-    .couponFacts,
-    .couponCards {
+    .couponFacts {
       display: none;
     }
 
@@ -1771,7 +1870,7 @@ const styles = `
       padding: 12px 18px 8px;
     }
 
-    .storeCard {
+    .couponListRow {
       grid-template-columns: 40px minmax(0, 1fr) auto;
       padding: 13px 18px;
     }
@@ -1781,11 +1880,11 @@ const styles = `
       height: 40px;
     }
 
-    .storeDeal {
+    .couponRowDeal {
       min-width: 64px;
     }
 
-    .storeDeal strong {
+    .couponRowDeal strong {
       font-size: 16px;
     }
 
