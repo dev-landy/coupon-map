@@ -1,6 +1,7 @@
 import { buildCouponMapView } from '../lib/frontendData';
 import { loadCouponRows } from '../lib/couponMapData';
 import { DEFAULT_LOCATION } from '../lib/location';
+import { buildHomePageJsonLd, serializeJsonLd } from '../lib/seo';
 import { DEFAULT_RADIUS_METERS } from '../lib/stores';
 import CouponMapScreen from './CouponMapScreen';
 
@@ -17,7 +18,15 @@ export default async function HomePage() {
     state.message ??
     (view.stores.length === 0 ? formatNearbyEmptyMessage(DEFAULT_RADIUS_METERS) : null);
 
-  return <CouponMapScreen view={view} status={status} message={message} />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(buildHomePageJsonLd(view)) }}
+      />
+      <CouponMapScreen view={view} status={status} message={message} />
+    </>
+  );
 }
 
 function formatNearbyEmptyMessage(radiusMeters: number): string {
