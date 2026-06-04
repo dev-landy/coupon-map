@@ -446,8 +446,8 @@ describe('CouponMapScreen', () => {
         watchPosition: vi.fn((onSuccess: PositionCallback) => {
           onSuccess({
             coords: {
-              latitude: 37.4979,
-              longitude: 127.0276,
+              latitude: 37.4979123,
+              longitude: 127.0276123,
             },
           } as GeolocationPosition);
           return 7;

@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { dynamic } from '../app/page';
+import { revalidate } from '../app/page';
 
 describe('HomePage route config', () => {
-  it('renders dynamically so Supabase data and coupon dates are request-time values', () => {
-    expect(dynamic).toBe('force-dynamic');
+  it('uses ISR so the homepage can be cached instead of server-rendered on every request', () => {
+    expect(revalidate).toBe(300);
   });
 });

@@ -4,6 +4,7 @@ import { fixtureAdapter } from './fixture.ts';
 import { kfcKrAdbAdapter } from './kfcKrAdb.ts';
 import { mcdonaldsKrAdbAdapter } from './mcdonaldsKrAdb.ts';
 import { mcdonaldsKrAdapter } from './mcdonaldsKr.ts';
+import { yogiyoKrAdbAdapter } from './yogiyoKrAdb.ts';
 
 const ADAPTERS: Record<string, CrawlAdapter> = {
   [burgerkingKrAdbAdapter.source]: burgerkingKrAdbAdapter,
@@ -11,6 +12,7 @@ const ADAPTERS: Record<string, CrawlAdapter> = {
   [kfcKrAdbAdapter.source]: kfcKrAdbAdapter,
   [mcdonaldsKrAdbAdapter.source]: mcdonaldsKrAdbAdapter,
   [mcdonaldsKrAdapter.source]: mcdonaldsKrAdapter,
+  [yogiyoKrAdbAdapter.source]: yogiyoKrAdbAdapter,
 };
 
 export function getCrawlAdapter(source: string): CrawlAdapter {

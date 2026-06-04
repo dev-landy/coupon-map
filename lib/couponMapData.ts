@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 import { BRANDS as DEMO_BRANDS, STORES as DEMO_STORES, toBrand } from './uiData';
 import type { CouponMapLoadStatus } from './frontendData';
@@ -16,10 +16,76 @@ export interface LoadState {
   message: string | null;
 }
 
+interface CachedLoadState {
+  envKey: string;
+  state: LoadState;
+  expiresAt: number;
+}
+
+interface InFlightLoadState {
+  envKey: string;
+  promise: Promise<LoadState>;
+}
+
+const COUPON_ROWS_CACHE_TTL_MS = 60 * 1000;
+const BRAND_SELECT_COLUMNS =
+  'id, source, external_id, name, app_scheme, store_url, app_store_url, updated_at, last_seen_at, created_at';
+const STORE_SELECT_COLUMNS =
+  'id, brand_id, source, external_id, name, lat, lng, address, updated_at, last_seen_at, created_at';
+const COUPON_SELECT_COLUMNS =
+  'id, brand_id, source, external_id, content_hash, title, discount_type, discount_value, valid_until, is_active, raw_payload, updated_at, last_seen_at, created_at';
+
+let cachedLoadState: CachedLoadState | null = null;
+let inFlightLoadState: InFlightLoadState | null = null;
+let cachedSupabaseClient: {
+  envKey: string;
+  client: SupabaseClient;
+} | null = null;
+
 export async function loadCouponRows(): Promise<LoadState> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const envKey = `${url ?? ''}:${anonKey ?? ''}`;
+  const now = Date.now();
 
+  if (cachedLoadState?.envKey === envKey && cachedLoadState.expiresAt > now) {
+    return cachedLoadState.state;
+  }
+
+  if (inFlightLoadState?.envKey === envKey) {
+    return inFlightLoadState.promise;
+  }
+
+  const promise = fetchCouponRows(url, anonKey).then((state) => {
+    cachedLoadState = {
+      envKey,
+      state,
+      expiresAt: Date.now() + COUPON_ROWS_CACHE_TTL_MS,
+    };
+    return state;
+  });
+
+  inFlightLoadState = { envKey, promise };
+
+  try {
+    return await promise;
+  } finally {
+    if (inFlightLoadState?.promise === promise) {
+      inFlightLoadState = null;
+    }
+  }
+}
+
+export function clearCouponRowsCacheForTests() {
+  cachedLoadState = null;
+  inFlightLoadState = null;
+  cachedSupabaseClient = null;
+}
+
+async function fetchCouponRows(
+  url: string | undefined,
+  anonKey: string | undefined
+): Promise<LoadState> {
   if (!url || !anonKey) {
     if (shouldUseDemoFallback()) {
       return withDemoRows('Supabase 환경변수가 아직 설정되지 않아 샘플 쿠폰 데이터를 표시합니다.', 'missing-env');
@@ -32,17 +98,12 @@ export async function loadCouponRows(): Promise<LoadState> {
     };
   }
 
-  const supabase = createClient(url, anonKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    },
-  });
+  const supabase = getCouponRowsClient(url, anonKey);
 
   const [brands, stores, coupons] = await Promise.all([
-    supabase.from('brands').select('*'),
-    supabase.from('stores').select('*'),
-    supabase.from('coupons').select('*'),
+    supabase.from('brands').select(BRAND_SELECT_COLUMNS),
+    supabase.from('stores').select(STORE_SELECT_COLUMNS),
+    supabase.from('coupons').select(COUPON_SELECT_COLUMNS),
   ]);
 
   const error = brands.error ?? stores.error ?? coupons.error;
@@ -76,6 +137,20 @@ export async function loadCouponRows(): Promise<LoadState> {
     status: isEmpty ? 'empty' : 'ready',
     message: isEmpty ? 'Supabase에 표시 가능한 쿠폰 데이터가 없습니다.' : null,
   };
+}
+
+function getCouponRowsClient(url: string, anonKey: string): SupabaseClient {
+  const envKey = `${url}:${anonKey}`;
+  if (cachedSupabaseClient?.envKey === envKey) return cachedSupabaseClient.client;
+
+  const client = createClient(url, anonKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
+  cachedSupabaseClient = { envKey, client };
+  return client;
 }
 
 function shouldUseDemoFallback(): boolean {

@@ -5,6 +5,11 @@ import { buildCouponMapView, type CouponMapLoadStatus } from '../../../lib/front
 import { MAX_SCALE_RADIUS_METERS } from '../../../lib/mapScale';
 import { DEFAULT_RADIUS_METERS, isValidCoordinate } from '../../../lib/stores';
 
+export const revalidate = 60;
+
+const COUPON_API_CACHE_CONTROL =
+  'public, max-age=0, s-maxage=60, stale-while-revalidate=240';
+
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const lat = parseNumberParam(url.searchParams.get('lat'));
@@ -43,7 +48,7 @@ export async function GET(request: Request) {
     },
     {
       headers: {
-        'Cache-Control': 'private, max-age=60, stale-while-revalidate=240',
+        'Cache-Control': COUPON_API_CACHE_CONTROL,
       },
     }
   );

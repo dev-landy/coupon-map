@@ -11,6 +11,8 @@
     "crawl:all": "node --experimental-strip-types scripts/crawl-all.ts",
     "crawl:burgerking:adb": "node --experimental-strip-types scripts/crawl-burgerking-adb.ts",
     "crawl:kfc:adb": "node --experimental-strip-types scripts/crawl-kfc-adb.ts",
+    "crawl:mcdonalds:adb": "node --experimental-strip-types scripts/crawl-mcdonalds-adb.ts",
+    "crawl:yogiyo:adb": "node --experimental-strip-types scripts/crawl-yogiyo-adb.ts",
     "crawler:launchd:install": "bash scripts/install-crawler-launchd.sh",
     "crawler:launchd:run": "bash scripts/run-crawler-launchd.sh",
     "crawler:launchd:status": "bash scripts/status-crawler-launchd.sh",

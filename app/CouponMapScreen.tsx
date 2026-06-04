@@ -341,7 +341,8 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
       }
 
       activeRequestRef.current?.abort();
-      const cacheKey = makeCouponRequestCacheKey(center, radiusMeters);
+      const requestCenter = normalizeCouponRequestCenter(center);
+      const cacheKey = makeCouponRequestCacheKey(requestCenter, radiusMeters);
       const cachedResponse = options.force
         ? null
         : readCachedCouponResponse(reloadCacheRef.current, cacheKey, Date.now());
@@ -360,8 +361,8 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
 
       try {
         const params = new URLSearchParams({
-          lat: String(center.lat),
-          lng: String(center.lng),
+          lat: String(requestCenter.lat),
+          lng: String(requestCenter.lng),
           radiusMeters: String(radiusMeters),
         });
         const response = await fetch(`/api/coupon-map?${params.toString()}`, {
@@ -1267,6 +1268,17 @@ function writeLastFeedbackSubmittedAt(value: number) {
 
 function makeCouponRequestCacheKey(center: Coords, radiusMeters: number): string {
   return `${center.lat.toFixed(4)},${center.lng.toFixed(4)},${Math.round(radiusMeters)}`;
+}
+
+function normalizeCouponRequestCenter(center: Coords): Coords {
+  return {
+    lat: roundCouponRequestCoordinate(center.lat),
+    lng: roundCouponRequestCoordinate(center.lng),
+  };
+}
+
+function roundCouponRequestCoordinate(value: number): number {
+  return Number(value.toFixed(4));
 }
 
 function readCachedCouponResponse(
