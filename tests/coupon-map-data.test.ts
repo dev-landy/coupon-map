@@ -4,13 +4,18 @@ import type { Brand, Coupon, Store } from '../lib/types';
 const supabaseMock = vi.hoisted(() => ({
   createClient: vi.fn(),
   from: vi.fn(),
+  rpc: vi.fn(),
 }));
 
 vi.mock('@supabase/supabase-js', () => ({
   createClient: supabaseMock.createClient,
 }));
 
-import { clearCouponRowsCacheForTests, loadCouponRows } from '../lib/couponMapData';
+import {
+  clearCouponRowsCacheForTests,
+  loadCouponRows,
+  loadCouponRowsNearLocation,
+} from '../lib/couponMapData';
 
 const BRAND: Brand = {
   id: 'brand-1',
@@ -48,6 +53,23 @@ const COUPON: Coupon = {
   },
 };
 
+const OTHER_BRAND: Brand = {
+  ...BRAND,
+  id: 'brand-2',
+  external_id: 'brand-2',
+  name: '버거킹',
+};
+
+const OTHER_COUPON: Coupon = {
+  ...COUPON,
+  id: 'coupon-2',
+  brand_id: 'brand-2',
+  external_id: 'coupon-2',
+  title: '와퍼 1,000원 할인',
+  discount_type: '정액',
+  discount_value: 1000,
+};
+
 type TableName = 'brands' | 'stores' | 'coupons';
 
 interface SupabaseRangeCall {
@@ -63,6 +85,7 @@ describe('loadCouponRows', () => {
     clearCouponRowsCacheForTests();
     supabaseMock.createClient.mockReset();
     supabaseMock.from.mockReset();
+    supabaseMock.rpc.mockReset();
   });
 
   afterEach(() => {
@@ -111,6 +134,45 @@ describe('loadCouponRows', () => {
       { table: 'stores', from: 1000, to: 1999 },
     ]);
   });
+
+  it('loads nearby stores through the PostGIS RPC instead of selecting every store row', async () => {
+    const { selectColumnsByTable } = setupSupabaseRows({
+      brands: [BRAND, OTHER_BRAND],
+      coupons: [COUPON, OTHER_COUPON],
+    });
+    supabaseMock.rpc.mockResolvedValue({
+      data: [
+        {
+          ...STORE,
+          distance_meters: 24.5,
+        },
+      ],
+      error: null,
+    });
+
+    const state = await loadCouponRowsNearLocation({
+      lat: 37.5563,
+      lng: 126.9236,
+      radiusMeters: 1000,
+    });
+
+    expect(supabaseMock.rpc).toHaveBeenCalledWith('nearby_stores', {
+      p_lat: 37.5563,
+      p_lng: 126.9236,
+      p_radius_meters: 1000,
+    });
+    expect(supabaseMock.from).toHaveBeenCalledTimes(2);
+    expect(selectColumnsByTable.stores).toBeUndefined();
+    expect(state.rows.brands).toEqual([BRAND]);
+    expect(state.rows.coupons).toEqual([COUPON]);
+    expect(state.rows.stores).toHaveLength(1);
+    expect(state.rows.stores[0]).toMatchObject({
+      id: 'store-1',
+      brand_id: 'brand-1',
+      distanceMeters: 24.5,
+    });
+    expect('distance_meters' in state.rows.stores[0]).toBe(false);
+  });
 });
 
 function setupSupabaseRows(
@@ -131,6 +193,7 @@ function setupSupabaseRows(
 
   supabaseMock.createClient.mockReturnValue({
     from: supabaseMock.from,
+    rpc: supabaseMock.rpc,
   });
   supabaseMock.from.mockImplementation((table: TableName) => ({
     select: vi.fn((columns: string) => {

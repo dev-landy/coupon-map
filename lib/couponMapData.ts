@@ -2,6 +2,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 import { BRANDS as DEMO_BRANDS, STORES as DEMO_STORES, toBrand } from './uiData';
 import type { CouponMapLoadStatus } from './frontendData';
+import { nearbyStores } from './stores';
 import type { Brand, Coupon, Store } from './types';
 
 export interface CouponRows {
@@ -14,6 +15,12 @@ export interface LoadState {
   rows: CouponRows;
   status: CouponMapLoadStatus;
   message: string | null;
+}
+
+export interface NearbyCouponRowsParams {
+  lat: number;
+  lng: number;
+  radiusMeters: number;
 }
 
 interface CachedLoadState {
@@ -32,6 +39,19 @@ interface SupabaseRowsResult<T> {
   error: { message: string } | null;
 }
 
+interface SupabaseRpcResult<T> {
+  data: T[] | null;
+  error: { message: string } | null;
+}
+
+type StoreWithDistance = Store & {
+  distanceMeters?: number;
+};
+
+type NearbyStoreRpcRow = Store & {
+  distance_meters: number | null;
+};
+
 const COUPON_ROWS_CACHE_TTL_MS = 60 * 1000;
 const SUPABASE_SELECT_PAGE_SIZE = 1000;
 const BRAND_SELECT_COLUMNS =
@@ -43,6 +63,8 @@ const COUPON_SELECT_COLUMNS =
 
 let cachedLoadState: CachedLoadState | null = null;
 let inFlightLoadState: InFlightLoadState | null = null;
+let cachedNearbyLoadState: CachedLoadState | null = null;
+let inFlightNearbyLoadState: InFlightLoadState | null = null;
 let cachedSupabaseClient: {
   envKey: string;
   client: SupabaseClient;
@@ -82,9 +104,47 @@ export async function loadCouponRows(): Promise<LoadState> {
   }
 }
 
+export async function loadCouponRowsNearLocation(
+  params: NearbyCouponRowsParams
+): Promise<LoadState> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const envKey = `${url ?? ''}:${anonKey ?? ''}:${params.lat}:${params.lng}:${params.radiusMeters}`;
+  const now = Date.now();
+
+  if (cachedNearbyLoadState?.envKey === envKey && cachedNearbyLoadState.expiresAt > now) {
+    return cachedNearbyLoadState.state;
+  }
+
+  if (inFlightNearbyLoadState?.envKey === envKey) {
+    return inFlightNearbyLoadState.promise;
+  }
+
+  const promise = fetchCouponRowsNearLocation(url, anonKey, params).then((state) => {
+    cachedNearbyLoadState = {
+      envKey,
+      state,
+      expiresAt: Date.now() + COUPON_ROWS_CACHE_TTL_MS,
+    };
+    return state;
+  });
+
+  inFlightNearbyLoadState = { envKey, promise };
+
+  try {
+    return await promise;
+  } finally {
+    if (inFlightNearbyLoadState?.promise === promise) {
+      inFlightNearbyLoadState = null;
+    }
+  }
+}
+
 export function clearCouponRowsCacheForTests() {
   cachedLoadState = null;
   inFlightLoadState = null;
+  cachedNearbyLoadState = null;
+  inFlightNearbyLoadState = null;
   cachedSupabaseClient = null;
 }
 
@@ -145,6 +205,60 @@ async function fetchCouponRows(
   };
 }
 
+async function fetchCouponRowsNearLocation(
+  url: string | undefined,
+  anonKey: string | undefined,
+  params: NearbyCouponRowsParams
+): Promise<LoadState> {
+  if (!url || !anonKey) {
+    const state = await fetchCouponRows(url, anonKey);
+    return scopeRowsToNearbyStores(state, params);
+  }
+
+  const supabase = getCouponRowsClient(url, anonKey);
+
+  const [brands, stores, coupons] = await Promise.all([
+    fetchAllSupabaseRows<Brand>(supabase, 'brands', BRAND_SELECT_COLUMNS),
+    fetchNearbyStores(supabase, params),
+    fetchAllSupabaseRows<Coupon>(supabase, 'coupons', COUPON_SELECT_COLUMNS),
+  ]);
+
+  const error = brands.error ?? stores.error ?? coupons.error;
+  if (error) {
+    const message = formatSupabaseErrorMessage(error.message);
+
+    if (shouldUseDemoFallback()) {
+      const demoState = withDemoRows(`Supabase 오류가 있어 샘플 쿠폰 데이터를 표시합니다. (${message})`, 'error');
+      return scopeRowsToNearbyStores(demoState, params);
+    }
+
+    return {
+      rows: { brands: [], stores: [], coupons: [] },
+      status: 'error',
+      message,
+    };
+  }
+
+  const nearbyRows = {
+    brands: (brands.data ?? []) as Brand[],
+    stores: (stores.data ?? []).map(toStoreWithDistance),
+    coupons: (coupons.data ?? []) as Coupon[],
+  };
+  const rows = filterRowsToStoreBrands(nearbyRows);
+  const isEmpty = rows.brands.length === 0 || rows.stores.length === 0 || rows.coupons.length === 0;
+
+  if (isEmpty && shouldUseDemoFallback()) {
+    const demoState = withDemoRows('Supabase에 표시 가능한 주변 쿠폰 데이터가 없어 샘플 데이터를 표시합니다.', 'empty');
+    return scopeRowsToNearbyStores(demoState, params);
+  }
+
+  return {
+    rows,
+    status: isEmpty ? 'empty' : 'ready',
+    message: isEmpty ? '현재 위치 반경에 표시 가능한 쿠폰 데이터가 없습니다.' : null,
+  };
+}
+
 async function fetchAllSupabaseRows<T>(
   supabase: SupabaseClient,
   table: string,
@@ -174,6 +288,47 @@ async function fetchAllSupabaseRows<T>(
   return {
     data: rows,
     error: null,
+  };
+}
+
+async function fetchNearbyStores(
+  supabase: SupabaseClient,
+  params: NearbyCouponRowsParams
+): Promise<SupabaseRpcResult<NearbyStoreRpcRow>> {
+  return (await supabase.rpc('nearby_stores', {
+    p_lat: params.lat,
+    p_lng: params.lng,
+    p_radius_meters: params.radiusMeters,
+  })) as SupabaseRpcResult<NearbyStoreRpcRow>;
+}
+
+function toStoreWithDistance(row: NearbyStoreRpcRow): StoreWithDistance {
+  const { distance_meters: distanceMeters, ...store } = row;
+  return {
+    ...store,
+    ...(typeof distanceMeters === 'number' && Number.isFinite(distanceMeters)
+      ? { distanceMeters }
+      : {}),
+  };
+}
+
+function scopeRowsToNearbyStores(state: LoadState, params: NearbyCouponRowsParams): LoadState {
+  const stores = nearbyStores(params.lat, params.lng, state.rows.stores, params.radiusMeters);
+  return {
+    ...state,
+    rows: filterRowsToStoreBrands({
+      ...state.rows,
+      stores,
+    }),
+  };
+}
+
+function filterRowsToStoreBrands(rows: CouponRows): CouponRows {
+  const brandIds = new Set(rows.stores.map((store) => store.brand_id));
+  return {
+    brands: rows.brands.filter((brand) => brandIds.has(brand.id)),
+    stores: rows.stores,
+    coupons: rows.coupons.filter((coupon) => brandIds.has(coupon.brand_id)),
   };
 }
 

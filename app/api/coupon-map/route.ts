@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import { loadCouponRows } from '../../../lib/couponMapData';
+import { loadCouponRowsNearLocation } from '../../../lib/couponMapData';
+import { formatNearbyEmptyMessage } from '../../../lib/format';
 import { buildCouponMapView, type CouponMapLoadStatus } from '../../../lib/frontendData';
 import { MAX_SCALE_RADIUS_METERS } from '../../../lib/mapScale';
 import { DEFAULT_RADIUS_METERS, isValidCoordinate } from '../../../lib/stores';
@@ -30,11 +31,12 @@ export async function GET(request: Request) {
     );
   }
 
-  const state = await loadCouponRows();
-  const view = buildCouponMapView(state.rows, new Date(), {
-    center: { lat, lng },
+  const state = await loadCouponRowsNearLocation({
+    lat,
+    lng,
     radiusMeters,
   });
+  const view = buildCouponMapView(state.rows, new Date());
   const status = resolveStatus(state.status, view.stores.length);
   const message =
     state.message ?? (view.stores.length === 0 ? formatNearbyEmptyMessage(radiusMeters) : null);
@@ -69,14 +71,4 @@ function parseRadiusMeters(value: string | null): number | null {
 function resolveStatus(baseStatus: CouponMapLoadStatus, storeCount: number): CouponMapLoadStatus {
   if (baseStatus === 'ready' && storeCount === 0) return 'empty';
   return baseStatus;
-}
-
-function formatNearbyEmptyMessage(radiusMeters: number): string {
-  return `현재 위치 ${formatRadiusLabel(radiusMeters)} 반경에 표시할 쿠폰 매장이 없습니다.`;
-}
-
-function formatRadiusLabel(radiusMeters: number): string {
-  return radiusMeters >= 1000
-    ? `${Number((radiusMeters / 1000).toFixed(1)).toLocaleString('ko-KR')}km`
-    : `${Math.round(radiusMeters).toLocaleString('ko-KR')}m`;
 }

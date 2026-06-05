@@ -5,6 +5,7 @@
 -- pgcrypto provides gen_random_uuid() on Supabase by default.
 
 create extension if not exists "pgcrypto";
+create extension if not exists "postgis";
 
 -- Brands: the franchise. Holds deep-link + fallback targets.
 create table if not exists brands (
@@ -85,6 +86,10 @@ alter table stores add column if not exists source text not null default 'manual
 alter table stores add column if not exists external_id text;
 alter table stores add column if not exists updated_at timestamptz not null default now();
 alter table stores add column if not exists last_seen_at timestamptz;
+alter table stores add column if not exists location geography(Point, 4326)
+  generated always as (
+    st_setsrid(st_makepoint(lng, lat), 4326)::geography
+  ) stored;
 
 alter table coupons add column if not exists source text not null default 'manual';
 alter table coupons add column if not exists external_id text;
@@ -164,3 +169,59 @@ create unique index if not exists idx_stores_brand_source_external_id
   on stores (brand_id, source, external_id);
 create unique index if not exists idx_coupons_brand_source_external_id
   on coupons (brand_id, source, external_id);
+
+
+create index if not exists idx_stores_location_gist
+  on stores using gist (location);
+
+create or replace function public.nearby_stores(
+    p_lat double precision,
+    p_lng double precision,
+    p_radius_meters integer default 1000
+  )
+  returns table (
+    id uuid,
+    brand_id uuid,
+    source text,
+    external_id text,
+    name text,
+    lat double precision,
+    lng double precision,
+    address text,
+    updated_at timestamptz,
+    last_seen_at timestamptz,
+    created_at timestamptz,
+    distance_meters double precision
+  )
+  language sql
+  stable
+  security invoker
+  as $$
+    select
+      s.id,
+      s.brand_id,
+      s.source,
+      s.external_id,
+      s.name,
+      s.lat,
+      s.lng,
+      s.address,
+      s.updated_at,
+      s.last_seen_at,
+      s.created_at,
+      st_distance(
+        s.location,
+        st_setsrid(st_makepoint(p_lng, p_lat), 4326)::geography
+      ) as distance_meters
+    from stores s
+    where st_dwithin(
+      s.location,
+      st_setsrid(st_makepoint(p_lng, p_lat), 4326)::geography,
+      least(greatest(p_radius_meters, 0), 5000)
+    )
+    order by distance_meters asc
+    limit 100;
+  $$;
+
+  grant execute on function public.nearby_stores(double precision, double precision, integer)
+  to anon, authenticated;

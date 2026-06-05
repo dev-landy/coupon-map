@@ -1,5 +1,6 @@
 import { buildCouponMapView } from '../lib/frontendData';
 import { loadCouponRows } from '../lib/couponMapData';
+import { formatNearbyEmptyMessage } from '../lib/format';
 import { DEFAULT_LOCATION } from '../lib/location';
 import { buildHomePageJsonLd, serializeJsonLd } from '../lib/seo';
 import { DEFAULT_RADIUS_METERS } from '../lib/stores';
@@ -27,14 +28,4 @@ export default async function HomePage() {
       <CouponMapScreen view={view} status={status} message={message} />
     </>
   );
-}
-
-function formatNearbyEmptyMessage(radiusMeters: number): string {
-  return `현재 위치 ${formatRadiusLabel(radiusMeters)} 반경에 표시할 쿠폰 매장이 없습니다.`;
-}
-
-function formatRadiusLabel(radiusMeters: number): string {
-  return radiusMeters >= 1000
-    ? `${Number((radiusMeters / 1000).toFixed(1)).toLocaleString('ko-KR')}km`
-    : `${Math.round(radiusMeters).toLocaleString('ko-KR')}m`;
 }

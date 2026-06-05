@@ -65,11 +65,24 @@ export function useUserLocation(): UserLocation {
     const watchId = geolocation.watchPosition(
       (position) => {
         if (isCancelled) return;
-        setState({
-          coords: toCoords(position),
-          usingDefault: false,
-          isLoading: false,
-          errorReason: null,
+        const coords = toCoords(position);
+        setState((current) => {
+          if (
+            !current.isLoading &&
+            !current.usingDefault &&
+            current.errorReason === null &&
+            current.coords.lat === coords.lat &&
+            current.coords.lng === coords.lng
+          ) {
+            return current;
+          }
+
+          return {
+            coords,
+            usingDefault: false,
+            isLoading: false,
+            errorReason: null,
+          };
         });
       },
       (error) => {
