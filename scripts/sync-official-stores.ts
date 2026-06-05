@@ -39,7 +39,7 @@ const BRAND_METADATA: Record<StoreBrand, {
     source: 'kfc-kr-adb',
     external_id: 'kfc',
     name: 'KFC',
-    app_scheme: null,
+    app_scheme: 'kfcremaster://main',
     store_url: 'https://www.kfckorea.com',
     app_store_url: 'https://play.google.com/store/apps/details?id=kfc_ko.kore.kg.kfc_korea',
   },
