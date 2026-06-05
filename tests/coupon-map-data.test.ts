@@ -48,6 +48,14 @@ const COUPON: Coupon = {
   },
 };
 
+type TableName = 'brands' | 'stores' | 'coupons';
+
+interface SupabaseRangeCall {
+  table: TableName;
+  from: number;
+  to: number;
+}
+
 describe('loadCouponRows', () => {
   beforeEach(() => {
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://coupon-map.supabase.co');
@@ -63,7 +71,7 @@ describe('loadCouponRows', () => {
   });
 
   it('caches Supabase rows briefly and selects only the fields used by the app', async () => {
-    const selectColumnsByTable = setupSupabaseRows();
+    const { selectColumnsByTable } = setupSupabaseRows();
 
     const first = await loadCouponRows();
     const second = await loadCouponRows();
@@ -83,28 +91,61 @@ describe('loadCouponRows', () => {
     expect(selectColumnsByTable.stores).not.toBe('*');
     expect(selectColumnsByTable.coupons).not.toBe('*');
   });
+
+  it('loads all pages when Supabase has more rows than a single select page', async () => {
+    const stores = Array.from({ length: 1001 }, (_, index) => ({
+      ...STORE,
+      id: `store-${index}`,
+      external_id: `store-${index}`,
+      name: `매장 ${index}`,
+    }));
+    const { rangeCalls } = setupSupabaseRows({ stores });
+
+    const state = await loadCouponRows();
+
+    expect(state.rows.stores).toHaveLength(1001);
+    expect(state.rows.stores[0].id).toBe('store-0');
+    expect(state.rows.stores[1000].id).toBe('store-1000');
+    expect(rangeCalls.filter((call) => call.table === 'stores')).toEqual([
+      { table: 'stores', from: 0, to: 999 },
+      { table: 'stores', from: 1000, to: 1999 },
+    ]);
+  });
 });
 
-function setupSupabaseRows(): Record<string, string> {
+function setupSupabaseRows(
+  overrides: Partial<{
+    brands: Brand[];
+    stores: Store[];
+    coupons: Coupon[];
+  }> = {}
+): { selectColumnsByTable: Record<string, string>; rangeCalls: SupabaseRangeCall[] } {
   const rowsByTable = {
     brands: [BRAND],
     stores: [STORE],
     coupons: [COUPON],
+    ...overrides,
   };
   const selectColumnsByTable: Record<string, string> = {};
+  const rangeCalls: SupabaseRangeCall[] = [];
 
   supabaseMock.createClient.mockReturnValue({
     from: supabaseMock.from,
   });
-  supabaseMock.from.mockImplementation((table: keyof typeof rowsByTable) => ({
+  supabaseMock.from.mockImplementation((table: TableName) => ({
     select: vi.fn((columns: string) => {
       selectColumnsByTable[table] = columns;
-      return Promise.resolve({
-        data: rowsByTable[table],
-        error: null,
-      });
+      return {
+        range: vi.fn((from: number, to: number) => {
+          rangeCalls.push({ table, from, to });
+          return Promise.resolve({
+            data: rowsByTable[table].slice(from, to + 1),
+            error: null,
+          });
+        }),
+      };
     }),
   }));
 
-  return selectColumnsByTable;
+  return { selectColumnsByTable, rangeCalls };
 }

@@ -3,7 +3,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const DEFAULT_OUTPUT = 'data/stores.official.csv';
-const DEFAULT_BRANDS = ['burgerking', 'kfc'] as const;
+const DEFAULT_BRANDS = ['burgerking', 'kfc', 'mcdonalds'] as const;
 const STORE_SOURCE = 'official-web';
 
 export type StoreBrand = (typeof DEFAULT_BRANDS)[number];
@@ -74,6 +74,25 @@ interface KfcStoreRow {
 interface KfcStoreListResponse {
   total?: number;
   rows?: KfcStoreRow[];
+}
+
+interface McdonaldsStoreRow {
+  seq?: string | number;
+  code?: string | number;
+  korName?: string;
+  addressKor?: string;
+  loadKor?: string;
+  lat?: string | number;
+  lng?: string | number;
+}
+
+interface McdonaldsStoreListResponse {
+  resultCode?: number;
+  resultMessage?: string;
+  resultObject?: {
+    totalCount?: number;
+    list?: McdonaldsStoreRow[];
+  };
 }
 
 interface FetchLike {
@@ -190,12 +209,11 @@ export async function fetchOfficialStoreRecords(
   const counts: Record<StoreBrand, number> = {
     burgerking: 0,
     kfc: 0,
+    mcdonalds: 0,
   };
 
   for (const brand of brands) {
-    const brandRecords = brand === 'burgerking'
-      ? await fetchBurgerKingStores(fetcher)
-      : await fetchKfcStores(fetcher);
+    const brandRecords = await fetchStoreRecordsByBrand(brand, fetcher);
     records.push(...brandRecords);
     counts[brand] = brandRecords.length;
   }
@@ -209,6 +227,20 @@ export async function fetchOfficialStoreRecords(
   });
 
   return { records, counts };
+}
+
+async function fetchStoreRecordsByBrand(
+  brand: StoreBrand,
+  fetcher: FetchLike
+): Promise<OfficialStoreRecord[]> {
+  switch (brand) {
+    case 'burgerking':
+      return fetchBurgerKingStores(fetcher);
+    case 'kfc':
+      return fetchKfcStores(fetcher);
+    case 'mcdonalds':
+      return fetchMcdonaldsStores(fetcher);
+  }
 }
 
 export async function fetchBurgerKingStores(
@@ -275,6 +307,37 @@ export async function fetchKfcStores(
   const payload = (await response.json()) as KfcStoreListResponse;
   const rows = payload.rows ?? [];
   return dedupeStores(rows.map(toKfcStoreRecord).filter(isDefined));
+}
+
+export async function fetchMcdonaldsStores(
+  fetcher: FetchLike = fetch
+): Promise<OfficialStoreRecord[]> {
+  const pageSize = 500;
+  const records: OfficialStoreRecord[] = [];
+  let total: number | null = null;
+
+  for (let page = 1; page <= 20; page += 1) {
+    const url = new URL('https://www.mcdonalds.co.kr/api/v1/kor/store/list');
+    url.searchParams.set('view_rows', String(pageSize));
+    url.searchParams.set('page', String(page));
+    url.searchParams.set('searchWord', '');
+    url.searchParams.set('Sido', '');
+    url.searchParams.set('lat', '');
+    url.searchParams.set('lng', '');
+
+    const response = await fetcher(url);
+    assertOk(response, `McDonald's store page ${page}`);
+    const payload = (await response.json()) as McdonaldsStoreListResponse;
+    const rows = payload.resultObject?.list ?? [];
+    total = payload.resultObject?.totalCount ?? rows.length;
+    records.push(...rows.map(toMcdonaldsStoreRecord).filter(isDefined));
+
+    if (rows.length === 0 || records.length >= total) {
+      break;
+    }
+  }
+
+  return dedupeStores(records);
 }
 
 export function renderStoresCsv(records: readonly OfficialStoreRecord[]): string {
@@ -396,6 +459,27 @@ function toKfcStoreRecord(row: KfcStoreRow): OfficialStoreRecord | null {
       .map(normalizeText)
       .filter(isDefined)
       .join(' ') || null,
+  };
+}
+
+function toMcdonaldsStoreRecord(row: McdonaldsStoreRow): OfficialStoreRecord | null {
+  const externalId = normalizeText(row.code) ?? normalizeText(row.seq);
+  const rawName = normalizeText(row.korName);
+  const lat = parseCoordinate(row.lat);
+  const lng = parseCoordinate(row.lng);
+  if (!externalId || !rawName || lat === null || lng === null) {
+    return null;
+  }
+
+  return {
+    brand_source: 'mcdonalds-kr-adb',
+    brand_external_id: 'mcdonalds',
+    source: STORE_SOURCE,
+    external_id: externalId,
+    name: addNamePrefix(rawName, '맥도날드'),
+    lat,
+    lng,
+    address: normalizeText(row.loadKor) ?? normalizeText(row.addressKor),
   };
 }
 

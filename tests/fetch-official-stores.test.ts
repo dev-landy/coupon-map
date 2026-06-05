@@ -10,12 +10,12 @@ import {
 describe('official store fetch helpers', () => {
   it('parses CLI args with defaults and brand filtering', () => {
     expect(parseArgs([])).toEqual({
-      brands: ['burgerking', 'kfc'],
+      brands: ['burgerking', 'kfc', 'mcdonalds'],
       output: 'data/stores.official.csv',
     });
-    expect(parseArgs(['--brands=kfc', '--output', 'tmp/kfc.csv'])).toEqual({
-      brands: ['kfc'],
-      output: 'tmp/kfc.csv',
+    expect(parseArgs(['--brands=mcdonalds', '--output', 'tmp/mcdonalds.csv'])).toEqual({
+      brands: ['mcdonalds'],
+      output: 'tmp/mcdonalds.csv',
     });
     expect(() => parseBrandList('kfc,kfc')).toThrow(/duplicate brand/);
     expect(() => parseBrandList('lotteria')).toThrow(/Unknown brand/);
@@ -26,7 +26,7 @@ describe('official store fetch helpers', () => {
     let writtenCsv = '';
 
     const summary = await runFetchOfficialStores(
-      { brands: ['burgerking', 'kfc'], output: 'data/stores.official.csv' },
+      { brands: ['burgerking', 'kfc', 'mcdonalds'], output: 'data/stores.official.csv' },
       {
         fetch: async (input) => {
           const url = String(input);
@@ -73,6 +73,27 @@ describe('official store fetch helpers', () => {
             });
           }
 
+          if (url.includes('mcdonalds.co.kr/api/v1/kor/store/list')) {
+            return jsonResponse({
+              resultCode: 100,
+              resultMessage: 'Success!',
+              resultObject: {
+                totalCount: 1,
+                list: [
+                  {
+                    seq: 513,
+                    code: '0545',
+                    korName: '강남 2호점',
+                    addressKor: '서울 강남구 역삼동 822-2',
+                    loadKor: '서울 강남구 테헤란로 107 메디타워2층',
+                    lat: '37.4986859',
+                    lng: '127.0287553',
+                  },
+                ],
+              },
+            });
+          }
+
           throw new Error(`Unexpected URL: ${url}`);
         },
         writeCsv: async (_output, csv) => {
@@ -81,17 +102,20 @@ describe('official store fetch helpers', () => {
       }
     );
 
-    expect(calls).toHaveLength(3);
+    expect(calls).toHaveLength(4);
     expect(summary).toEqual({
       output: 'data/stores.official.csv',
-      stores: 2,
-      counts: { burgerking: 1, kfc: 1 },
+      stores: 3,
+      counts: { burgerking: 1, kfc: 1, mcdonalds: 1 },
     });
     expect(writtenCsv).toContain(
       'burgerking-kr-adb,burgerking,official-web,0001,버거킹 강남점,37.5,127,서울 강남구 테헤란로'
     );
     expect(writtenCsv).toContain(
       'kfc-kr-adb,kfc,official-web,1420001,KFC 홍대입구,37.55,126.92,서울 마포구 양화로 1층'
+    );
+    expect(writtenCsv).toContain(
+      'mcdonalds-kr-adb,mcdonalds,official-web,0545,맥도날드 강남 2호점,37.4986859,127.0287553,서울 강남구 테헤란로 107 메디타워2층'
     );
   });
 

@@ -16,7 +16,7 @@ import type { ManualStoreImportSummary } from '../lib/ingest/manualStores.ts';
 import { createServerSupabaseClient } from '../lib/ingest/supabase.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-const DEFAULT_BRANDS: StoreBrand[] = ['burgerking', 'kfc'];
+const DEFAULT_BRANDS: StoreBrand[] = ['burgerking', 'kfc', 'mcdonalds'];
 const VIRTUAL_STORE_FILE = 'official-store-api';
 
 const BRAND_METADATA: Record<StoreBrand, {
@@ -42,6 +42,14 @@ const BRAND_METADATA: Record<StoreBrand, {
     app_scheme: null,
     store_url: 'https://www.kfckorea.com',
     app_store_url: 'https://play.google.com/store/apps/details?id=kfc_ko.kore.kg.kfc_korea',
+  },
+  mcdonalds: {
+    source: 'mcdonalds-kr-adb',
+    external_id: 'mcdonalds',
+    name: '맥도날드',
+    app_scheme: 'mcdonaldskr://',
+    store_url: 'https://www.mcdonalds.co.kr',
+    app_store_url: 'https://play.google.com/store/apps/details?id=com.mcdonalds.mobileapp',
   },
 };
 

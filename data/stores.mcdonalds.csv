@@ -1,0 +1,402 @@
+brand_source,brand_external_id,source,external_id,name,lat,lng,address
+mcdonalds-kr-adb,mcdonalds,official-web,0322,맥도날드 가락DT점,37.494879,127.130762,서울 송파구 동남로 196
+mcdonalds-kr-adb,mcdonalds,official-web,0448,맥도날드 가산디지털,37.4813244,126.8837789,서울 금천구 벚꽃로 298 대륭포스트타워 6차
+mcdonalds-kr-adb,mcdonalds,official-web,0433,맥도날드 가산비지니스센터점,37.4801705,126.8811402,서울 금천구 가산디지털1로 165 (가산동)
+mcdonalds-kr-adb,mcdonalds,official-web,0274,맥도날드 가야,35.155374,129.038409,부산 부산진구 가야대로 607
+mcdonalds-kr-adb,mcdonalds,official-web,0545,맥도날드 강남 2호점,37.4986859,127.0287553,서울 강남구 테헤란로 107 메디타워2층
+mcdonalds-kr-adb,mcdonalds,official-web,0454,맥도날드 강남구청,37.5162358,127.0413134,서울 강남구 선릉로 667
+mcdonalds-kr-adb,mcdonalds,official-web,0677,맥도날드 강남삼성DT,37.5108629,127.0473756,서울 강남구 봉은사로 432
+mcdonalds-kr-adb,mcdonalds,official-web,0332,맥도날드 강릉,37.7549777,128.8961252,강원 강릉시 경강로 2097
+mcdonalds-kr-adb,mcdonalds,official-web,0717,맥도날드 강릉송정DT,37.7722802,128.9239953,강원특별자치도 강릉시 경강로 2412
+mcdonalds-kr-adb,mcdonalds,official-web,0052,맥도날드 강선,37.673849,126.764442,"경기 고양시 일산서구 대산로 113 1층 맥도날드(주엽동, 백마프라자)"
+mcdonalds-kr-adb,mcdonalds,official-web,0397,맥도날드 거제,34.890759,128.6164715,경남 거제시 장평로 12 디큐브백화점 1층
+mcdonalds-kr-adb,mcdonalds,official-web,0705,맥도날드 경기광주DT,37.40132790837621,127.27116160471068,경기 광주시 경충대로 1477
+mcdonalds-kr-adb,mcdonalds,official-web,0715,맥도날드 경산정평DT,35.8347,128.727062,경북 경산시 대학로 37
+mcdonalds-kr-adb,mcdonalds,official-web,0111,맥도날드 경성대,35.136797,129.099534,부산 남구 수영로 304 대승타워1층
+mcdonalds-kr-adb,mcdonalds,official-web,0605,맥도날드 경주보문DT,35.8437132,129.2882117,경북 경주시 보문로 441
+mcdonalds-kr-adb,mcdonalds,official-web,0685,맥도날드 경주용강 DT,35.8690051,129.2250611,경북 경주시 산업로 4364
+mcdonalds-kr-adb,mcdonalds,official-web,0490,맥도날드 경주황남 DT,35.8388905,129.2049056,경북 경주시 태종로 701
+mcdonalds-kr-adb,mcdonalds,official-web,0556,맥도날드 경희대국제캠퍼스,37.247936,127.077602,경기 수원시 영통구 덕영대로 1703 아이시티
+mcdonalds-kr-adb,mcdonalds,official-web,0716,맥도날드 고양덕이DT,37.699185,126.759431,경기 고양시 일산서구 경의로 914
+mcdonalds-kr-adb,mcdonalds,official-web,0704,맥도날드 고양삼송DT,37.6445183,126.8960646,경기 고양시 덕양구 고양대로 1948
+mcdonalds-kr-adb,mcdonalds,official-web,0686,맥도날드 고양원당DT점,37.6559796,126.8351623,경기 고양시 덕양구 호국로 777
+mcdonalds-kr-adb,mcdonalds,official-web,0650,맥도날드 고양풍동DT,37.6628115,126.8027062,경기 고양시 일산동구 백마로 493
+mcdonalds-kr-adb,mcdonalds,official-web,0232,맥도날드 고양DT,37.702824,126.903952,경기 고양시 덕양구 호국로 1699
+mcdonalds-kr-adb,mcdonalds,official-web,0658,맥도날드 고척DT,37.497228,126.863536,서울 구로구 경인로 393
+mcdonalds-kr-adb,mcdonalds,official-web,0422,맥도날드 공덕점,37.5411571,126.9471352,서울 마포구 마포대로 53 (도화동)
+mcdonalds-kr-adb,mcdonalds,official-web,0266,맥도날드 과천이마트,37.426269,126.991841,경기 과천시 별양상가3로 11 1층
+mcdonalds-kr-adb,mcdonalds,official-web,0615,맥도날드 과학기술대점,37.629723,127.07612,서울 노원구 공릉로 231
+mcdonalds-kr-adb,mcdonalds,official-web,0633,맥도날드 광명소하DT점,37.4477011,126.8817756,경기 광명시 오리로 512
+mcdonalds-kr-adb,mcdonalds,official-web,0140,맥도날드 광명역점,37.47899,126.853911,경기 광명시 광명로 895-1 (광명동)
+mcdonalds-kr-adb,mcdonalds,official-web,0663,맥도날드 광명DT,37.4685501,126.8478428,경기 광명시 광명로 765
+mcdonalds-kr-adb,mcdonalds,official-web,0698,맥도날드 광양DT,34.9393534,127.6997305,전남 광양시 동광길 5
+mcdonalds-kr-adb,mcdonalds,official-web,0451,맥도날드 광주동림DT,35.1723932,126.8622261,광주 북구 하남대로 635
+mcdonalds-kr-adb,mcdonalds,official-web,0542,맥도날드 광주산정DT점,35.165782,126.801344,광주 광산구 용아로 251 (산정동)
+mcdonalds-kr-adb,mcdonalds,official-web,0481,맥도날드 광주쌍촌 DT,35.151535,126.86275,광주 서구 상무대로 921-1
+mcdonalds-kr-adb,mcdonalds,official-web,0479,맥도날드 광주운암DT,35.1849172,126.8701582,광주 북구 북문대로187번길 2
+mcdonalds-kr-adb,mcdonalds,official-web,0573,맥도날드 광주월산DT,35.145839,126.889637,광주 남구 대남대로 393
+mcdonalds-kr-adb,mcdonalds,official-web,0651,맥도날드 광주진월DT,35.1216173,126.8982296,광주 남구 서문대로 697
+mcdonalds-kr-adb,mcdonalds,official-web,0464,맥도날드 광주첨단DT점,35.2115964,126.8717442,광주 북구 임방울대로 1048 (용두동)
+mcdonalds-kr-adb,mcdonalds,official-web,0399,맥도날드 구로디지털,37.485098,126.8950405,서울 구로구 디지털로31길 12 태평양물산 1층 맥도날드
+mcdonalds-kr-adb,mcdonalds,official-web,0581,맥도날드 구리수택점,37.600423,127.142066,경기 구리시 검배로 7 (수택동)
+mcdonalds-kr-adb,mcdonalds,official-web,0679,맥도날드 구리인창 DT,37.6102744,127.137706,경기 구리시 동구릉로 130
+mcdonalds-kr-adb,mcdonalds,official-web,0517,맥도날드 구미도량 DT,36.1362527,128.3320295,경북 구미시 야은로 447
+mcdonalds-kr-adb,mcdonalds,official-web,0670,맥도날드 구미옥계DT점,36.1403367,128.4182258,경북 구미시 옥계2공단로 390
+mcdonalds-kr-adb,mcdonalds,official-web,0634,맥도날드 구미인동DT,36.0953595,128.4315431,경북 구미시 인동북길 155
+mcdonalds-kr-adb,mcdonalds,official-web,0277,맥도날드 구미형곡점,36.111127,128.335711,경북 구미시 형곡중앙로 31 (형곡동)
+mcdonalds-kr-adb,mcdonalds,official-web,0327,맥도날드 구산,37.6106,126.916698,서울 은평구 연서로 131 홍천빌딩
+mcdonalds-kr-adb,mcdonalds,official-web,0635,맥도날드 구월 아시아드 DT점,37.446767,126.707541,인천 남동구 남동대로 724
+mcdonalds-kr-adb,mcdonalds,official-web,0139,맥도날드 구의역,37.536406,127.084466,서울 광진구 아차산로 376
+mcdonalds-kr-adb,mcdonalds,official-web,0549,맥도날드 군산나운DT,35.962196,126.696174,전북 군산시 나운로 132
+mcdonalds-kr-adb,mcdonalds,official-web,0720,맥도날드 군산조촌DT,35.9768446,126.737038,전북특별자치도 군산시 조촌로 143
+mcdonalds-kr-adb,mcdonalds,official-web,0657,맥도날드 군포당동SK DT,37.346099,126.943522,경기 군포시 고산로 259
+mcdonalds-kr-adb,mcdonalds,official-web,0582,맥도날드 군포산본DT점,37.373413,126.936938,경기 군포시 고산로 715 (산본동)
+mcdonalds-kr-adb,mcdonalds,official-web,0653,맥도날드 굽은다리역DT,37.547256,127.142984,서울 강동구 양재대로 1587
+mcdonalds-kr-adb,mcdonalds,official-web,0543,맥도날드 김천평화DT점,36.127952,128.117844,경북 김천시 자산로 199
+mcdonalds-kr-adb,mcdonalds,official-web,0607,맥도날드 김포감정DT점,37.624299,126.696611,경기 김포시 중봉로25번길 21
+mcdonalds-kr-adb,mcdonalds,official-web,0442,맥도날드 김포고촌SK DT점,37.6011347,126.7710576,경기 김포시 고촌읍 김포대로 336
+mcdonalds-kr-adb,mcdonalds,official-web,0708,맥도날드 김포구래DT,37.645171,126.619049,경기 김포시 김포한강10로 213
+mcdonalds-kr-adb,mcdonalds,official-web,0583,맥도날드 김포장기 DT,37.6463204,126.6707396,경기 김포시 김포한강1로 77-40
+mcdonalds-kr-adb,mcdonalds,official-web,0478,맥도날드 김해삼계 DT,35.2627423,128.8720488,경남 김해시 가야로 167
+mcdonalds-kr-adb,mcdonalds,official-web,0435,맥도날드 김해삼정 DT,35.2281242,128.8968947,경남 김해시 김해대로 2471
+mcdonalds-kr-adb,mcdonalds,official-web,0575,맥도날드 김해외동DT점,35.229524,128.862475,경남 김해시 분성로 144 (외동)
+mcdonalds-kr-adb,mcdonalds,official-web,0668,맥도날드 김해장유 DT,35.1926792,128.8044838,경남 김해시 삼문로 34
+mcdonalds-kr-adb,mcdonalds,official-web,0007,맥도날드 노량진,37.5134312,126.943535,서울 동작구 노량진로 158
+mcdonalds-kr-adb,mcdonalds,official-web,0210,맥도날드 달동,35.535139,129.321918,울산 남구 신정로 37
+mcdonalds-kr-adb,mcdonalds,official-web,0211,맥도날드 달맞이 DT,35.161841,129.170957,"부산 해운대구 좌동순환로 455 (중동,맥도날드)"
+mcdonalds-kr-adb,mcdonalds,official-web,0082,맥도날드 당감 DT,35.165666,129.039561,부산 부산진구 동평로 91
+mcdonalds-kr-adb,mcdonalds,official-web,0646,맥도날드 대구 다사DT,35.861736,128.461659,대구 달성군 다사읍 달구벌대로 825
+mcdonalds-kr-adb,mcdonalds,official-web,0467,맥도날드 대구 모다 DT점,35.8399882,128.4912427,대구 달서구 달서대로 455
+mcdonalds-kr-adb,mcdonalds,official-web,0512,맥도날드 대구 수성DT,35.860015,128.6191288,대구 수성구 달구벌대로 2345
+mcdonalds-kr-adb,mcdonalds,official-web,0565,맥도날드 대구 이곡DT,35.8551203,128.508293,대구 달서구 이곡공원로 8
+mcdonalds-kr-adb,mcdonalds,official-web,0418,맥도날드 대구 침산DT,35.886979,128.591729,대구 북구 침산로 120
+mcdonalds-kr-adb,mcdonalds,official-web,0660,맥도날드 대구교대DT,35.853471,128.590254,대구 남구 중앙대로 225
+mcdonalds-kr-adb,mcdonalds,official-web,0702,맥도날드 대구동호DT,35.8696417,128.7281069,대구 동구 안심로 403
+mcdonalds-kr-adb,mcdonalds,official-web,0596,맥도날드 대구두류DT점,35.8546703,128.5501994,대구 달서구 달구벌대로 1684 (두류동)
+mcdonalds-kr-adb,mcdonalds,official-web,0504,맥도날드 대구만촌DT점,35.8564424,128.6500702,대구 수성구 달구벌대로 2634 (만촌동)
+mcdonalds-kr-adb,mcdonalds,official-web,0641,맥도날드 대구복현DT점,35.8923448,128.6230705,대구 북구 동북로 303
+mcdonalds-kr-adb,mcdonalds,official-web,0558,맥도날드 대구본리DT점,35.844745,128.537513,대구 달서구 와룡로 134 (감삼동)
+mcdonalds-kr-adb,mcdonalds,official-web,0571,맥도날드 대구상인DT,35.8229302,128.5334999,대구 달서구 월곡로 338
+mcdonalds-kr-adb,mcdonalds,official-web,0410,맥도날드 대구시지DT점,35.8409636,128.7070276,대구 수성구 달구벌대로 3199 (매호동)
+mcdonalds-kr-adb,mcdonalds,official-web,0463,맥도날드 대구진천DT점,35.813863,128.521789,대구 달서구 월배로 67 (진천동)
+mcdonalds-kr-adb,mcdonalds,official-web,0544,맥도날드 대구태전 DT,35.9227656,128.5465096,대구 북구 칠곡중앙대로 303
+mcdonalds-kr-adb,mcdonalds,official-web,0415,맥도날드 대구평리DT점,35.8664105,128.5552987,대구 서구 서대구로 95 (평리동)
+mcdonalds-kr-adb,mcdonalds,official-web,0731,맥도날드 대구현풍DT점,35.691667724045,128.444479447185,대구 달성군 현풍읍 비슬로 592
+mcdonalds-kr-adb,mcdonalds,official-web,0502,맥도날드 대구황금DT점,35.8398734,128.6253141,대구 수성구 청수로 157 (황금동)
+mcdonalds-kr-adb,mcdonalds,official-web,0420,맥도날드 대구희망DT점,35.8466919,128.6133472,대구 수성구 수성로 238 (중동)
+mcdonalds-kr-adb,mcdonalds,official-web,0430,맥도날드 대전 센트럴 DT점,36.3241732,127.419176,대전 중구 중앙로 64
+mcdonalds-kr-adb,mcdonalds,official-web,0577,맥도날드 대전 유성 DT점,36.354346,127.340413,대전 유성구 계룡로87번길 3 (봉명동)
+mcdonalds-kr-adb,mcdonalds,official-web,0570,맥도날드 대전가수원DT,36.303557,127.348389,대전 서구 계백로 1124
+mcdonalds-kr-adb,mcdonalds,official-web,0437,맥도날드 대전가장DT,36.3344569,127.3888453,대전 서구 도산로 324
+mcdonalds-kr-adb,mcdonalds,official-web,0630,맥도날드 대전부사DT,36.319769,127.431771,대전 중구 충무로 139
+mcdonalds-kr-adb,mcdonalds,official-web,0551,맥도날드 대전신탄진DT점,36.432737,127.423142,대전 대덕구 신탄진로 605 (상서동)
+mcdonalds-kr-adb,mcdonalds,official-web,0561,맥도날드 대전유천DT점,36.317445,127.3924202,대전 중구 계백로 1549 (유천동)
+mcdonalds-kr-adb,mcdonalds,official-web,0540,맥도날드 대전카이스트DT점,36.3805308,127.3782696,대전 유성구 대덕대로 535
+mcdonalds-kr-adb,mcdonalds,official-web,0431,맥도날드 대전터미널점,36.3502842,127.4366222,대전 동구 동서대로 1689 (용전동)
+mcdonalds-kr-adb,mcdonalds,official-web,0419,맥도날드 대전한남대DT점,36.3584065,127.4212141,대전 대덕구 한밭대로 1102 (중리동)
+mcdonalds-kr-adb,mcdonalds,official-web,0165,맥도날드 대학로,37.58285,127.002106,서울 종로구 대학로 130 맥도날드
+mcdonalds-kr-adb,mcdonalds,official-web,0242,맥도날드 덕소,37.58581,127.212386,경기 남양주시 와부읍 덕소로 93 희빌딩 1층
+mcdonalds-kr-adb,mcdonalds,official-web,0597,맥도날드 동두천지행DT,37.892105,127.057318,경기 동두천시 평화로 2290
+mcdonalds-kr-adb,mcdonalds,official-web,0688,맥도날드 동묘,37.5731655,127.0151274,서울 종로구 종로 339
+mcdonalds-kr-adb,mcdonalds,official-web,0136,맥도날드 동성로 2,35.8690671,128.5950782,대구 중구 동성로 23-2
+mcdonalds-kr-adb,mcdonalds,official-web,0491,맥도날드 동수원GS DT,37.294811,127.048409,경기 수원시 영통구 창룡대로 370-1
+mcdonalds-kr-adb,mcdonalds,official-web,0109,맥도날드 동아대,35.112976,128.964497,부산 사하구 낙동대로 548
+mcdonalds-kr-adb,mcdonalds,official-web,0019,맥도날드 동인천점,37.474576,126.630452,인천 중구 우현로 85-1 (인현동)
+mcdonalds-kr-adb,mcdonalds,official-web,0723,맥도날드 동탄2 DT,37.2098,127.105,경기 화성시 동탄순환대로 754-9
+mcdonalds-kr-adb,mcdonalds,official-web,0401,맥도날드 동탄SK점,37.2211071,127.0602127,경기 화성시 효행로 1260 (능동)
+mcdonalds-kr-adb,mcdonalds,official-web,0519,맥도날드 동판교,37.395622,127.113596,경기 성남시 분당구 대왕판교로606번길 58
+mcdonalds-kr-adb,mcdonalds,official-web,0665,맥도날드 동해DT,37.5208536,129.1140294,강원 동해시 한섬로 93
+mcdonalds-kr-adb,mcdonalds,official-web,0526,맥도날드 등촌 DT,37.5582134,126.8597362,서울 강서구 양천로 546
+mcdonalds-kr-adb,mcdonalds,official-web,0527,맥도날드 마리오 아울렛,37.4779193,126.8872055,서울 금천구 디지털로 185 마리오아울렛1
+mcdonalds-kr-adb,mcdonalds,official-web,0707,맥도날드 마산석전DT,35.228,128.574,경남 창원시 마산회원구 3.15대로 601
+mcdonalds-kr-adb,mcdonalds,official-web,0405,맥도날드 마산신포DT,35.197997,128.57071,경남 창원시 마산합포구 서성로 8
+mcdonalds-kr-adb,mcdonalds,official-web,0559,맥도날드 마석DT,37.6600182,127.3023431,경기 남양주시 화도읍 비룡로 89
+mcdonalds-kr-adb,mcdonalds,official-web,0534,맥도날드 만수DT점,37.459989,126.723486,인천 남동구 백범로 229 (만수동)
+mcdonalds-kr-adb,mcdonalds,official-web,0249,맥도날드 만촌이마트,35.871288,128.636848,대구 수성구 동원로 136 이마트만촌점
+mcdonalds-kr-adb,mcdonalds,official-web,0258,맥도날드 망원점,37.5560628,126.9097173,서울 마포구 월드컵로 81 (망원동)
+mcdonalds-kr-adb,mcdonalds,official-web,0403,맥도날드 명동,37.564146,126.9845069,서울 중구 명동7길 8
+mcdonalds-kr-adb,mcdonalds,official-web,0449,맥도날드 명동 2호점,37.5605158,126.9846104,서울 중구 퇴계로 116-1 (회현동 3가)
+mcdonalds-kr-adb,mcdonalds,official-web,0569,맥도날드 명지대점,37.579896,126.924725,서울특별시 서대문구 거북골로 25 (남가좌동)
+mcdonalds-kr-adb,mcdonalds,official-web,0123,맥도날드 목동,37.528116,126.863788,서울 양천구 목동로 221
+mcdonalds-kr-adb,mcdonalds,official-web,0524,맥도날드 목원대점,36.3303563,127.3376545,대전 유성구 도안북로 81 (용계동)
+mcdonalds-kr-adb,mcdonalds,official-web,0681,맥도날드 목포남악DT점,34.8107491,126.4606712,전남 무안군 삼향읍 남악3로 58
+mcdonalds-kr-adb,mcdonalds,official-web,0413,맥도날드 목포석현DT,34.8172292,126.4203474,전남 목포시 영산로 577
+mcdonalds-kr-adb,mcdonalds,official-web,0579,맥도날드 목포하당DT점,34.800431,126.433771,전남 목포시 통일대로 88 (상동)
+mcdonalds-kr-adb,mcdonalds,official-web,0514,맥도날드 문학DT점,37.4382026,126.6888976,인천 미추홀구 매소홀로 600 (문학동)
+mcdonalds-kr-adb,mcdonalds,official-web,0535,맥도날드 미아역,37.626944,127.026192,서울 강북구 도봉로 204 미아역 맥도날드
+mcdonalds-kr-adb,mcdonalds,official-web,0643,맥도날드 미아DT,37.618093,127.021708,서울 강북구 삼양로 158
+mcdonalds-kr-adb,mcdonalds,official-web,0666,맥도날드 밀양 DT,35.491029,128.746135,경남 밀양시 밀양대로 1872
+mcdonalds-kr-adb,mcdonalds,official-web,0032,맥도날드 방배,37.481612,126.997127,서울 서초구 방배로 81 유경빌딩 1층
+mcdonalds-kr-adb,mcdonalds,official-web,0220,맥도날드 방촌 DT,35.8811089,128.6668421,대구 동구 동촌로 243
+mcdonalds-kr-adb,mcdonalds,official-web,0608,맥도날드 방학역DT점,37.670048,127.043274,서울 도봉구 도봉로 735
+mcdonalds-kr-adb,mcdonalds,official-web,0458,맥도날드 범일 SK DT,35.1375351,129.0641472,부산 동구 자성로 127
+mcdonalds-kr-adb,mcdonalds,official-web,0529,맥도날드 병점DT점,37.205453,127.037108,경기 화성시 경기대로 1004 (병점동)
+mcdonalds-kr-adb,mcdonalds,official-web,0661,맥도날드 보라매,37.5003258,126.9200103,서울 영등포구 여의대방로 145 세인트빌딩
+mcdonalds-kr-adb,mcdonalds,official-web,0129,맥도날드 부곡,35.2395625,129.0918982,부산 금정구 수림로 12 에스케이아파트 상가 맥도날드
+mcdonalds-kr-adb,mcdonalds,official-web,0563,맥도날드 부산 구남DT점,35.198924,128.995988,부산 북구 백양대로 1045 (구포동)
+mcdonalds-kr-adb,mcdonalds,official-web,0687,맥도날드 부산 남천DT점,35.1478008,129.1107721,부산 수영구 수영로 470
+mcdonalds-kr-adb,mcdonalds,official-web,0488,맥도날드 부산교대 DT점,35.1928227,129.079559,부산 연제구 중앙대로 1179 (거제동)
+mcdonalds-kr-adb,mcdonalds,official-web,0587,맥도날드 부산구서DT,35.2589962,129.0909939,부산 금정구 중앙대로 1957
+mcdonalds-kr-adb,mcdonalds,official-web,0523,맥도날드 부산기장 DT,35.2395851,129.2204796,부산 기장군 기장읍 기장대로 500
+mcdonalds-kr-adb,mcdonalds,official-web,0659,맥도날드 부산다대DT점,35.0587439,128.9715034,부산 사하구 다대로 532-1
+mcdonalds-kr-adb,mcdonalds,official-web,0106,맥도날드 부산대 2,35.229515,129.087488,부산 금정구 금정로60번길 24 해자빌딩 1층 맥도날드 부산대2호점
+mcdonalds-kr-adb,mcdonalds,official-web,0626,맥도날드 부산덕천 DT,35.2193532,129.0064388,부산 북구 금곡대로 107
+mcdonalds-kr-adb,mcdonalds,official-web,0622,맥도날드 부산동명대DT점,35.1228007,129.0997316,부산 남구 신선로 424
+mcdonalds-kr-adb,mcdonalds,official-web,0683,맥도날드 부산명지DT점,35.0974674,128.9225055,부산 강서구 명지국제8로 270
+mcdonalds-kr-adb,mcdonalds,official-web,0652,맥도날드 부산범전DT,35.1653457,129.0643637,부산 부산진구 중앙대로 823
+mcdonalds-kr-adb,mcdonalds,official-web,0625,맥도날드 부산사직DT점,35.1943637,129.0669049,부산 동래구 아시아드대로 110
+mcdonalds-kr-adb,mcdonalds,official-web,0506,맥도날드 부산송정DT,35.18386,129.20147,부산 해운대구 해운대로 1114
+mcdonalds-kr-adb,mcdonalds,official-web,0537,맥도날드 부산수영SK DT점,35.1682444,129.1143187,부산 수영구 연수로 411 (수영동)
+mcdonalds-kr-adb,mcdonalds,official-web,0669,맥도날드 부산엄궁 DT,35.128014,128.969062,부산 사상구 낙동대로 745
+mcdonalds-kr-adb,mcdonalds,official-web,0610,맥도날드 부산영도DT,35.092896,129.045401,부산 영도구 태종로 150
+mcdonalds-kr-adb,mcdonalds,official-web,0497,맥도날드 부산온천 SK DT,35.206364,129.073908,부산 동래구 충렬대로 121
+mcdonalds-kr-adb,mcdonalds,official-web,0678,맥도날드 부산정관DT점,35.3205339,129.1773511,부산 기장군 정관읍 정관로 584
+mcdonalds-kr-adb,mcdonalds,official-web,0694,맥도날드 부산초량 DT,35.1172315,129.0413088,부산 동구 중앙대로 228
+mcdonalds-kr-adb,mcdonalds,official-web,0691,맥도날드 부산하단DT,35.1040914,128.9711394,부산 사하구 낙동대로 431
+mcdonalds-kr-adb,mcdonalds,official-web,0521,맥도날드 부산황령DT점,35.1448686,129.0978176,부산 남구 황령대로 374 (대연동)
+mcdonalds-kr-adb,mcdonalds,official-web,0598,맥도날드 부천북부역,37.485544,126.782317,경기 부천시 부천로 11
+mcdonalds-kr-adb,mcdonalds,official-web,0637,맥도날드 부천심곡DT,37.483618,126.774632,경기 부천시 경인로 170
+mcdonalds-kr-adb,mcdonalds,official-web,0647,맥도날드 부천역곡역DT,37.483738,126.809594,경기 부천시 경인로 487
+mcdonalds-kr-adb,mcdonalds,official-web,0640,맥도날드 부천원종DT,37.5177814,126.8044098,경기 부천시 소사로 689
+mcdonalds-kr-adb,mcdonalds,official-web,0182,맥도날드 부평역,37.489788,126.723239,인천 부평구 광장로 16
+mcdonalds-kr-adb,mcdonalds,official-web,0188,맥도날드 부평중앙,37.4941027,126.723369,인천 부평구 부평문화로 65
+mcdonalds-kr-adb,mcdonalds,official-web,0472,맥도날드 부평SK DT,37.5000338,126.7226495,인천 부평구 부평대로 96
+mcdonalds-kr-adb,mcdonalds,official-web,0416,맥도날드 북수원DT점,37.3051514,127.002735,경기 수원시 장안구 경수대로 991 (송죽동)
+mcdonalds-kr-adb,mcdonalds,official-web,0351,맥도날드 분당효자점,37.374311,127.136348,경기 성남시 분당구 불정로 379 (서현동)
+mcdonalds-kr-adb,mcdonalds,official-web,0054,맥도날드 사직점,35.195991,129.060616,부산 동래구 사직북로 1 (사직동)
+mcdonalds-kr-adb,mcdonalds,official-web,0480,맥도날드 사천DT,35.080744,128.083462,경남 사천시 사천읍 사천대로 1838
+mcdonalds-kr-adb,mcdonalds,official-web,0085,맥도날드 삼선,37.5894108,127.0075428,서울 성북구 동소문로 13 일화빌딩 1층
+mcdonalds-kr-adb,mcdonalds,official-web,0471,맥도날드 삼성역,37.5082794,127.0587636,서울 강남구 삼성로92길 29 도일빌딩 1층
+mcdonalds-kr-adb,mcdonalds,official-web,0600,맥도날드 상계DT,37.672395,127.056223,서울 노원구 동일로 1612
+mcdonalds-kr-adb,mcdonalds,official-web,0204,맥도날드 상무대,35.153713,126.847691,광주 서구 치평로 72
+mcdonalds-kr-adb,mcdonalds,official-web,0611,맥도날드 상일동점,37.5498037,127.1753478,서울 강동구 상일로6길 39
+mcdonalds-kr-adb,mcdonalds,official-web,0662,맥도날드 서면 3,35.154629,129.061099,부산 부산진구 중앙대로692번길 33
+mcdonalds-kr-adb,mcdonalds,official-web,0648,맥도날드 서산DT,36.772804,126.441134,충남 서산시 충의로 3
+mcdonalds-kr-adb,mcdonalds,official-web,0675,맥도날드 서울 상암 DMC,37.5804493,126.8899133,서울 마포구 월드컵북로 400 1층 맥도날드
+mcdonalds-kr-adb,mcdonalds,official-web,0725,맥도날드 서울 태릉입구역DT,37.6202095879751,127.075128533636,서울 노원구 동일로 1010
+mcdonalds-kr-adb,mcdonalds,official-web,0507,맥도날드 서울교대점,37.4939517,127.0161834,서울 서초구 서초대로 316(서초동)
+mcdonalds-kr-adb,mcdonalds,official-web,0655,맥도날드 서울둔촌DT,37.52928,127.137334,서울 강동구 양재대로 1382
+mcdonalds-kr-adb,mcdonalds,official-web,0631,맥도날드 서울번동DT점,37.621142,127.045245,서울특별시 강북구 월계로 191
+mcdonalds-kr-adb,mcdonalds,official-web,0391,맥도날드 서울시청,37.5667729,126.9794809,서울 중구 남대문로9길 51 효덕빌딩
+mcdonalds-kr-adb,mcdonalds,official-web,0620,맥도날드 서울시흥DT,37.45046,126.902621,서울 금천구 시흥대로 184
+mcdonalds-kr-adb,mcdonalds,official-web,0371,맥도날드 서울역,37.5546203,126.9704671,서울 용산구 청파로 378 서울역 2층
+mcdonalds-kr-adb,mcdonalds,official-web,0389,맥도날드 서초뱅뱅,37.490081,127.030926,"서울 서초구 강남대로 305, 101호(서초 현대렉시온)"
+mcdonalds-kr-adb,mcdonalds,official-web,0404,맥도날드 서초GS점,37.486518,127.009527,서울 서초구 효령로49길 52 (서초동)
+mcdonalds-kr-adb,mcdonalds,official-web,0674,맥도날드 서판교 DT,37.3906413,127.0840039,경기 성남시 분당구 운중로 190
+mcdonalds-kr-adb,mcdonalds,official-web,0515,맥도날드 석촌역,37.5059873,127.1091036,서울 송파구 백제고분로 390
+mcdonalds-kr-adb,mcdonalds,official-web,0408,맥도날드 선릉,37.5034932,127.0470395,서울 강남구 테헤란로 326 아이타워 1층 맥도날드
+mcdonalds-kr-adb,mcdonalds,official-web,0554,맥도날드 성남신흥DT점,37.451099,127.148536,경기 성남시 수정구 수정로 306 (신흥동)
+mcdonalds-kr-adb,mcdonalds,official-web,0048,맥도날드 세이브존 노원,37.6366485,127.0689352,서울 노원구 한글비석로 57 (하계동)
+mcdonalds-kr-adb,mcdonalds,official-web,0090,맥도날드 세이브존 대전점,36.35164,127.39557,대전 서구 둔산로 201 (하계동)
+mcdonalds-kr-adb,mcdonalds,official-web,0414,맥도날드 속초DT,38.1898673,128.583929,강원 속초시 동해대로 4118
+mcdonalds-kr-adb,mcdonalds,official-web,0562,맥도날드 송도GS DT점,37.385219,126.6446957,인천 연수구 하모니로 128 (송도동)
+mcdonalds-kr-adb,mcdonalds,official-web,0276,맥도날드 송정역,37.561718,126.809705,"서울 강서구 공항대로 21 (공항동,맥도날드)"
+mcdonalds-kr-adb,mcdonalds,official-web,0251,맥도날드 송탄,37.08079,127.050829,경기 평택시 쇼핑로 13
+mcdonalds-kr-adb,mcdonalds,official-web,0613,맥도날드 송파잠실DT,37.504361,127.077051,서울 송파구 도곡로 434
+mcdonalds-kr-adb,mcdonalds,official-web,0555,맥도날드 수내역,37.378172,127.113477,경기 성남시 분당구 백현로101번길 29 C&C 빌딩 1층
+mcdonalds-kr-adb,mcdonalds,official-web,0589,맥도날드 수원 망포DT,37.246121,127.054623,경기도 수원시 영통구 덕영대로 1499 (망포동)
+mcdonalds-kr-adb,mcdonalds,official-web,0550,맥도날드 수원 성균관대,37.298442,126.971211,경기 수원시 장안구 서부로 2127
+mcdonalds-kr-adb,mcdonalds,official-web,0553,맥도날드 수원 아주대점,37.278765,127.044082,경기 수원시 영통구 아주로 46 (원천동)
+mcdonalds-kr-adb,mcdonalds,official-web,0588,맥도날드 수원세류DT,37.2446881,127.0171584,경기 수원시 권선구 경수대로 195
+mcdonalds-kr-adb,mcdonalds,official-web,0572,맥도날드 수원인계DT,37.270672,127.034944,경기 수원시 팔달구 권광로 261
+mcdonalds-kr-adb,mcdonalds,official-web,0632,맥도날드 수원정자DT,37.290278,127.001636,경기 수원시 장안구 수성로 267
+mcdonalds-kr-adb,mcdonalds,official-web,0722,맥도날드 수원탑동 DT,37.2547,126.9759,경기 수원시 권선구 서부로 1766
+mcdonalds-kr-adb,mcdonalds,official-web,0376,맥도날드 수원화성DT점,37.285572,127.028107,경기 수원시 팔달구 경수대로 676
+mcdonalds-kr-adb,mcdonalds,official-web,0461,맥도날드 수원GS DT,37.2590888,127.0260263,경기 수원시 권선구 권선로 684
+mcdonalds-kr-adb,mcdonalds,official-web,0036,맥도날드 수유,37.637908,127.026011,서울 강북구 도봉로 342
+mcdonalds-kr-adb,mcdonalds,official-web,0530,맥도날드 순천덕암DT점,34.9417246,127.5089934,전남 순천시 구암원길 1 (덕암동)
+mcdonalds-kr-adb,mcdonalds,official-web,0591,맥도날드 순천조례DT,34.957298,127.528712,전남 순천시 순광로 75
+mcdonalds-kr-adb,mcdonalds,official-web,0593,맥도날드 숭실대,37.495071,126.956887,서울 동작구 사당로 22 창주빌딩 1층
+mcdonalds-kr-adb,mcdonalds,official-web,0221,맥도날드 시청 DT,35.180789,129.077025,부산 연제구 중앙대로 1031 (연산동)
+mcdonalds-kr-adb,mcdonalds,official-web,0189,맥도날드 시화점,37.3459274,126.736907,"경기 시흥시 정왕대로 210 (정왕동, EMART시화점 1층)"
+mcdonalds-kr-adb,mcdonalds,official-web,0247,맥도날드 시흥은행,37.444743,126.798344,경기 시흥시 대은로 90
+mcdonalds-kr-adb,mcdonalds,official-web,0168,맥도날드 신내,37.606387,127.094714,서울 중랑구 봉화산로 194 신아타운1층 신내 맥도날드
+mcdonalds-kr-adb,mcdonalds,official-web,0377,맥도날드 신도림 테크노점,37.506818,126.890674,서울 구로구 새말로 97 (구로동)
+mcdonalds-kr-adb,mcdonalds,official-web,0074,맥도날드 신림,37.481966,126.930161,서울 관악구 신림로 310
+mcdonalds-kr-adb,mcdonalds,official-web,0132,맥도날드 신마산,35.1798836,128.5603864,경남 창원시 마산합포구 월영동서로 20
+mcdonalds-kr-adb,mcdonalds,official-web,0546,맥도날드 신사역,37.517415,127.021881,서울 강남구 도산대로 123 2층
+mcdonalds-kr-adb,mcdonalds,official-web,0477,맥도날드 신월남부 DT점,37.5197288,126.8387402,서울 양천구 남부순환로 553 (신월동)
+mcdonalds-kr-adb,mcdonalds,official-web,0533,맥도날드 신월DT,37.5314234,126.8308779,서울 양천구 남부순환로 404
+mcdonalds-kr-adb,mcdonalds,official-web,0282,맥도날드 신천,37.511393,127.082759,서울 송파구 올림픽로 108 맥스빌딩 1층
+mcdonalds-kr-adb,mcdonalds,official-web,0300,맥도날드 신흥DT점,37.456986,126.634617,인천 중구 인항로 38 (신흥동3가)
+mcdonalds-kr-adb,mcdonalds,official-web,0724,맥도날드 아산탕정 DT,36.793966580455,127.084993860141,충남 아산시 탕정면 이순신대로 748
+mcdonalds-kr-adb,mcdonalds,official-web,0718,맥도날드 안동DT,36.560062,128.703393,경북 안동시 경북대로 335 (옥동)
+mcdonalds-kr-adb,mcdonalds,official-web,0684,맥도날드 안산고잔 DT,37.3128766,126.8285911,경기 안산시 단원구 광덕3로 145-3
+mcdonalds-kr-adb,mcdonalds,official-web,0719,맥도날드 안성공도DT,37.0031697,127.1806612,경기 안성시 공도읍 서동대로 4475
+mcdonalds-kr-adb,mcdonalds,official-web,0057,맥도날드 안암,37.584398,127.029239,서울 성북구 고려대로24길 42 방주빌딩
+mcdonalds-kr-adb,mcdonalds,official-web,0133,맥도날드 안양,37.3988674,126.9231201,경기 안양시 만안구 안양로292번길 22
+mcdonalds-kr-adb,mcdonalds,official-web,0436,맥도날드 안양비산DT,37.3933777,126.9418787,경기 안양시 동안구 경수대로 839 (비산동)
+mcdonalds-kr-adb,mcdonalds,official-web,0390,맥도날드 압구정CGV,37.524435,127.028976,서울 강남구 논현로 848 1층 맥도날드
+mcdonalds-kr-adb,mcdonalds,official-web,0483,맥도날드 야탑 뉴코아,37.4103789,127.1272851,경기 성남시 분당구 야탑로81번길 11 (야탑동)
+mcdonalds-kr-adb,mcdonalds,official-web,0616,맥도날드 양산덕계DT점,35.380737,129.155334,경남 양산시 웅상대로 910
+mcdonalds-kr-adb,mcdonalds,official-web,0727,맥도날드 양산물금DT점,35.3294988828857,129.004517420884,경남 양산시 물금읍 황산로 651
+mcdonalds-kr-adb,mcdonalds,official-web,0606,맥도날드 양산북정 DT점,35.3529749,129.0375763,경남 양산시 양산대로 925
+mcdonalds-kr-adb,mcdonalds,official-web,0378,맥도날드 양산DT점,35.328068,129.033486,경남 양산시 동면 남양산길 7
+mcdonalds-kr-adb,mcdonalds,official-web,0382,맥도날드 양재,37.4822573,127.0358688,서울 서초구 강남대로 213
+mcdonalds-kr-adb,mcdonalds,official-web,0446,맥도날드 양재 SK DT,37.478071,127.03961,서울 서초구 바우뫼로 178
+mcdonalds-kr-adb,mcdonalds,official-web,0427,맥도날드 양주덕계DT,37.8247972,127.0508141,경기 양주시 평화로 1511
+mcdonalds-kr-adb,mcdonalds,official-web,0713,맥도날드 양주옥정DT,37.802978,127.077974,경기 양주시 고덕로 341
+mcdonalds-kr-adb,mcdonalds,official-web,0592,맥도날드 양주휴게소DT,37.678968,126.91616,경기 양주시 장흥면 서울외곽순환고속도로 58 양주간이휴게시설내 양주휴게소DT점
+mcdonalds-kr-adb,mcdonalds,official-web,0505,맥도날드 양평SK DT,37.5309805,126.893343,서울 영등포구 선유로 195
+mcdonalds-kr-adb,mcdonalds,official-web,0452,맥도날드 어린이대공원점,37.5472224,127.0730854,서울 광진구 광나루로 392
+mcdonalds-kr-adb,mcdonalds,official-web,0574,맥도날드 여수 학동 DT점,34.760998,127.664462,전남 여수시 망마로 9 (학동)
+mcdonalds-kr-adb,mcdonalds,official-web,0726,맥도날드 여수미평 DT,34.7636730705692,127.705821898361,전남 여수시 좌수영로 387
+mcdonalds-kr-adb,mcdonalds,official-web,0460,맥도날드 여의도,37.525103,126.92577838897705,서울 영등포구 국제금융로 10 L3층
+mcdonalds-kr-adb,mcdonalds,official-web,0712,맥도날드 여주DT,37.280375,127.635963,경기 여주시 세종로 200
+mcdonalds-kr-adb,mcdonalds,official-web,0475,맥도날드 연세대점,37.5585515,126.9367086,서울 서대문구 연세로 33
+mcdonalds-kr-adb,mcdonalds,official-web,0260,맥도날드 연수 GS DT점,37.4148325,126.6770929,인천 연수구 먼우금로 200 (연수동)
+mcdonalds-kr-adb,mcdonalds,official-web,0365,맥도날드 연수이마트,37.404243,126.681058,인천 연수구 경원대로 184
+mcdonalds-kr-adb,mcdonalds,official-web,0198,맥도날드 연신내,37.617615,126.919217,서울 은평구 연서로 213
+mcdonalds-kr-adb,mcdonalds,official-web,0380,맥도날드 연희 DT,37.541262,126.676282,인천 서구 서곶로 265
+mcdonalds-kr-adb,mcdonalds,official-web,0594,맥도날드 염창 DT점,37.547627,126.8715,서울 강서구 공항대로71길 3 (염창동)
+mcdonalds-kr-adb,mcdonalds,official-web,0078,맥도날드 영등포,37.516948,126.90763,서울 영등포구 경인로 855
+mcdonalds-kr-adb,mcdonalds,official-web,0703,맥도날드 영천DT,35.9762739,128.952638,경북 영천시 호국로 141
+mcdonalds-kr-adb,mcdonalds,official-web,0492,맥도날드 오리역점,37.3400118,127.1083921,경기 성남시 분당구 성남대로 45 (구미동)
+mcdonalds-kr-adb,mcdonalds,official-web,0516,맥도날드 오산세교DT점,37.1785643,127.0558738,경기 오산시 경기대로 651
+mcdonalds-kr-adb,mcdonalds,official-web,0386,맥도날드 오산DT점,37.139911,127.073855,경기 오산시 경기대로 170
+mcdonalds-kr-adb,mcdonalds,official-web,0425,맥도날드 옥포SK DT,34.8886974,128.6917714,경남 거제시 거제대로 3714 (옥포동)
+mcdonalds-kr-adb,mcdonalds,official-web,0547,맥도날드 외대,37.595842,127.061874,서울 동대문구 휘경로 13
+mcdonalds-kr-adb,mcdonalds,official-web,0387,맥도날드 용봉DT,35.185125,126.898181,광주 북구 설죽로 283
+mcdonalds-kr-adb,mcdonalds,official-web,0328,맥도날드 용산 DT,35.857381,128.530813,대구 달서구 용산로 222 (용산동)
+mcdonalds-kr-adb,mcdonalds,official-web,0636,맥도날드 용인동백DT,37.274748,127.141523,경기 용인시 기흥구 어정로 108-1
+mcdonalds-kr-adb,mcdonalds,official-web,0447,맥도날드 용인마북 DT,37.3024726357499,127.10628235193924,경기 용인시 기흥구 용구대로 2420
+mcdonalds-kr-adb,mcdonalds,official-web,0700,맥도날드 용인보라DT,37.2544724,127.1046466,경기 용인시 기흥구 용구대로 1861
+mcdonalds-kr-adb,mcdonalds,official-web,0474,맥도날드 용인수지DT,37.3303186,127.1023476,경기 용인시 수지구 신수로 677
+mcdonalds-kr-adb,mcdonalds,official-web,0623,맥도날드 용인시청DT,37.2387541,127.1745618,경기 용인시 처인구 중부대로 1166(삼가동)
+mcdonalds-kr-adb,mcdonalds,official-web,0619,맥도날드 용인신갈DT,37.269515,127.0970449,경기 용인시 기흥구 중부대로 266
+mcdonalds-kr-adb,mcdonalds,official-web,0730,맥도날드 용인중부DT,37.2690428446982,127.067011789891,경기 용인시 기흥구 중부대로 1-2
+mcdonalds-kr-adb,mcdonalds,official-web,0709,맥도날드 용인DT,37.239931446158,127.2106275428,경기 용인시 처인구 백옥대로 1176
+mcdonalds-kr-adb,mcdonalds,official-web,0642,맥도날드 우장산DT,37.545063,126.837336,서울시 강서구 화곡동 1026
+mcdonalds-kr-adb,mcdonalds,official-web,0602,맥도날드 울산 굴화DT점,35.556479,129.262596,울산 울주군 범서읍 울밀로 2877
+mcdonalds-kr-adb,mcdonalds,official-web,0468,맥도날드 울산 병영,35.5684842,129.3450248,울산 중구 번영로 576
+mcdonalds-kr-adb,mcdonalds,official-web,0604,맥도날드 울산 삼산로 DT,35.5380226,129.3323694,울산 남구 삼산로 230
+mcdonalds-kr-adb,mcdonalds,official-web,0639,맥도날드 울산 일산 DT,35.498218,129.428313,울산 동구 방어진순환도로 634
+mcdonalds-kr-adb,mcdonalds,official-web,0459,맥도날드 울산삼산DT,35.5426585,129.3391428,울산 남구 화합로 201
+mcdonalds-kr-adb,mcdonalds,official-web,0721,맥도날드 울산서동DT,35.5809426,129.3475574,울산 중구 북부순환도로 891
+mcdonalds-kr-adb,mcdonalds,official-web,0528,맥도날드 울산옥동 DT,35.5338665,129.2999606,울산 남구 문수로423번길 2
+mcdonalds-kr-adb,mcdonalds,official-web,0347,맥도날드 울산옥현,35.541154,129.26178,울산 남구 옥현로58번길 4
+mcdonalds-kr-adb,mcdonalds,official-web,0443,맥도날드 울산호계SK DT점,35.6354397,129.3452839,울산 북구 산업로 1448
+mcdonalds-kr-adb,mcdonalds,official-web,0393,맥도날드 울산SK DT,35.5326525,129.3156324,울산 남구 중앙로 126 (달동)
+mcdonalds-kr-adb,mcdonalds,official-web,0400,맥도날드 웅상DT,35.410612,129.164741,경남 양산시 웅상대로 1259
+mcdonalds-kr-adb,mcdonalds,official-web,0173,맥도날드 원동점,35.194386,129.110998,부산 동래구 충렬대로 486 (안락동)
+mcdonalds-kr-adb,mcdonalds,official-web,0494,맥도날드 원주단계DT,37.344154,127.928521,강원 원주시 서원대로 154 (단계동)
+mcdonalds-kr-adb,mcdonalds,official-web,0421,맥도날드 원주단구DT,37.3291139,127.9513641,강원 원주시 서원대로 426 (단구동)
+mcdonalds-kr-adb,mcdonalds,official-web,0692,맥도날드 위례신도시,37.4749314,127.1428218,서울 송파구 위례광장로 290번지 위례중앙푸르지오 2단지
+mcdonalds-kr-adb,mcdonalds,official-web,0548,맥도날드 의왕오전DT,37.356517,126.967186,경기 의왕시 경수대로 351
+mcdonalds-kr-adb,mcdonalds,official-web,0439,맥도날드 의정부금오DT점,37.7555791,127.0785317,경기 의정부시 호국로 1604 (금오동)
+mcdonalds-kr-adb,mcdonalds,official-web,0412,맥도날드 의정부녹양DT점,37.7567324,127.0385792,경기 의정부시 서부로 717 (가능동)
+mcdonalds-kr-adb,mcdonalds,official-web,0532,맥도날드 의정부만가대 DT점,37.7309716,127.0865032,경기 의정부시 민락로 11
+mcdonalds-kr-adb,mcdonalds,official-web,0493,맥도날드 의정부역,37.739985,127.048476,경기 의정부시 행복로 11
+mcdonalds-kr-adb,mcdonalds,official-web,0315,맥도날드 의정부GS DT점,37.7201469,127.0471417,경기 의정부시 평화로 315 (호원동)
+mcdonalds-kr-adb,mcdonalds,official-web,0311,맥도날드 이마트 포항점,35.991381,129.39895,경북 포항시 남구 냉천로 10 (인덕동)
+mcdonalds-kr-adb,mcdonalds,official-web,0429,맥도날드 이수점,37.484658,126.980731,서울 동작구 사당로 300 (사당동)
+mcdonalds-kr-adb,mcdonalds,official-web,0638,맥도날드 이천 DT,37.275135,127.446654,경기 이천시 경충대로 2578
+mcdonalds-kr-adb,mcdonalds,official-web,0005,맥도날드 이태원,37.5339542,126.9897127,서울 용산구 이태원로 142-1
+mcdonalds-kr-adb,mcdonalds,official-web,0566,맥도날드 익산영등DT점,35.958123,126.972979,전북 익산시 무왕로 1046
+mcdonalds-kr-adb,mcdonalds,official-web,0728,맥도날드 인천간석DT점,37.4803190073324,26.698663364305,인천 부평구 경원대로 1122
+mcdonalds-kr-adb,mcdonalds,official-web,0695,맥도날드 인천계산DT,37.5343565,126.7381358,인천 계양구 오조산로 39
+mcdonalds-kr-adb,mcdonalds,official-web,0470,맥도날드 인천구산 DT,37.4840793,126.7518742,인천 부평구 경인로 1191
+mcdonalds-kr-adb,mcdonalds,official-web,0428,맥도날드 인천구월DT점,37.4500387,126.6938266,인천 남동구 인주대로 514 (구월동)
+mcdonalds-kr-adb,mcdonalds,official-web,0576,맥도날드 인천삼산DT점,37.519461,126.732804,인천 부평구 장제로 380 (삼산동)
+mcdonalds-kr-adb,mcdonalds,official-web,0733,맥도날드 인천영종하늘도시,37.4899190790589,126.56026657696,인천 중구 하늘중앙로 197
+mcdonalds-kr-adb,mcdonalds,official-web,0601,맥도날드 인천옥련 DT점,37.428082,126.654103,인천 연수구 비류대로 176 (옥련동)
+mcdonalds-kr-adb,mcdonalds,official-web,0710,맥도날드 인천청라DT,37.517362,126.649716,인천 서구 원창로 8
+mcdonalds-kr-adb,mcdonalds,official-web,0522,맥도날드 잠실역,37.5150646,127.099686,서울 송파구 송파대로 558
+mcdonalds-kr-adb,mcdonalds,official-web,0536,맥도날드 장안사거리점,37.572507,127.072619,서울 동대문구 답십리로 291-1 (장안동)
+mcdonalds-kr-adb,mcdonalds,official-web,0560,맥도날드 전남대 DT,35.179382,126.912369,광주 북구 우치로 134
+mcdonalds-kr-adb,mcdonalds,official-web,0248,맥도날드 전농,37.578132,127.057758,서울 동대문구 전농로16길 8
+mcdonalds-kr-adb,mcdonalds,official-web,0680,맥도날드 전북정읍DT,35.5696764,126.8516727,전북 정읍시 남북로 51
+mcdonalds-kr-adb,mcdonalds,official-web,0538,맥도날드 전주덕진 DT,35.843834,127.123055,전북 전주시 덕진구 기린대로 503
+mcdonalds-kr-adb,mcdonalds,official-web,0455,맥도날드 전주송천 DT,35.864989,127.121885,전북 전주시 덕진구 송천중앙로 200
+mcdonalds-kr-adb,mcdonalds,official-web,0511,맥도날드 전주인후DT점,35.8440085,127.145058,전북 전주시 덕진구 백제대로 692 (인후동2가)
+mcdonalds-kr-adb,mcdonalds,official-web,0402,맥도날드 전주중화산 DT점,35.8142624,127.1235637,전북 전주시 완산구 백제대로 238 (중화산동2가)
+mcdonalds-kr-adb,mcdonalds,official-web,0590,맥도날드 전주평화 DT,35.793859,127.132678,전북 전주시 완산구 모악로 4758
+mcdonalds-kr-adb,mcdonalds,official-web,0539,맥도날드 전주효자 DT,35.805783,127.1117512,전북 전주시 완산구 용머리로 13
+mcdonalds-kr-adb,mcdonalds,official-web,0303,맥도날드 정발산,37.6594219,126.770358,경기 고양시 일산동구 중앙로1275번길 38-5 이레21빌딩
+mcdonalds-kr-adb,mcdonalds,official-web,0618,맥도날드 제주공항DT점,33.4950661,126.4925675,제주특별자치도 제주시 도령로 159
+mcdonalds-kr-adb,mcdonalds,official-web,0394,맥도날드 제주노형 DT,33.4863584,126.4808204,제주특별자치도 제주시 노연로 7
+mcdonalds-kr-adb,mcdonalds,official-web,0706,맥도날드 제주도남DT,33.480548,126.527551,제주특별자치도 제주시 연북로 434
+mcdonalds-kr-adb,mcdonalds,official-web,0503,맥도날드 제주서귀포DT,33.2532031,126.5626474,제주특별자치도 서귀포시 일주동로 8665 (서귀동)
+mcdonalds-kr-adb,mcdonalds,official-web,0445,맥도날드 제주시청DT,33.4956779,126.5331559,제주특별자치도 제주시 중앙로 277
+mcdonalds-kr-adb,mcdonalds,official-web,0714,맥도날드 제주외도DT,33.493466,126.431264,제주특별자치도 제주시 일주서로 7339
+mcdonalds-kr-adb,mcdonalds,official-web,0624,맥도날드 제주월드컵스타디움DT,33.2494014,126.5073152,제주특별자치도 서귀포시 일주서로 7
+mcdonalds-kr-adb,mcdonalds,official-web,0580,맥도날드 제주일도 DT,33.507559,126.541128,제주특별자치도 제주시 동광로 134
+mcdonalds-kr-adb,mcdonalds,official-web,0699,맥도날드 제주중문DT,33.254867,126.413763,제주특별자치도 서귀포시 중문관광로 38
+mcdonalds-kr-adb,mcdonalds,official-web,0644,맥도날드 제천DT점,37.145273,128.214212,충북 제천시 의림대로 202
+mcdonalds-kr-adb,mcdonalds,official-web,0396,맥도날드 종로 3가,37.570588,126.990462,서울 종로구 종로 115
+mcdonalds-kr-adb,mcdonalds,official-web,0361,맥도날드 종암SK DT,37.59578,127.0360251,서울 성북구 종암로 58
+mcdonalds-kr-adb,mcdonalds,official-web,0128,맥도날드 좌동 1,35.177959,129.176034,부산 해운대구 좌동순환로 181
+mcdonalds-kr-adb,mcdonalds,official-web,0080,맥도날드 주례,35.150981,129.012736,부산 사상구 가야대로 368
+mcdonalds-kr-adb,mcdonalds,official-web,0088,맥도날드 중계,37.650831,127.07599,서울 노원구 중계로 218
+mcdonalds-kr-adb,mcdonalds,official-web,0155,맥도날드 중계역,37.648286,127.062056,서울 노원구 동일로 1341 장우빌딩 1층
+mcdonalds-kr-adb,mcdonalds,official-web,0265,맥도날드 중동DT점,37.502167,126.774163,경기 부천시 중동로262번길 94 (중동)
+mcdonalds-kr-adb,mcdonalds,official-web,0119,맥도날드 중랑,37.59341,127.075477,서울 중랑구 망우로 202 동성빌딩
+mcdonalds-kr-adb,mcdonalds,official-web,0462,맥도날드 중산DT점,37.6828342,126.7788292,경기 고양시 일산동구 고양대로 745 (중산동)
+mcdonalds-kr-adb,mcdonalds,official-web,0417,맥도날드 중앙대,37.506553,126.958968,서울 동작구 흑석로 84 (R&D센터 지하1층 맥도날드)
+mcdonalds-kr-adb,mcdonalds,official-web,0496,맥도날드 진접DT,37.7220147,127.1896496,경기 남양주시 진접읍 금강로 1467
+mcdonalds-kr-adb,mcdonalds,official-web,0693,맥도날드 진주가좌DT,35.1615021,128.1071192,경남 진주시 진주대로 612
+mcdonalds-kr-adb,mcdonalds,official-web,0172,맥도날드 진주신안,35.178345,128.064365,경남 진주시 진양호로 280 (신안동)
+mcdonalds-kr-adb,mcdonalds,official-web,0432,맥도날드 진주칠암 DT,35.1755202,128.0930724,경남 진주시 진주대로 838
+mcdonalds-kr-adb,mcdonalds,official-web,0701,맥도날드 진주혁신GSDT,35.1792099,128.1547736,경남 진주시 동진로 581
+mcdonalds-kr-adb,mcdonalds,official-web,0157,맥도날드 진해,35.151339,128.663628,경남 창원시 진해구 벚꽃로 68-1
+mcdonalds-kr-adb,mcdonalds,official-web,0697,맥도날드 진해용원DT,35.1011458,128.8106492,경남 창원시 진해구 용원로7번길 10
+mcdonalds-kr-adb,mcdonalds,official-web,0541,맥도날드 진해자은 DT,35.1447205,128.7068096,경남 창원시 진해구 진해대로 950
+mcdonalds-kr-adb,mcdonalds,official-web,0586,맥도날드 창원내서DT,35.2485149,128.5103547,경남 창원시 마산회원구 내서읍 광려천서로 77 맥도날드 창원내서DT점
+mcdonalds-kr-adb,mcdonalds,official-web,0564,맥도날드 창원사파DT,35.221964,128.700305,경남 창원시 성산구 창이대로706번길 2
+mcdonalds-kr-adb,mcdonalds,official-web,0473,맥도날드 창원상남,35.2198264,128.6827941,"경남 창원시 성산구 단정로 22, 1층"
+mcdonalds-kr-adb,mcdonalds,official-web,0379,맥도날드 창원시티7,35.2400818,128.6533769,경남 창원시 의창구 원이대로 320 더시티세븐몰 W-103 맥도날드
+mcdonalds-kr-adb,mcdonalds,official-web,0509,맥도날드 창원역DT점,35.2559358,128.6067754,경남 창원시 의창구 의창대로 50 (팔용동)
+mcdonalds-kr-adb,mcdonalds,official-web,0450,맥도날드 천안 쌍용역 DT점,36.7935958,127.1259295,충남 천안시 서북구 충무로 166 (쌍용동)
+mcdonalds-kr-adb,mcdonalds,official-web,0628,맥도날드 천안고속버스터미널,36.819356,127.1542419,충남 천안시 동남구 만남로 43 1층
+mcdonalds-kr-adb,mcdonalds,official-web,0711,맥도날드 천안두정역DT,36.832998,127.152069,충남 천안시 서북구 천안대로 1022
+mcdonalds-kr-adb,mcdonalds,official-web,0406,맥도날드 천안두정DT,36.8256774,127.1286879,충남 천안시 서북구 동서대로 49 (두정동)
+mcdonalds-kr-adb,mcdonalds,official-web,0513,맥도날드 천안원성 DT,36.8105986,127.164304,충남 천안시 동남구 천안대로 699
+mcdonalds-kr-adb,mcdonalds,official-web,0734,맥도날드 천호로데오점,37.5378379676663,127.12733248525,"서울 강동구 천호대로 1037, 2층"
+mcdonalds-kr-adb,mcdonalds,official-web,0280,맥도날드 철산역점,37.475449,126.868547,경기 광명시 오리로856번길 17 (철산동)
+mcdonalds-kr-adb,mcdonalds,official-web,0595,맥도날드 청주금천 DT,36.627773,127.508134,충북 청주시 상당구 중고개로 281
+mcdonalds-kr-adb,mcdonalds,official-web,0518,맥도날드 청주봉명 DT,36.6462293,127.4642027,충북 청주시 흥덕구 1순환로 518
+mcdonalds-kr-adb,mcdonalds,official-web,0424,맥도날드 청주분평DT,36.610333,127.483852,충북 청주시 서원구 청남로 1991
+mcdonalds-kr-adb,mcdonalds,official-web,0525,맥도날드 청주비하 DT,36.6386995,127.4222387,충북 청주시 흥덕구 2순환로 1076
+mcdonalds-kr-adb,mcdonalds,official-web,0485,맥도날드 청주성화,36.617241,127.44765,충북 청주시 서원구 서부로 1344
+mcdonalds-kr-adb,mcdonalds,official-web,0557,맥도날드 청주율량GS DT점,36.67074,127.484197,충북 청주시 청원구 공항로 156
+mcdonalds-kr-adb,mcdonalds,official-web,0487,맥도날드 초읍DT점,35.181997,129.048057,부산 부산진구 성지로 152 (초읍동)
+mcdonalds-kr-adb,mcdonalds,official-web,0567,맥도날드 춘천퇴계DT,37.859061,127.73104,강원 춘천시 영서로 2173
+mcdonalds-kr-adb,mcdonalds,official-web,0673,맥도날드 춘천후평DT,37.8808807,127.7494853,강원 춘천시 후석로 334
+mcdonalds-kr-adb,mcdonalds,official-web,0690,맥도날드 충남논산DT,36.18859,127.0954323,충남 논산시 시민로 247
+mcdonalds-kr-adb,mcdonalds,official-web,0609,맥도날드 충남당진DT,36.8971623,126.6269708,충남 당진시 서문1길 62-18
+mcdonalds-kr-adb,mcdonalds,official-web,0672,맥도날드 충남보령DT,36.341671,126.589098,충남 보령시 터미널길 3
+mcdonalds-kr-adb,mcdonalds,official-web,0645,맥도날드 충남아산DT,36.784632,127.0050001,충남 아산시 충무로 37
+mcdonalds-kr-adb,mcdonalds,official-web,0696,맥도날드 충남홍성DT,36.6046922,126.6613855,충남 홍성군 홍성읍 충서로 1528
+mcdonalds-kr-adb,mcdonalds,official-web,0438,맥도날드 충주교현 DT,36.9793601,127.9279571,충북 충주시 국원대로 87
+mcdonalds-kr-adb,mcdonalds,official-web,0237,맥도날드 칠곡2 DT,35.932701,128.549584,대구 북구 구암로 83
+mcdonalds-kr-adb,mcdonalds,official-web,0667,맥도날드 코엑스,37.5105202,127.0602059,서울 강남구 영동대로 513 B1 A102 맥도날드
+mcdonalds-kr-adb,mcdonalds,official-web,0234,맥도날드 탄현점,37.691958,126.763783,경기 고양시 일산서구 일현로 56 (탄현동)
+mcdonalds-kr-adb,mcdonalds,official-web,0187,맥도날드 탑동,33.516925,126.5271375,제주특별자치도 제주시 임항로 17 (건입동)
+mcdonalds-kr-adb,mcdonalds,official-web,0135,맥도날드 토곡,35.1878973,129.102371,부산 연제구 과정로 226
+mcdonalds-kr-adb,mcdonalds,official-web,0510,맥도날드 통영죽림DT,34.8842312,128.4176021,경남 통영시 광도면 죽림4로 36
+mcdonalds-kr-adb,mcdonalds,official-web,0732,맥도날드 파주운정교하점,37.7129807250219,126.721301804869,경기 파주시 청석로 116
+mcdonalds-kr-adb,mcdonalds,official-web,0664,맥도날드 판교테크노밸리,37.401232,127.108642,경기 성남시 분당구 판교역로 231 H스퀘어 S동 1층
+mcdonalds-kr-adb,mcdonalds,official-web,0508,맥도날드 평내 DT,37.647998,127.23483,경기 남양주시 경춘로 1273
+mcdonalds-kr-adb,mcdonalds,official-web,0269,맥도날드 평촌호계점,37.3842341,126.9590925,경기 안양시 동안구 평촌대로 137 (호계동)
+mcdonalds-kr-adb,mcdonalds,official-web,0383,맥도날드 평택 세교DT점,37.005327,127.084502,경기 평택시 경기대로 570 (세교동)
+mcdonalds-kr-adb,mcdonalds,official-web,0444,맥도날드 평택서정 DT점,37.0696681,127.0639889,경기 평택시 경기대로 1395 (서정동)
+mcdonalds-kr-adb,mcdonalds,official-web,0689,맥도날드 평택소사벌점,37.0004749,127.1114954,경기 평택시 평남로 862
+mcdonalds-kr-adb,mcdonalds,official-web,0729,맥도날드 평택안중DT,36.9906332307197,126.914020595487,경기 평택시 안중읍 서동대로 1465
+mcdonalds-kr-adb,mcdonalds,official-web,0495,맥도날드 평택GS DT,36.9960302,127.1424225,경기 평택시 서동대로 3929
+mcdonalds-kr-adb,mcdonalds,official-web,0374,맥도날드 포천DT,37.845665,127.160166,경기 포천시 호국로 894
+mcdonalds-kr-adb,mcdonalds,official-web,0149,맥도날드 포항 2,36.039009,129.365716,경북 포항시 북구 중앙로 291
+mcdonalds-kr-adb,mcdonalds,official-web,0434,맥도날드 포항남부DT점,36.0172853,129.3472423,경북 포항시 남구 새천년대로 470 (대잠동)
+mcdonalds-kr-adb,mcdonalds,official-web,0456,맥도날드 포항북부 DT,36.0563529,129.3775382,경북 포항시 북구 삼호로 202
+mcdonalds-kr-adb,mcdonalds,official-web,0426,맥도날드 포항장성DT점,36.0747692,129.3848809,경북 포항시 북구 새천년대로 1261 (장성동)
+mcdonalds-kr-adb,mcdonalds,official-web,0614,맥도날드 하남시청DT점,37.540954,127.214961,경기 하남시 대청로 25
+mcdonalds-kr-adb,mcdonalds,official-web,0169,맥도날드 한양대,37.557201,127.041917,서울 성동구 왕십리로 227
+mcdonalds-kr-adb,mcdonalds,official-web,0409,맥도날드 한티역,37.4973442,127.055157,서울 강남구 도곡로 409
+mcdonalds-kr-adb,mcdonalds,official-web,0466,맥도날드 합정메세나폴리스,37.5507165,126.9134947,서울 마포구 양화로 45 메세나폴리스 2층 맥도날드
+mcdonalds-kr-adb,mcdonalds,official-web,0629,맥도날드 해운대DT,35.160151,129.159643,부산 해운대구 해운대로570번길 51
+mcdonalds-kr-adb,mcdonalds,official-web,0216,맥도날드 행신,37.615203,126.833698,경기 고양시 덕양구 충경로 38
+mcdonalds-kr-adb,mcdonalds,official-web,0676,맥도날드 홍제역,37.588756,126.944663,서울 서대문구 통일로 442-1
+mcdonalds-kr-adb,mcdonalds,official-web,0252,맥도날드 화명 DT,35.240479,129.014479,부산 북구 금곡대로 360
+mcdonalds-kr-adb,mcdonalds,official-web,0627,맥도날드 화성봉담DT,37.2238271,126.9731257,경기 화성시 효행로 269
+mcdonalds-kr-adb,mcdonalds,official-web,0671,맥도날드 화성향남DT,37.121811,126.9187348,경기 화성시 향남읍 행정남로 120
+mcdonalds-kr-adb,mcdonalds,official-web,0141,맥도날드 화정역,37.633886,126.831529,경기 고양시 덕양구 화신로272번길 67
+mcdonalds-kr-adb,mcdonalds,official-web,0170,맥도날드 See&See,37.451888,126.701878,인천 남동구 예술로 198

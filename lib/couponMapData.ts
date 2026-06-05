@@ -27,7 +27,13 @@ interface InFlightLoadState {
   promise: Promise<LoadState>;
 }
 
+interface SupabaseRowsResult<T> {
+  data: T[] | null;
+  error: { message: string } | null;
+}
+
 const COUPON_ROWS_CACHE_TTL_MS = 60 * 1000;
+const SUPABASE_SELECT_PAGE_SIZE = 1000;
 const BRAND_SELECT_COLUMNS =
   'id, source, external_id, name, app_scheme, store_url, app_store_url, updated_at, last_seen_at, created_at';
 const STORE_SELECT_COLUMNS =
@@ -101,9 +107,9 @@ async function fetchCouponRows(
   const supabase = getCouponRowsClient(url, anonKey);
 
   const [brands, stores, coupons] = await Promise.all([
-    supabase.from('brands').select(BRAND_SELECT_COLUMNS),
-    supabase.from('stores').select(STORE_SELECT_COLUMNS),
-    supabase.from('coupons').select(COUPON_SELECT_COLUMNS),
+    fetchAllSupabaseRows<Brand>(supabase, 'brands', BRAND_SELECT_COLUMNS),
+    fetchAllSupabaseRows<Store>(supabase, 'stores', STORE_SELECT_COLUMNS),
+    fetchAllSupabaseRows<Coupon>(supabase, 'coupons', COUPON_SELECT_COLUMNS),
   ]);
 
   const error = brands.error ?? stores.error ?? coupons.error;
@@ -136,6 +142,38 @@ async function fetchCouponRows(
     rows,
     status: isEmpty ? 'empty' : 'ready',
     message: isEmpty ? 'Supabase에 표시 가능한 쿠폰 데이터가 없습니다.' : null,
+  };
+}
+
+async function fetchAllSupabaseRows<T>(
+  supabase: SupabaseClient,
+  table: string,
+  columns: string
+): Promise<SupabaseRowsResult<T>> {
+  const rows: T[] = [];
+
+  for (let from = 0; ; from += SUPABASE_SELECT_PAGE_SIZE) {
+    const to = from + SUPABASE_SELECT_PAGE_SIZE - 1;
+    const result = (await supabase
+      .from(table)
+      .select(columns)
+      .range(from, to)) as SupabaseRowsResult<T>;
+
+    if (result.error) {
+      return {
+        data: null,
+        error: result.error,
+      };
+    }
+
+    const page = result.data ?? [];
+    rows.push(...page);
+    if (page.length < SUPABASE_SELECT_PAGE_SIZE) break;
+  }
+
+  return {
+    data: rows,
+    error: null,
   };
 }
 

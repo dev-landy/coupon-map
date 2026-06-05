@@ -102,7 +102,7 @@ npm run crawl:all -- --sources burgerking-kr-adb,kfc-kr-adb
 프론트 지도는 `brands`, `coupons`, `stores`가 모두 있어야 매장을 표시합니다.
 쿠폰만 저장되어 있고 매장 데이터가 없으면 지도에는 아무것도 뜨지 않습니다.
 
-버거킹/KFC 매장은 공식 웹 API에서 바로 Supabase에 저장할 수 있습니다.
+버거킹/KFC/맥도날드 매장은 공식 웹 API에서 바로 Supabase에 저장할 수 있습니다.
 
 ```bash
 npm run sync:stores -- --dry-run
@@ -132,7 +132,7 @@ CSV 컬럼은 아래 형식입니다.
 brand_source,brand_external_id,source,external_id,name,lat,lng,address
 ```
 
-예를 들어 `brand_source=kfc-kr-adb`, `brand_external_id=kfc`인 매장은 KFC 브랜드 row에 연결됩니다.
+예를 들어 `brand_source=mcdonalds-kr-adb`, `brand_external_id=mcdonalds`인 매장은 맥도날드 브랜드 row에 연결됩니다.
 
 ## 8. 프론트에서 확인하기
 

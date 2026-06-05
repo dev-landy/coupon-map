@@ -11,11 +11,11 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 describe('official store Supabase sync', () => {
   it('parses dry-run and brand filter args', () => {
     expect(parseArgs([])).toEqual({
-      brands: ['burgerking', 'kfc'],
+      brands: ['burgerking', 'kfc', 'mcdonalds'],
       dryRun: false,
     });
-    expect(parseArgs(['--dry-run', '--brands', 'kfc'])).toEqual({
-      brands: ['kfc'],
+    expect(parseArgs(['--dry-run', '--brands', 'mcdonalds'])).toEqual({
+      brands: ['mcdonalds'],
       dryRun: true,
     });
   });
@@ -25,7 +25,7 @@ describe('official store Supabase sync', () => {
     let importedCsv = '';
 
     const summary = await runSyncOfficialStores(
-      { brands: ['burgerking', 'kfc'], dryRun: false },
+      { brands: ['burgerking', 'kfc', 'mcdonalds'], dryRun: false },
       {
         createClient: () => ({}) as SupabaseClient,
         ensureBrands: async () => undefined,
@@ -72,6 +72,24 @@ describe('official store Supabase sync', () => {
             });
           }
 
+          if (url.includes('mcdonalds.co.kr/api/v1/kor/store/list')) {
+            return jsonResponse({
+              resultCode: 100,
+              resultObject: {
+                totalCount: 1,
+                list: [
+                  {
+                    code: '0545',
+                    korName: '강남 2호점',
+                    loadKor: '서울 강남구 테헤란로 107',
+                    lat: '37.4986859',
+                    lng: '127.0287553',
+                  },
+                ],
+              },
+            });
+          }
+
           throw new Error(`Unexpected URL: ${url}`);
         },
         importStores: async (args, dependencies): Promise<ManualStoreImportSummary> => {
@@ -80,12 +98,13 @@ describe('official store Supabase sync', () => {
           return {
             file: args.file,
             dryRun: args.dryRun,
-            stores: 2,
+            stores: 3,
             brands: [
               { brand_source: 'burgerking-kr-adb', brand_external_id: 'burgerking' },
               { brand_source: 'kfc-kr-adb', brand_external_id: 'kfc' },
+              { brand_source: 'mcdonalds-kr-adb', brand_external_id: 'mcdonalds' },
             ],
-            upserted: 2,
+            upserted: 3,
           };
         },
       }
@@ -97,12 +116,13 @@ describe('official store Supabase sync', () => {
     });
     expect(importedCsv).toContain('burgerking-kr-adb,burgerking,official-web,0001');
     expect(importedCsv).toContain('kfc-kr-adb,kfc,official-web,1420001');
+    expect(importedCsv).toContain('mcdonalds-kr-adb,mcdonalds,official-web,0545');
     expect(summary).toMatchObject({
       dryRun: false,
-      stores: 2,
-      counts: { burgerking: 1, kfc: 1 },
+      stores: 3,
+      counts: { burgerking: 1, kfc: 1, mcdonalds: 1 },
     });
-    expect(summary.import.upserted).toBe(2);
+    expect(summary.import.upserted).toBe(3);
   });
 });
 
