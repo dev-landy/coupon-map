@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import CouponMapScreen from '../app/CouponMapScreen';
@@ -27,6 +27,8 @@ afterEach(() => {
     // Some jsdom launch modes provide a partial localStorage shim.
   }
   vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
+  window.__couponMapKakaoLoader = undefined;
   vi.clearAllMocks();
 });
 
@@ -196,6 +198,152 @@ function mockMobileViewport() {
       removeListener: vi.fn(),
       dispatchEvent: vi.fn(),
     })),
+  });
+}
+
+class MockKakaoLatLng {
+  constructor(
+    private readonly lat: number,
+    private readonly lng: number
+  ) {}
+
+  getLat(): number {
+    return this.lat;
+  }
+
+  getLng(): number {
+    return this.lng;
+  }
+}
+
+class MockKakaoLatLngBounds {
+  readonly points: MockKakaoLatLng[] = [];
+
+  extend(latlng: MockKakaoLatLng): void {
+    this.points.push(latlng);
+  }
+}
+
+class MockKakaoMap {
+  private center: MockKakaoLatLng;
+  private level: number;
+  private readonly listeners = new Map<string, Set<() => void>>();
+
+  constructor(
+    _container: HTMLElement,
+    options: {
+      center: MockKakaoLatLng;
+      level: number;
+    }
+  ) {
+    this.center = options.center;
+    this.level = options.level;
+    latestKakaoMap = this;
+  }
+
+  getCenter(): MockKakaoLatLng {
+    return this.center;
+  }
+
+  getLevel(): number {
+    return this.level;
+  }
+
+  getProjection(): {
+    containerPointFromCoords(latlng: MockKakaoLatLng): { x: number; y: number };
+  } {
+    return {
+      containerPointFromCoords: (latlng) => ({
+        x: Math.round(400 + (latlng.getLng() - this.center.getLng()) * 100_000),
+        y: Math.round(300 - (latlng.getLat() - this.center.getLat()) * 100_000),
+      }),
+    };
+  }
+
+  panTo(latlng: MockKakaoLatLng): void {
+    this.center = latlng;
+    this.emit('center_changed');
+    this.emit('bounds_changed');
+    this.emit('idle');
+  }
+
+  relayout(): void {}
+
+  setBounds(bounds: MockKakaoLatLngBounds): void {
+    if (bounds.points.length > 0) {
+      const latSum = bounds.points.reduce((sum, point) => sum + point.getLat(), 0);
+      const lngSum = bounds.points.reduce((sum, point) => sum + point.getLng(), 0);
+      this.center = new MockKakaoLatLng(
+        latSum / bounds.points.length,
+        lngSum / bounds.points.length
+      );
+    }
+    this.emit('bounds_changed');
+    this.emit('idle');
+  }
+
+  setCenter(latlng: MockKakaoLatLng): void {
+    this.center = latlng;
+    this.emit('center_changed');
+    this.emit('bounds_changed');
+  }
+
+  setLevel(level: number): void {
+    this.level = level;
+    this.emit('zoom_changed');
+    this.emit('bounds_changed');
+  }
+
+  moveCameraTo(lat: number, lng: number): void {
+    this.center = new MockKakaoLatLng(lat, lng);
+    this.emit('center_changed');
+  }
+
+  addListener(eventName: string, handler: () => void): void {
+    const handlers = this.listeners.get(eventName) ?? new Set();
+    handlers.add(handler);
+    this.listeners.set(eventName, handlers);
+  }
+
+  removeListener(eventName: string, handler: () => void): void {
+    this.listeners.get(eventName)?.delete(handler);
+  }
+
+  private emit(eventName: string): void {
+    for (const handler of this.listeners.get(eventName) ?? []) {
+      handler();
+    }
+  }
+}
+
+let latestKakaoMap: MockKakaoMap | null = null;
+
+function mockAnimationFrame() {
+  vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) =>
+    window.setTimeout(() => callback(window.performance.now()), 0)
+  );
+  vi.stubGlobal('cancelAnimationFrame', (id: number) => window.clearTimeout(id));
+}
+
+function mockKakaoMaps() {
+  latestKakaoMap = null;
+  vi.stubGlobal('kakao', {
+    maps: {
+      LatLng: MockKakaoLatLng,
+      LatLngBounds: MockKakaoLatLngBounds,
+      Map: MockKakaoMap,
+      event: {
+        addListener(target: MockKakaoMap, eventName: string, handler: () => void) {
+          target.addListener(eventName, handler);
+        },
+        removeListener(target: MockKakaoMap, eventName: string, handler: () => void) {
+          target.removeListener(eventName, handler);
+        },
+      },
+      load(callback: () => void) {
+        callback();
+      },
+    },
   });
 }
 
@@ -437,6 +585,40 @@ describe('CouponMapScreen', () => {
 
     expect(container.querySelector('.mapBackdrop')).toBeNull();
     expect(container.querySelector('.mapStatus')).toBeTruthy();
+  });
+
+  it('keeps Kakao-projected store markers anchored on mobile camera moves', async () => {
+    vi.stubEnv('NEXT_PUBLIC_KAKAO_MAP_APP_KEY', 'test-key');
+    mockMobileViewport();
+    mockAnimationFrame();
+    mockKakaoMaps();
+
+    render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+
+    const marker = await screen.findByRole('button', { name: '맥도날드 홍대점 20%' });
+
+    await waitFor(() => {
+      expect(marker.className).toContain('isProjected');
+      expect(marker.style.getPropertyValue('--pin-x')).toMatch(/px$/);
+      expect(marker.style.getPropertyValue('--pin-y')).toMatch(/px$/);
+    });
+    expect(marker.style.getPropertyValue('--pin-mobile-x')).toBe('');
+    expect(marker.style.getPropertyValue('--pin-mobile-y')).toBe('');
+
+    await act(async () => {
+      latestKakaoMap?.moveCameraTo(VIEW.stores[0].lat, VIEW.stores[0].lng);
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+
+    await waitFor(() => {
+      expect(marker.style.getPropertyValue('--pin-x')).toBe('400px');
+      expect(marker.style.getPropertyValue('--pin-y')).toBe('300px');
+    });
+
+    const styleText = [...document.querySelectorAll('style')]
+      .map((style) => style.textContent ?? '')
+      .join('\n');
+    expect(styleText).toContain('.marker:not(.isProjected)');
   });
 
   it('reloads coupon data when the browser reports a moved location', async () => {

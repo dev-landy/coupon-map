@@ -99,7 +99,6 @@ interface CouponMapApiResponse {
   message: string | null;
 }
 
-const KAKAO_MAP_APP_KEY = process.env.NEXT_PUBLIC_KAKAO_MAP_APP_KEY?.trim() ?? '';
 const KAKAO_MAP_SCRIPT_ID = 'coupon-map-kakao-sdk';
 const DEFAULT_CENTER = { lat: 37.5572, lng: 126.9254 };
 const LOCATION_RELOAD_THRESHOLD_METERS = 50;
@@ -157,6 +156,7 @@ interface CouponSheetDragState {
 }
 
 export default function CouponMapScreen({ view, status, message }: CouponMapScreenProps) {
+  const kakaoMapAppKey = readKakaoMapAppKey();
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<KakaoMap | null>(null);
   const kakaoMapsRef = useRef<KakaoMapsNamespace | null>(null);
@@ -190,7 +190,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     useState<FeedbackSubmitStatus>('idle');
   const [feedbackError, setFeedbackError] = useState<string | null>(null);
   const [mapProviderStatus, setMapProviderStatus] = useState<MapProviderStatus>(
-    KAKAO_MAP_APP_KEY ? 'loading' : 'missing-key'
+    kakaoMapAppKey ? 'loading' : 'missing-key'
   );
   const [markerPoints, setMarkerPoints] = useState<Record<string, MarkerScreenPoint>>({});
   const [locationPoint, setLocationPoint] = useState<MarkerScreenPoint | null>(null);
@@ -482,7 +482,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
   }, [displayView.stores, selectedCouponSelection]);
 
   useEffect(() => {
-    if (!KAKAO_MAP_APP_KEY) {
+    if (!kakaoMapAppKey) {
       setMapProviderStatus('missing-key');
       return;
     }
@@ -493,7 +493,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     let interactionContainer: HTMLElement | null = null;
     let markUserMapInteraction: (() => void) | null = null;
 
-    loadKakaoMaps(KAKAO_MAP_APP_KEY)
+    loadKakaoMaps(kakaoMapAppKey)
       .then((kakaoMaps) => {
         if (!isActive || !mapContainerRef.current) return;
 
@@ -526,6 +526,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
         });
 
         listeners = [
+          { target: map, eventName: 'center_changed', handler: scheduleMarkerProjection },
           { target: map, eventName: 'bounds_changed', handler: scheduleMarkerProjection },
           { target: map, eventName: 'zoom_changed', handler: scheduleMarkerProjection },
           { target: map, eventName: 'idle', handler: scheduleViewportReload },
@@ -569,7 +570,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
         if (mapContainerRef.current) mapContainerRef.current.innerHTML = '';
       }
     };
-  }, [fitStoreBounds, scheduleMarkerProjection, scheduleViewportReload]);
+  }, [fitStoreBounds, kakaoMapAppKey, scheduleMarkerProjection, scheduleViewportReload]);
 
   useEffect(() => {
     if (mapProviderStatus !== 'ready') return;
@@ -880,41 +881,47 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
             </button>
           </div>
         ) : showFallbackPins ? (
-          displayView.stores.map((store) => (
-            <button
-              key={store.id}
-              type="button"
-              className={`marker ${store.id === activeStoreId ? 'selected' : ''}`}
-              style={{
-                '--pin-x': `${store.markerX}%`,
-                '--pin-y': `${store.markerY}%`,
-                '--pin-mobile-x': `${16 + store.markerX * 0.68}%`,
-                '--pin-mobile-y': `${18 + store.markerY * 0.28}%`,
-                '--brand-color': store.brandColor,
-                ...(markerPoints[store.id]
-                  ? {
-                      '--pin-x': `${markerPoints[store.id].x}px`,
-                      '--pin-y': `${markerPoints[store.id].y}px`,
-                      '--pin-mobile-x': `${markerPoints[store.id].x}px`,
-                      '--pin-mobile-y': `${markerPoints[store.id].y}px`,
-                    }
-                  : {}),
-              } as React.CSSProperties}
-              aria-label={`${store.brandName} ${store.name} ${store.bestCoupon.headline}`}
-              aria-pressed={store.id === activeStoreId}
-              aria-controls={`store-${store.id}`}
-              onClick={() => selectStore(store.id)}
-            >
-              <span className="pinBubble">
-                <BrandLogo store={store} className="pinLogo" />
-                <span className="pinDeal">
-                  <small>최대</small>
-                  <b>{store.bestCoupon.headline}</b>
+          displayView.stores.map((store) => {
+            const markerPoint =
+              mapProviderStatus === 'ready' ? markerPoints[store.id] : undefined;
+            if (mapProviderStatus === 'ready' && !markerPoint) return null;
+
+            const markerStyle = markerPoint
+              ? ({
+                  '--pin-x': `${markerPoint.x}px`,
+                  '--pin-y': `${markerPoint.y}px`,
+                  '--brand-color': store.brandColor,
+                } as React.CSSProperties)
+              : ({
+                  '--pin-x': `${store.markerX}%`,
+                  '--pin-y': `${store.markerY}%`,
+                  '--pin-mobile-x': `${16 + store.markerX * 0.68}%`,
+                  '--pin-mobile-y': `${18 + store.markerY * 0.28}%`,
+                  '--brand-color': store.brandColor,
+                } as React.CSSProperties);
+
+            return (
+              <button
+                key={store.id}
+                type="button"
+                className={`marker ${markerPoint ? 'isProjected' : 'isFallbackPosition'} ${store.id === activeStoreId ? 'selected' : ''}`}
+                style={markerStyle}
+                aria-label={`${store.brandName} ${store.name} ${store.bestCoupon.headline}`}
+                aria-pressed={store.id === activeStoreId}
+                aria-controls={`store-${store.id}`}
+                onClick={() => selectStore(store.id)}
+              >
+                <span className="pinBubble">
+                  <BrandLogo store={store} className="pinLogo" />
+                  <span className="pinDeal">
+                    <small>최대</small>
+                    <b>{store.bestCoupon.headline}</b>
+                  </span>
                 </span>
-              </span>
-              <span className="pinTail" />
-            </button>
-          ))
+                <span className="pinTail" />
+              </button>
+            );
+          })
         ) : null}
       </section>
 
@@ -1312,6 +1319,10 @@ function writeCachedCouponResponse(
     if (typeof oldestKey !== 'string') return;
     cache.delete(oldestKey);
   }
+}
+
+function readKakaoMapAppKey(): string {
+  return process.env.NEXT_PUBLIC_KAKAO_MAP_APP_KEY?.trim() ?? '';
 }
 
 function loadKakaoMaps(appKey: string): Promise<KakaoMapsNamespace> {
@@ -2617,9 +2628,12 @@ const styles = `
       grid-template-columns: 1fr 1fr;
     }
 
-    .marker {
+    .marker:not(.isProjected) {
       left: clamp(16vw, var(--pin-mobile-x), 84vw);
       top: clamp(92px, var(--pin-mobile-y), 42vh);
+    }
+
+    .marker {
       max-width: 48vw;
     }
 
