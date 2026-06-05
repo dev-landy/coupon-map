@@ -7,6 +7,11 @@ export interface MarkerScreenPoint {
   y: number;
 }
 
+export interface KakaoPoint {
+  x: number;
+  y: number;
+}
+
 export interface KakaoLatLng {
   getLat(): number;
   getLng(): number;
@@ -18,6 +23,7 @@ export interface KakaoLatLngBounds {
 
 export interface KakaoMapProjection {
   containerPointFromCoords(latlng: KakaoLatLng): MarkerScreenPoint;
+  coordsFromContainerPoint(point: KakaoPoint): KakaoLatLng;
 }
 
 export interface KakaoMap {
@@ -40,6 +46,7 @@ export interface KakaoMap {
 export interface KakaoMapsNamespace {
   LatLng: new (lat: number, lng: number) => KakaoLatLng;
   LatLngBounds: new () => KakaoLatLngBounds;
+  Point: new (x: number, y: number) => KakaoPoint;
   Map: new (
     container: HTMLElement,
     options: {

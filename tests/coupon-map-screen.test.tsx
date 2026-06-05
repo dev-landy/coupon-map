@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import CouponMapScreen from '../app/CouponMapScreen';
 import type { CouponMapView } from '../lib/frontendData';
+import { USER_LOCATION_STORAGE_KEY } from '../lib/geo';
 
 vi.mock('../lib/deeplink', () => ({
   openBrandApp: vi.fn(),
@@ -11,6 +12,7 @@ vi.mock('../lib/deeplink', () => ({
 const { openBrandApp } = await import('../lib/deeplink');
 const originalGeolocation = navigator.geolocation;
 const originalMatchMedia = window.matchMedia;
+const originalLocalStorage = window.localStorage;
 
 afterEach(() => {
   Object.defineProperty(navigator, 'geolocation', {
@@ -23,9 +25,14 @@ afterEach(() => {
   });
   try {
     window.localStorage.removeItem?.('coupon-map-feedback-last-submitted-at');
+    window.localStorage.removeItem?.(USER_LOCATION_STORAGE_KEY);
   } catch {
     // Some jsdom launch modes provide a partial localStorage shim.
   }
+  Object.defineProperty(window, 'localStorage', {
+    configurable: true,
+    value: originalLocalStorage,
+  });
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
   window.__couponMapKakaoLoader = undefined;
@@ -224,6 +231,13 @@ class MockKakaoLatLngBounds {
   }
 }
 
+class MockKakaoPoint {
+  constructor(
+    readonly x: number,
+    readonly y: number
+  ) {}
+}
+
 class MockKakaoMap {
   private center: MockKakaoLatLng;
   private level: number;
@@ -251,12 +265,18 @@ class MockKakaoMap {
 
   getProjection(): {
     containerPointFromCoords(latlng: MockKakaoLatLng): { x: number; y: number };
+    coordsFromContainerPoint(point: MockKakaoPoint): MockKakaoLatLng;
   } {
     return {
       containerPointFromCoords: (latlng) => ({
         x: Math.round(400 + (latlng.getLng() - this.center.getLng()) * 100_000),
         y: Math.round(300 - (latlng.getLat() - this.center.getLat()) * 100_000),
       }),
+      coordsFromContainerPoint: (point) =>
+        new MockKakaoLatLng(
+          this.center.getLat() + (300 - point.y) / 100_000,
+          this.center.getLng() + (point.x - 400) / 100_000
+        ),
     };
   }
 
@@ -331,6 +351,7 @@ function mockKakaoMaps() {
     maps: {
       LatLng: MockKakaoLatLng,
       LatLngBounds: MockKakaoLatLngBounds,
+      Point: MockKakaoPoint,
       Map: MockKakaoMap,
       event: {
         addListener(target: MockKakaoMap, eventName: string, handler: () => void) {
@@ -343,6 +364,23 @@ function mockKakaoMaps() {
       load(callback: () => void) {
         callback();
       },
+    },
+  });
+}
+
+function mockLocalStorage() {
+  const values = new Map<string, string>();
+
+  Object.defineProperty(window, 'localStorage', {
+    configurable: true,
+    value: {
+      getItem: vi.fn((key: string) => values.get(key) ?? null),
+      setItem: vi.fn((key: string, value: string) => {
+        values.set(key, value);
+      }),
+      removeItem: vi.fn((key: string) => {
+        values.delete(key);
+      }),
     },
   });
 }
@@ -400,6 +438,26 @@ describe('CouponMapScreen', () => {
     expect(listLogo?.textContent).toBe('KFC');
     expect(selectedLogo?.getAttribute('data-brand-logo')).toBe('kfc');
     expect(listLogo?.getAttribute('data-brand-logo')).toBe('kfc');
+  });
+
+  it('renders Korean brand full names inside brand badges', () => {
+    const { container } = render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+
+    const selectedLogo = container.querySelector('.selectedHead .brandLogo');
+    const markerLogos = Array.from(container.querySelectorAll('.marker .pinLogo'));
+
+    expect(selectedLogo?.textContent).toBe('맥도날드');
+    expect(selectedLogo?.getAttribute('data-brand-logo')).toBe('mcdonalds');
+    expect(markerLogos.map((logo) => logo.textContent)).toEqual(
+      expect.arrayContaining(['맥도날드', '버거킹'])
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '버거킹 강남점 3,000원' }));
+
+    const burgerKingSelectedLogo = container.querySelector('.selectedHead .brandLogo');
+
+    expect(burgerKingSelectedLogo?.textContent).toBe('버거킹');
+    expect(burgerKingSelectedLogo?.getAttribute('data-brand-logo')).toBe('burgerking');
   });
 
   it('updates the selected store from marker and list interactions', () => {
@@ -602,6 +660,7 @@ describe('CouponMapScreen', () => {
       expect(marker.style.getPropertyValue('--pin-x')).toMatch(/px$/);
       expect(marker.style.getPropertyValue('--pin-y')).toMatch(/px$/);
     });
+    expect(latestKakaoMap?.getLevel()).toBeGreaterThan(5);
     expect(marker.style.getPropertyValue('--pin-mobile-x')).toBe('');
     expect(marker.style.getPropertyValue('--pin-mobile-y')).toBe('');
 
@@ -621,7 +680,34 @@ describe('CouponMapScreen', () => {
     expect(styleText).toContain('.marker:not(.isProjected)');
   });
 
+  it('pans a selected mobile store into the visible area above the bottom sheet', async () => {
+    vi.stubEnv('NEXT_PUBLIC_KAKAO_MAP_APP_KEY', 'test-key');
+    mockMobileViewport();
+    mockAnimationFrame();
+    mockKakaoMaps();
+
+    render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+
+    const gangnamMarker = await screen.findByRole('button', {
+      name: '버거킹 강남점 3,000원',
+    });
+
+    await waitFor(() => {
+      expect(gangnamMarker.className).toContain('isProjected');
+    });
+
+    fireEvent.click(gangnamMarker);
+
+    const selectedPoint = latestKakaoMap
+      ?.getProjection()
+      .containerPointFromCoords(new MockKakaoLatLng(VIEW.stores[1].lat, VIEW.stores[1].lng));
+
+    expect(selectedPoint).toEqual({ x: 400, y: 126 });
+    expect(latestKakaoMap?.getCenter().getLat()).not.toBe(VIEW.stores[1].lat);
+  });
+
   it('reloads coupon data when the browser reports a moved location', async () => {
+    mockLocalStorage();
     Object.defineProperty(navigator, 'geolocation', {
       configurable: true,
       value: {
@@ -662,6 +748,7 @@ describe('CouponMapScreen', () => {
     const { container } = render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    expect(window.localStorage.getItem(USER_LOCATION_STORAGE_KEY)).toContain('37.4979123');
 
     const requestedUrl = String(fetchMock.mock.calls[0]?.[0] ?? '');
     expect(requestedUrl).toContain('/api/coupon-map?');
@@ -680,6 +767,112 @@ describe('CouponMapScreen', () => {
     );
     expect(screen.getByRole('button', { name: '맥도날드 홍대점 20%' })).toBeTruthy();
     expect(screen.getByRole('button', { name: '버거킹 강남점 3,000원' })).toBeTruthy();
+  });
+
+  it('starts from a stored user location without prompting geolocation again', async () => {
+    mockLocalStorage();
+    const watchPosition = vi.fn();
+    Object.defineProperty(navigator, 'geolocation', {
+      configurable: true,
+      value: {
+        watchPosition,
+        clearWatch: vi.fn(),
+      },
+    });
+    window.localStorage.setItem(
+      USER_LOCATION_STORAGE_KEY,
+      JSON.stringify({ lat: 37.4979123, lng: 127.0276123, savedAt: Date.now() })
+    );
+    const nextView: CouponMapView = {
+      stores: [VIEW.stores[1], VIEW.stores[0]],
+      totals: {
+        brands: 2,
+        stores: 2,
+        activeCoupons: 3,
+      },
+    };
+    const fetchMock = vi.fn((_input: RequestInfo | URL, _init?: RequestInit) =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () =>
+          Promise.resolve({
+            view: nextView,
+            status: 'ready',
+            message: null,
+          }),
+      } as Response)
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    expect(watchPosition).not.toHaveBeenCalled();
+
+    const requestedUrl = String(fetchMock.mock.calls[0]?.[0] ?? '');
+    expect(requestedUrl).toContain('/api/coupon-map?');
+    expect(requestedUrl).toContain('lat=37.4979');
+    expect(requestedUrl).toContain('lng=127.0276');
+    await waitFor(() =>
+      expect(screen.getByTestId('selected-store-detail').getAttribute('data-selected-store-id')).toBe(
+        'hongdae'
+      )
+    );
+  });
+
+  it('refreshes a stored location from the locate button before reloading coupons', async () => {
+    mockLocalStorage();
+    Object.defineProperty(navigator, 'geolocation', {
+      configurable: true,
+      value: {
+        getCurrentPosition: vi.fn((onSuccess: PositionCallback) => {
+          onSuccess({
+            coords: {
+              latitude: 37.4979123,
+              longitude: 127.0276123,
+            },
+          } as GeolocationPosition);
+        }),
+        watchPosition: vi.fn(),
+        clearWatch: vi.fn(),
+      },
+    });
+    window.localStorage.setItem(
+      USER_LOCATION_STORAGE_KEY,
+      JSON.stringify({ lat: 37.5563, lng: 126.9236, savedAt: Date.now() })
+    );
+    const fetchMock = vi.fn((_input: RequestInfo | URL, _init?: RequestInit) =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () =>
+          Promise.resolve({
+            view: {
+              stores: [VIEW.stores[1], VIEW.stores[0]],
+              totals: {
+                brands: 2,
+                stores: 2,
+                activeCoupons: 3,
+              },
+            },
+            status: 'ready',
+            message: null,
+          }),
+      } as Response)
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+
+    fireEvent.click(screen.getByRole('button', { name: '현재 위치 갱신' }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    const requestedUrl = String(fetchMock.mock.calls[0]?.[0] ?? '');
+    expect(requestedUrl).toContain('/api/coupon-map?');
+    expect(requestedUrl).toContain('lat=37.4979');
+    expect(requestedUrl).toContain('lng=127.0276');
+    expect(window.localStorage.getItem(USER_LOCATION_STORAGE_KEY)).toContain('37.4979123');
   });
 
   it('forces a current-location reload from the map locate button', async () => {

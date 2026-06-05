@@ -117,86 +117,88 @@ export const CouponPanel = memo(function CouponPanel({
               </div>
             </div>
 
-            {selectedStore && selectedCoupon ? (
-              <section
-                className="selectedDetail"
-                aria-live="polite"
-                data-testid="selected-store-detail"
-                data-selected-store-id={selectedStore.id}
-                data-selected-coupon-id={selectedCoupon.id}
-              >
-                <div className="selectedHead">
-                  <BrandLogo store={selectedStore} className="brandLogo" />
-                  <div>
-                    <p>{selectedStore.brandName}</p>
-                    <h2>{selectedCoupon.title}</h2>
-                    <span>{selectedStore.name}</span>
+            <div className="panelScroll">
+              {selectedStore && selectedCoupon ? (
+                <section
+                  className="selectedDetail"
+                  aria-live="polite"
+                  data-testid="selected-store-detail"
+                  data-selected-store-id={selectedStore.id}
+                  data-selected-coupon-id={selectedCoupon.id}
+                >
+                  <div className="selectedHead">
+                    <BrandLogo store={selectedStore} className="brandLogo" />
+                    <div>
+                      <p>{selectedStore.brandName}</p>
+                      <h2>{selectedCoupon.title}</h2>
+                      <span>{selectedStore.name}</span>
+                    </div>
+                    <strong>{selectedCoupon.headline}</strong>
                   </div>
-                  <strong>{selectedCoupon.headline}</strong>
-                </div>
 
-                {selectedCoupon.facts.length > 0 ? (
-                  <dl className="couponFacts" aria-label="coupon details">
-                    {selectedCoupon.facts.map((fact) => (
-                      <div key={`${fact.label}-${fact.value}`}>
-                        <dt>{fact.label}</dt>
-                        <dd>{fact.value}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                ) : null}
+                  {selectedCoupon.facts.length > 0 ? (
+                    <dl className="couponFacts" aria-label="coupon details">
+                      {selectedCoupon.facts.map((fact) => (
+                        <div key={`${fact.label}-${fact.value}`}>
+                          <dt>{fact.label}</dt>
+                          <dd>{fact.value}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  ) : null}
 
-                <div className="selectedActions">
-                  <button
-                    type="button"
-                    className="openAppButton"
-                    onClick={() =>
-                      openBrandApp(selectedStore.brand, undefined, selectedCoupon.appLink)
+                  <div className="selectedActions">
+                    <button
+                      type="button"
+                      className="openAppButton"
+                      onClick={() =>
+                        openBrandApp(selectedStore.brand, undefined, selectedCoupon.appLink)
+                      }
+                    >
+                      앱에서 열기
+                      <ArrowIcon />
+                    </button>
+                    <button
+                      type="button"
+                      className="reportCouponButton"
+                      onClick={() => onOpenFeedback('coupon_incorrect')}
+                    >
+                      정보 수정 제안
+                    </button>
+                  </div>
+                </section>
+              ) : null}
+
+              <div className="sectionHeader">
+                <h2>{formatRadiusLabel(searchRadiusMeters)} 내 쿠폰</h2>
+                <span>{couponListItems.length}</span>
+              </div>
+
+              <div className="couponList" aria-label="nearby coupon list">
+                {couponListItems.map((item) => (
+                  <CouponListRow
+                    key={item.key}
+                    rowId={item.rowId}
+                    store={item.store}
+                    coupon={item.coupon}
+                    isSelected={
+                      item.store.id === activeStoreId && item.coupon.id === selectedCoupon?.id
                     }
-                  >
-                    앱에서 열기
-                    <ArrowIcon />
-                  </button>
-                  <button
-                    type="button"
-                    className="reportCouponButton"
-                    onClick={() => onOpenFeedback('coupon_incorrect')}
-                  >
-                    정보 수정 제안
-                  </button>
-                </div>
-              </section>
-            ) : null}
+                    onSelect={onSelectCoupon}
+                  />
+                ))}
+              </div>
 
-            <div className="sectionHeader">
-              <h2>{formatRadiusLabel(searchRadiusMeters)} 내 쿠폰</h2>
-              <span>{couponListItems.length}</span>
+              <footer className="feedbackEntry">
+                <button
+                  type="button"
+                  className="feedbackOpenButton"
+                  onClick={() => onOpenFeedback(selectedStore ? 'other' : 'feature_request')}
+                >
+                  피드백 보내기
+                </button>
+              </footer>
             </div>
-
-            <div className="couponList" aria-label="nearby coupon list">
-              {couponListItems.map((item) => (
-                <CouponListRow
-                  key={item.key}
-                  rowId={item.rowId}
-                  store={item.store}
-                  coupon={item.coupon}
-                  isSelected={
-                    item.store.id === activeStoreId && item.coupon.id === selectedCoupon?.id
-                  }
-                  onSelect={onSelectCoupon}
-                />
-              ))}
-            </div>
-
-            <footer className="feedbackEntry">
-              <button
-                type="button"
-                className="feedbackOpenButton"
-                onClick={() => onOpenFeedback(selectedStore ? 'other' : 'feature_request')}
-              >
-                피드백 보내기
-              </button>
-            </footer>
           </>
         ) : null}
       </aside>

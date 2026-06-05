@@ -279,11 +279,25 @@ export const styles = `
     text-transform: uppercase;
   }
 
+  .brandBadge[data-brand-logo="mcdonalds"],
+  .brandBadge[data-brand-logo="burgerking"] {
+    padding: 0 2px;
+    text-align: center;
+    white-space: normal;
+    word-break: break-all;
+  }
+
   .pinLogo {
     width: 28px;
     height: 28px;
     border-radius: 8px;
     font-size: 11px;
+  }
+
+  .pinLogo.brandBadge[data-brand-logo="mcdonalds"],
+  .pinLogo.brandBadge[data-brand-logo="burgerking"] {
+    font-size: 9px;
+    line-height: 1.05;
   }
 
   .pinDeal {
@@ -456,6 +470,17 @@ export const styles = `
     border-bottom: 1px solid #ececef;
   }
 
+  .panelScroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .panelScroll::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
   .eyebrow {
     color: #f5402c;
     font-size: 11px;
@@ -509,6 +534,12 @@ export const styles = `
     height: 50px;
     border-radius: 8px;
     font-size: 16px;
+  }
+
+  .brandLogo.brandBadge[data-brand-logo="mcdonalds"],
+  .brandLogo.brandBadge[data-brand-logo="burgerking"] {
+    font-size: 13px;
+    line-height: 1.08;
   }
 
   .brandLogo.brandBadge[data-brand-logo="kfc"] {
@@ -627,15 +658,8 @@ export const styles = `
 
   .couponList {
     display: grid;
-    flex: 1;
     align-content: start;
-    overflow: auto;
     border-top: 1px solid #ececef;
-  }
-
-  .couponList::-webkit-scrollbar {
-    width: 0;
-    height: 0;
   }
 
   .couponListRow {
@@ -664,6 +688,12 @@ export const styles = `
     height: 42px;
     border-radius: 8px;
     font-size: 13px;
+  }
+
+  .storeLogo.brandBadge[data-brand-logo="mcdonalds"],
+  .storeLogo.brandBadge[data-brand-logo="burgerking"] {
+    font-size: 11px;
+    line-height: 1.08;
   }
 
   .couponRowCopy {
@@ -980,6 +1010,7 @@ export const styles = `
       border-bottom: 0;
       border-left: 0;
       border-radius: 22px 22px 0 0;
+      background: #fff;
       box-shadow: 0 -12px 34px rgba(20,20,30,.18);
     }
 
@@ -1001,8 +1032,6 @@ export const styles = `
 
     .selectedDetail {
       gap: 10px;
-      max-height: 230px;
-      overflow: auto;
       padding: 12px 18px;
     }
 

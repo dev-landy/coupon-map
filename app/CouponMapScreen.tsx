@@ -20,6 +20,8 @@ import { cancelFrame, requestFrame } from '../lib/domFrame';
 import {
   DEFAULT_CENTER,
   getMapPadding,
+  isMobileCouponSheet,
+  type KakaoLatLng,
   type KakaoMap,
   type KakaoMapListener,
   type KakaoMapsNamespace,
@@ -47,6 +49,12 @@ interface CouponMapScreenProps {
 const LOCATION_RELOAD_THRESHOLD_METERS = 50;
 const MAP_RELOAD_DEBOUNCE_MS = 500;
 const MAP_PROGRAMMATIC_MOVE_SUPPRESSION_MS = 900;
+const MOBILE_MAP_LEVEL_OFFSET = 1;
+const DEFAULT_MAP_CONTAINER_HEIGHT_PX = 600;
+const MOBILE_SELECTED_STORE_TOP_PADDING_PX = 96;
+const MOBILE_COUPON_SHEET_HEIGHT_RATIO = 0.74;
+const MOBILE_COUPON_SHEET_MAX_HEIGHT_PX = 620;
+const MOBILE_COUPON_SHEET_TOP_GAP_PX = 92;
 
 interface SelectedCouponSelection {
   storeId: string;
@@ -65,6 +73,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
   const hasUserMapInteractionRef = useRef(false);
   const hasAutoFocusedUserLocationRef = useRef(false);
   const pendingUserLocationMapFitRef = useRef(false);
+  const skipNextUserLocationReloadRef = useRef(false);
   const fitStoreBoundsRef = useRef<() => void>(() => undefined);
   const activeRequestRef = useRef<AbortController | null>(null);
   const reloadCacheRef = useRef(new Map<string, CachedCouponMapApiResponse>());
@@ -154,7 +163,12 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     loadMessage ?? formatNearbyEmptyMessage(searchRadiusMeters);
   const showFallbackPins = mapProviderStatus !== 'loading';
   const panelToggleLabel = isCouponPanelOpen ? '쿠폰 패널 닫기' : '쿠폰 패널 열기';
-  const locateButtonLabel = userLocation.usingDefault ? '기본 위치로 이동' : '현재 위치로 이동';
+  const locateButtonLabel =
+    userLocation.source === 'stored'
+      ? '현재 위치 갱신'
+      : userLocation.usingDefault
+        ? '기본 위치로 이동'
+        : '현재 위치로 이동';
 
   const suppressViewportReload = useCallback(() => {
     viewportReloadSuppressedUntilRef.current =
@@ -178,7 +192,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     if (stores.length === 0 || !centerStore) {
       suppressViewportReload();
       map.setCenter(userLatLng);
-      map.setLevel(4);
+      map.setLevel(getAutoFitMapLevel(4));
       requestMarkerReproject();
       return;
     }
@@ -189,7 +203,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     ) {
       suppressViewportReload();
       map.setCenter(userLatLng);
-      map.setLevel(4);
+      map.setLevel(getAutoFitMapLevel(4));
       requestMarkerReproject();
       return;
     }
@@ -202,6 +216,9 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
 
     suppressViewportReload();
     map.setBounds(bounds, ...getMapPadding(isCouponPanelOpen));
+    if (isMobileCouponSheet()) {
+      map.setLevel(map.getLevel() + MOBILE_MAP_LEVEL_OFFSET);
+    }
     requestMarkerReproject();
   }, [isCouponPanelOpen, requestMarkerReproject, suppressViewportReload]);
   fitStoreBoundsRef.current = fitStoreBounds;
@@ -332,8 +349,13 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
 
   useEffect(() => {
     if (userLocation.isLoading) return;
+    if (skipNextUserLocationReloadRef.current) {
+      skipNextUserLocationReloadRef.current = false;
+      return;
+    }
+
     const shouldFocusUserLocation =
-      !userLocation.usingDefault && !hasAutoFocusedUserLocationRef.current;
+      userLocation.source === 'geolocation' && !hasAutoFocusedUserLocationRef.current;
 
     if (shouldFocusUserLocation) {
       hasAutoFocusedUserLocationRef.current = true;
@@ -355,6 +377,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     reloadNearbyCoupons,
     userLocation.coords,
     userLocation.isLoading,
+    userLocation.source,
     userLocation.usingDefault,
   ]);
 
@@ -426,7 +449,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
         );
         const map = new kakaoMaps.Map(mapContainerRef.current, {
           center,
-          level: storesRef.current.length > 1 ? 5 : 4,
+          level: getAutoFitMapLevel(storesRef.current.length > 1 ? 5 : 4),
           scrollwheel: true,
           tileAnimation: true,
         });
@@ -536,8 +559,10 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
       const kakaoMaps = kakaoMapsRef.current;
       if (!store || !map || !kakaoMaps) return;
 
+      const storeLatLng = new kakaoMaps.LatLng(store.lat, store.lng);
+
       suppressViewportReload();
-      map.panTo(new kakaoMaps.LatLng(store.lat, store.lng));
+      map.panTo(getSelectedStoreMapCenter(storeLatLng, map, kakaoMaps, mapContainerRef.current));
       requestMarkerReproject();
     },
     [displayView.stores, openPanelForSelection, requestMarkerReproject, suppressViewportReload]
@@ -551,8 +576,15 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     [selectStore]
   );
 
-  const returnToUserLocation = useCallback(() => {
-    const coords = userCoordsRef.current;
+  const returnToUserLocation = useCallback(async () => {
+    let coords = userCoordsRef.current;
+    if (userLocation.source === 'stored') {
+      const refreshedCoords = await userLocation.requestCurrentLocation();
+      if (!refreshedCoords) return;
+      coords = refreshedCoords;
+      skipNextUserLocationReloadRef.current = true;
+    }
+
     const map = mapRef.current;
     const kakaoMaps = kakaoMapsRef.current;
     const radiusMeters = map
@@ -571,7 +603,14 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     suppressViewportReload();
     map.panTo(new kakaoMaps.LatLng(coords.lat, coords.lng));
     requestMarkerReproject();
-  }, [collapseSheet, reloadNearbyCoupons, requestMarkerReproject, suppressViewportReload]);
+  }, [
+    collapseSheet,
+    reloadNearbyCoupons,
+    requestMarkerReproject,
+    suppressViewportReload,
+    userLocation.requestCurrentLocation,
+    userLocation.source,
+  ]);
 
   return (
     <main className="appShell">
@@ -670,4 +709,47 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
 
 function isAbortError(error: unknown): boolean {
   return error instanceof DOMException && error.name === 'AbortError';
+}
+
+function getAutoFitMapLevel(level: number): number {
+  return isMobileCouponSheet() ? level + MOBILE_MAP_LEVEL_OFFSET : level;
+}
+
+function getSelectedStoreMapCenter(
+  storeLatLng: KakaoLatLng,
+  map: KakaoMap,
+  kakaoMaps: KakaoMapsNamespace,
+  mapContainer: HTMLElement | null
+): KakaoLatLng {
+  if (!isMobileCouponSheet()) return storeLatLng;
+
+  const projection = map.getProjection();
+  const storePoint = projection.containerPointFromCoords(storeLatLng);
+  const height = getMapContainerHeight(mapContainer);
+  const centerY = height / 2;
+  const focusY = getMobileSelectedStoreFocusY(height);
+
+  return projection.coordsFromContainerPoint(
+    new kakaoMaps.Point(storePoint.x, storePoint.y + centerY - focusY)
+  );
+}
+
+function getMapContainerHeight(mapContainer: HTMLElement | null): number {
+  const rect = mapContainer?.getBoundingClientRect();
+
+  return Math.round(rect?.height ?? 0) || DEFAULT_MAP_CONTAINER_HEIGHT_PX;
+}
+
+function getMobileSelectedStoreFocusY(containerHeight: number): number {
+  const sheetHeight = Math.min(
+    containerHeight * MOBILE_COUPON_SHEET_HEIGHT_RATIO,
+    MOBILE_COUPON_SHEET_MAX_HEIGHT_PX,
+    Math.max(0, containerHeight - MOBILE_COUPON_SHEET_TOP_GAP_PX)
+  );
+  const sheetTop = containerHeight - sheetHeight;
+
+  return (
+    MOBILE_SELECTED_STORE_TOP_PADDING_PX +
+    Math.max(0, sheetTop - MOBILE_SELECTED_STORE_TOP_PADDING_PX) / 2
+  );
 }

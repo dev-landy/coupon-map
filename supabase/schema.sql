@@ -219,8 +219,7 @@ create or replace function public.nearby_stores(
       st_setsrid(st_makepoint(p_lng, p_lat), 4326)::geography,
       least(greatest(p_radius_meters, 0), 5000)
     )
-    order by distance_meters asc
-    limit 100;
+    order by distance_meters asc;
   $$;
 
   grant execute on function public.nearby_stores(double precision, double precision, integer)

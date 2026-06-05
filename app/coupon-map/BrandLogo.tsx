@@ -46,6 +46,22 @@ function resolveBrandLogo(store: CouponMapStore): {
     };
   }
 
+  if (brandTokens.includes('맥도날드') || /\bmcdonalds?\b/.test(brandTokens)) {
+    return {
+      kind: 'mcdonalds',
+      label: '맥도날드',
+      background: store.brandColor,
+    };
+  }
+
+  if (brandTokens.includes('버거킹') || /\bburger\s*king\b/.test(brandTokens)) {
+    return {
+      kind: 'burgerking',
+      label: '버거킹',
+      background: store.brandColor,
+    };
+  }
+
   return {
     kind: 'default',
     label: store.brandInitial,
