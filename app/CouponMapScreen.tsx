@@ -164,6 +164,9 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
   const viewportReloadTimeoutRef = useRef<number | null>(null);
   const viewportReloadSuppressedUntilRef = useRef(0);
   const hasUserMapInteractionRef = useRef(false);
+  const hasAutoFocusedUserLocationRef = useRef(false);
+  const pendingUserLocationMapFitRef = useRef(false);
+  const fitStoreBoundsRef = useRef<() => void>(() => undefined);
   const activeRequestRef = useRef<AbortController | null>(null);
   const reloadCacheRef = useRef(new Map<string, CachedCouponMapApiResponse>());
   const sheetDragRef = useRef<CouponSheetDragState | null>(null);
@@ -243,6 +246,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     loadMessage ?? formatNearbyEmptyMessage(searchRadiusMeters);
   const showFallbackPins = mapProviderStatus !== 'loading';
   const panelToggleLabel = isCouponPanelOpen ? '쿠폰 패널 닫기' : '쿠폰 패널 열기';
+  const locateButtonLabel = userLocation.usingDefault ? '기본 위치로 이동' : '현재 위치로 이동';
 
   const suppressViewportReload = useCallback(() => {
     viewportReloadSuppressedUntilRef.current =
@@ -315,11 +319,12 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     map.setBounds(bounds, ...getMapPadding(isCouponPanelOpen));
     scheduleMarkerProjection();
   }, [isCouponPanelOpen, scheduleMarkerProjection, suppressViewportReload]);
+  fitStoreBoundsRef.current = fitStoreBounds;
 
   const reloadNearbyCoupons = useCallback(
     async (
       center: Coords,
-      options: { force?: boolean; radiusMeters?: number } = {}
+      options: { force?: boolean; radiusMeters?: number; selectFirstStore?: boolean } = {}
     ) => {
       const radiusMeters = options.radiusMeters ?? searchRadiusRef.current;
       const previousSearch = lastLoadedSearchRef.current;
@@ -352,6 +357,10 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
         setLoadStatus(cachedResponse.status);
         setLoadMessage(cachedResponse.message);
         setSearchRadiusMeters(radiusMeters);
+        if (options.selectFirstStore) {
+          setSelectedStoreId(cachedResponse.view.stores[0]?.id ?? null);
+          setSelectedCouponSelection(null);
+        }
         lastLoadedSearchRef.current = { center, radiusMeters };
         return;
       }
@@ -378,6 +387,10 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
         setLoadStatus(nextState.status);
         setLoadMessage(nextState.message);
         setSearchRadiusMeters(radiusMeters);
+        if (options.selectFirstStore) {
+          setSelectedStoreId(nextState.view.stores[0]?.id ?? null);
+          setSelectedCouponSelection(null);
+        }
         lastLoadedSearchRef.current = { center, radiusMeters };
         writeCachedCouponResponse(
           reloadCacheRef.current,
@@ -434,10 +447,31 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
 
   useEffect(() => {
     if (userLocation.isLoading) return;
+    const shouldFocusUserLocation =
+      !userLocation.usingDefault && !hasAutoFocusedUserLocationRef.current;
+
+    if (shouldFocusUserLocation) {
+      hasAutoFocusedUserLocationRef.current = true;
+    }
+
     void reloadNearbyCoupons(userLocation.coords, {
       radiusMeters: searchRadiusRef.current,
+      selectFirstStore: shouldFocusUserLocation,
+    }).then(() => {
+      if (!shouldFocusUserLocation) return;
+      pendingUserLocationMapFitRef.current = true;
+      requestFrame(() => {
+        if (!pendingUserLocationMapFitRef.current) return;
+        fitStoreBoundsRef.current();
+        if (mapRef.current) pendingUserLocationMapFitRef.current = false;
+      });
     });
-  }, [reloadNearbyCoupons, userLocation.coords, userLocation.isLoading]);
+  }, [
+    reloadNearbyCoupons,
+    userLocation.coords,
+    userLocation.isLoading,
+    userLocation.usingDefault,
+  ]);
 
   useEffect(() => {
     return () => {
@@ -574,6 +608,19 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
 
   useEffect(() => {
     if (mapProviderStatus !== 'ready') return;
+    if (!pendingUserLocationMapFitRef.current) return;
+
+    const frame = requestFrame(() => {
+      if (!pendingUserLocationMapFitRef.current) return;
+      fitStoreBounds();
+      pendingUserLocationMapFitRef.current = false;
+    });
+
+    return () => cancelFrame(frame);
+  }, [displayView.stores, fitStoreBounds, mapProviderStatus]);
+
+  useEffect(() => {
+    if (mapProviderStatus !== 'ready') return;
     scheduleMarkerProjection();
   }, [
     mapProviderStatus,
@@ -650,6 +697,29 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
       return nextIsOpen;
     });
   }, []);
+
+  const returnToUserLocation = useCallback(() => {
+    const coords = userCoordsRef.current;
+    const map = mapRef.current;
+    const kakaoMaps = kakaoMapsRef.current;
+    const radiusMeters = map
+      ? radiusMetersForMapLevel(map.getLevel())
+      : searchRadiusRef.current;
+
+    setIsCouponSheetExpanded(false);
+    setIsCouponSheetLowered(false);
+    void reloadNearbyCoupons(coords, {
+      force: true,
+      radiusMeters,
+      selectFirstStore: true,
+    });
+
+    if (!map || !kakaoMaps) return;
+
+    suppressViewportReload();
+    map.panTo(new kakaoMaps.LatLng(coords.lat, coords.lng));
+    scheduleMarkerProjection();
+  }, [reloadNearbyCoupons, scheduleMarkerProjection, suppressViewportReload]);
 
   const startCouponSheetDrag = useCallback(
     (event: React.PointerEvent<HTMLElement>) => {
@@ -867,6 +937,19 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
             <span />
           </div>
         ) : null}
+        <button
+          type="button"
+          className="locateButton"
+          aria-label={locateButtonLabel}
+          title={locateButtonLabel}
+          disabled={userLocation.isLoading}
+          onClick={(event) => {
+            event.stopPropagation();
+            returnToUserLocation();
+          }}
+        >
+          <LocateIcon />
+        </button>
 
         {displayView.stores.length === 0 ? (
           <div className="empty">
@@ -1321,6 +1404,23 @@ function writeCachedCouponResponse(
   }
 }
 
+function requestFrame(callback: FrameRequestCallback): number {
+  if (typeof window.requestAnimationFrame === 'function') {
+    return window.requestAnimationFrame(callback);
+  }
+
+  return window.setTimeout(() => callback(window.performance.now()), 0);
+}
+
+function cancelFrame(frame: number) {
+  if (typeof window.cancelAnimationFrame === 'function') {
+    window.cancelAnimationFrame(frame);
+    return;
+  }
+
+  window.clearTimeout(frame);
+}
+
 function readKakaoMapAppKey(): string {
   return process.env.NEXT_PUBLIC_KAKAO_MAP_APP_KEY?.trim() ?? '';
 }
@@ -1567,6 +1667,21 @@ function PanelToggleIcon() {
   );
 }
 
+function LocateIcon() {
+  return (
+    <svg width="21" height="21" viewBox="0 0 21 21" fill="none" aria-hidden="true">
+      <path
+        d="M10.5 3v2.4M10.5 15.6V18M18 10.5h-2.4M5.4 10.5H3"
+        stroke="currentColor"
+        strokeWidth="1.9"
+        strokeLinecap="round"
+      />
+      <circle cx="10.5" cy="10.5" r="4.4" stroke="currentColor" strokeWidth="1.9" />
+      <circle cx="10.5" cy="10.5" r="1.4" fill="currentColor" />
+    </svg>
+  );
+}
+
 const styles = `
   * {
     box-sizing: border-box;
@@ -1759,6 +1874,33 @@ const styles = `
     box-shadow: 0 2px 8px rgba(20,20,30,.22);
   }
 
+  .locateButton {
+    position: absolute;
+    z-index: 32;
+    left: 18px;
+    bottom: 22px;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border: 1px solid rgba(21,21,26,.1);
+    border-radius: 8px;
+    background: rgba(255,255,255,.96);
+    color: #15151a;
+    box-shadow: 0 12px 28px rgba(20,20,30,.16);
+    cursor: pointer;
+    transition: transform .16s ease, opacity .16s ease;
+  }
+
+  .locateButton:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  .locateButton:disabled {
+    cursor: wait;
+    opacity: .58;
+  }
+
   .marker {
     position: absolute;
     z-index: 20;
@@ -1864,7 +2006,8 @@ const styles = `
   .feedbackCloseButton:focus-visible,
   .feedbackSecondaryButton:focus-visible,
   .feedbackSubmitButton:focus-visible,
-  .panelToggle:focus-visible {
+  .panelToggle:focus-visible,
+  .locateButton:focus-visible {
     outline: 3px solid rgba(46,118,255,.32);
     outline-offset: 3px;
   }
@@ -2451,6 +2594,14 @@ const styles = `
       top: max(14px, env(safe-area-inset-top));
       left: 14px;
       width: calc(100vw - 28px);
+    }
+
+    .locateButton {
+      top: max(14px, env(safe-area-inset-top));
+      bottom: auto;
+      left: 14px;
+      width: 46px;
+      height: 46px;
     }
 
     .panelDock {

@@ -638,11 +638,72 @@ describe('CouponMapScreen', () => {
       },
     });
     const nextView: CouponMapView = {
-      stores: [VIEW.stores[1]],
+      stores: [VIEW.stores[1], VIEW.stores[0]],
       totals: {
-        brands: 1,
-        stores: 1,
-        activeCoupons: 1,
+        brands: 2,
+        stores: 2,
+        activeCoupons: 3,
+      },
+    };
+    const fetchMock = vi.fn((_input: RequestInfo | URL, _init?: RequestInit) =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () =>
+          Promise.resolve({
+            view: nextView,
+            status: 'ready',
+            message: null,
+          }),
+      } as Response)
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    const { container } = render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+
+    const requestedUrl = String(fetchMock.mock.calls[0]?.[0] ?? '');
+    expect(requestedUrl).toContain('/api/coupon-map?');
+    expect(requestedUrl).toContain('lat=37.4979');
+    expect(requestedUrl).toContain('lng=127.0276');
+    expect(requestedUrl).toContain('radiusMeters=1000');
+
+    await waitFor(() =>
+      expect(screen.getByTestId('selected-store-detail').getAttribute('data-selected-store-id')).toBe(
+        'gangnam'
+      )
+    );
+    const couponRows = container.querySelectorAll('.couponListRow');
+    expect(couponRows[0]?.getAttribute('aria-label')).toBe(
+      '버거킹 강남점 와퍼 3,000원 할인 3,000원'
+    );
+    expect(screen.getByRole('button', { name: '맥도날드 홍대점 20%' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: '버거킹 강남점 3,000원' })).toBeTruthy();
+  });
+
+  it('forces a current-location reload from the map locate button', async () => {
+    Object.defineProperty(navigator, 'geolocation', {
+      configurable: true,
+      value: {
+        watchPosition: vi.fn((onSuccess: PositionCallback) => {
+          onSuccess({
+            coords: {
+              latitude: 37.4979123,
+              longitude: 127.0276123,
+            },
+          } as GeolocationPosition);
+          return 7;
+        }),
+        clearWatch: vi.fn(),
+      },
+    });
+    const nextView: CouponMapView = {
+      stores: [VIEW.stores[1], VIEW.stores[0]],
+      totals: {
+        brands: 2,
+        stores: 2,
+        activeCoupons: 3,
       },
     };
     const fetchMock = vi.fn((_input: RequestInfo | URL, _init?: RequestInit) =>
@@ -663,18 +724,16 @@ describe('CouponMapScreen', () => {
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
 
-    const requestedUrl = String(fetchMock.mock.calls[0]?.[0] ?? '');
+    fireEvent.click(screen.getByRole('button', { name: '현재 위치로 이동' }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+    const requestedUrl = String(fetchMock.mock.calls[1]?.[0] ?? '');
     expect(requestedUrl).toContain('/api/coupon-map?');
     expect(requestedUrl).toContain('lat=37.4979');
     expect(requestedUrl).toContain('lng=127.0276');
     expect(requestedUrl).toContain('radiusMeters=1000');
-
-    await waitFor(() =>
-      expect(screen.getByTestId('selected-store-detail').getAttribute('data-selected-store-id')).toBe(
-        'gangnam'
-      )
+    expect(screen.getByTestId('selected-store-detail').getAttribute('data-selected-store-id')).toBe(
+      'gangnam'
     );
-    expect(screen.queryByRole('button', { name: '맥도날드 홍대점 20%' })).toBeNull();
-    expect(screen.getByRole('button', { name: '버거킹 강남점 3,000원' })).toBeTruthy();
   });
 });
