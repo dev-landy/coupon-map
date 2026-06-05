@@ -684,7 +684,7 @@ describe('CouponMapScreen', () => {
       expect(marker.style.getPropertyValue('--pin-x')).toMatch(/px$/);
       expect(marker.style.getPropertyValue('--pin-y')).toMatch(/px$/);
     });
-    expect(latestKakaoMap?.getLevel()).toBeGreaterThan(5);
+    expect(latestKakaoMap?.getLevel()).toBe(5);
     expect(marker.style.getPropertyValue('--pin-mobile-x')).toBe('');
     expect(marker.style.getPropertyValue('--pin-mobile-y')).toBe('');
 
@@ -702,6 +702,57 @@ describe('CouponMapScreen', () => {
       .map((style) => style.textContent ?? '')
       .join('\n');
     expect(styleText).toContain('.marker:not(.isProjected)');
+  });
+
+  it('keeps the mobile camera anchored to the user when coupon stores are outside the search radius', async () => {
+    vi.stubEnv('NEXT_PUBLIC_KAKAO_MAP_APP_KEY', 'test-key');
+    mockMobileViewport();
+    mockAnimationFrame();
+    mockKakaoMaps();
+    Object.defineProperty(navigator, 'geolocation', {
+      configurable: true,
+      value: {
+        watchPosition: vi.fn((onSuccess: PositionCallback) => {
+          onSuccess({
+            coords: {
+              latitude: 37.4979123,
+              longitude: 127.0276123,
+            },
+          } as GeolocationPosition);
+          return 7;
+        }),
+        clearWatch: vi.fn(),
+      },
+    });
+    const fetchMock = vi.fn((_input: RequestInfo | URL, _init?: RequestInit) =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () =>
+          Promise.resolve({
+            view: {
+              stores: [VIEW.stores[0]],
+              totals: {
+                brands: 1,
+                stores: 1,
+                activeCoupons: 2,
+              },
+            },
+            status: 'ready',
+            message: null,
+          }),
+      } as Response)
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    await waitFor(() => {
+      expect(latestKakaoMap?.getCenter().getLat()).toBeCloseTo(37.4979123, 4);
+      expect(latestKakaoMap?.getCenter().getLng()).toBeCloseTo(127.0276123, 4);
+      expect(latestKakaoMap?.getLevel()).toBe(5);
+    });
   });
 
   it('pans a selected mobile store into the visible area above the bottom sheet', async () => {

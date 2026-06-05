@@ -183,40 +183,45 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     const kakaoMaps = kakaoMapsRef.current;
     if (!map || !kakaoMaps) return;
 
-    const stores = storesRef.current;
     const coords = userCoordsRef.current;
     const userLatLng = new kakaoMaps.LatLng(coords.lat, coords.lng);
-    const centerStore = stores[0];
+    const nearbyStores = storesRef.current.filter(
+      (store) =>
+        haversineMeters(coords.lat, coords.lng, store.lat, store.lng) <=
+        searchRadiusRef.current
+    );
+    const centerStore = nearbyStores[0];
+    const userFocusedLevel = getAutoFitMapLevel(4);
 
-    if (stores.length === 0 || !centerStore) {
+    if (nearbyStores.length === 0 || !centerStore) {
       suppressViewportReload();
       map.setCenter(userLatLng);
-      map.setLevel(getAutoFitMapLevel(4));
+      map.setLevel(userFocusedLevel);
       requestMarkerReproject();
       return;
     }
 
     if (
-      stores.length === 1 &&
+      nearbyStores.length === 1 &&
       haversineMeters(coords.lat, coords.lng, centerStore.lat, centerStore.lng) < 20
     ) {
       suppressViewportReload();
       map.setCenter(userLatLng);
-      map.setLevel(getAutoFitMapLevel(4));
+      map.setLevel(userFocusedLevel);
       requestMarkerReproject();
       return;
     }
 
     const bounds = new kakaoMaps.LatLngBounds();
     bounds.extend(userLatLng);
-    for (const store of stores) {
+    for (const store of nearbyStores) {
       bounds.extend(new kakaoMaps.LatLng(store.lat, store.lng));
     }
 
     suppressViewportReload();
     map.setBounds(bounds, ...getMapPadding(isCouponPanelOpen));
-    if (isMobileCouponSheet()) {
-      map.setLevel(map.getLevel() + MOBILE_MAP_LEVEL_OFFSET);
+    if (map.getLevel() > userFocusedLevel) {
+      map.setLevel(userFocusedLevel);
     }
     requestMarkerReproject();
   }, [isCouponPanelOpen, requestMarkerReproject, suppressViewportReload]);
