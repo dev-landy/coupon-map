@@ -1,6 +1,15 @@
-import { describe, it, expect } from 'vitest';
-import { resolveDeepLinkTarget } from '../lib/deeplink';
+import { afterEach, describe, it, expect } from 'vitest';
+import { detectPlatform, resolveDeepLinkTarget } from '../lib/deeplink';
 import type { Brand } from '../lib/types';
+
+const originalUserAgent = navigator.userAgent;
+
+afterEach(() => {
+  Object.defineProperty(navigator, 'userAgent', {
+    configurable: true,
+    value: originalUserAgent,
+  });
+});
 
 function makeBrand(overrides: Partial<Brand> = {}): Brand {
   return {
@@ -11,6 +20,13 @@ function makeBrand(overrides: Partial<Brand> = {}): Brand {
     app_store_url: 'https://apps.apple.com/test',
     ...overrides,
   };
+}
+
+function mockUserAgent(userAgent: string): void {
+  Object.defineProperty(navigator, 'userAgent', {
+    configurable: true,
+    value: userAgent,
+  });
 }
 
 describe('resolveDeepLinkTarget', () => {
@@ -46,6 +62,61 @@ describe('resolveDeepLinkTarget', () => {
 
     // Act
     const target = resolveDeepLinkTarget(brand, 'mobile');
+
+    // Assert
+    expect(target.kind).toBe('app-scheme');
+    expect(target.fallbackUrl).toBe('https://brand.example.com');
+  });
+
+  it('uses the iOS App Store fallback for a known brand on iPhone', () => {
+    // Arrange
+    const brand = makeBrand({
+      external_id: 'burgerking',
+      name: '버거킹',
+      app_scheme: 'burgerkingkorea://',
+      app_store_url: 'https://play.google.com/store/apps/details?id=kr.co.burgerkinghybrid',
+    });
+
+    // Act
+    const target = resolveDeepLinkTarget(brand, 'ios');
+
+    // Assert
+    expect(target.kind).toBe('app-scheme');
+    expect(target.url).toBe('burgerkingkorea://');
+    expect(target.fallbackUrl).toContain('apps.apple.com/kr/app/');
+    expect(target.fallbackUrl).toContain('id1017567032');
+  });
+
+  it('uses the Play Store fallback for a known brand on Android', () => {
+    // Arrange
+    const brand = makeBrand({
+      external_id: 'burgerking',
+      name: '버거킹',
+      app_scheme: 'burgerkingkorea://',
+      app_store_url: 'https://apps.apple.com/kr/app/id1017567032',
+    });
+
+    // Act
+    const target = resolveDeepLinkTarget(brand, 'android');
+
+    // Assert
+    expect(target.kind).toBe('app-scheme');
+    expect(target.url).toBe('burgerkingkorea://');
+    expect(target.fallbackUrl).toBe(
+      'https://play.google.com/store/apps/details?id=kr.co.burgerkinghybrid'
+    );
+  });
+
+  it('does not send iPhone users to a Play Store legacy fallback for unknown brands', () => {
+    // Arrange
+    const brand = makeBrand({
+      external_id: 'unknown',
+      name: 'Unknown Brand',
+      app_store_url: 'https://play.google.com/store/apps/details?id=com.example.app',
+    });
+
+    // Act
+    const target = resolveDeepLinkTarget(brand, 'ios');
 
     // Assert
     expect(target.kind).toBe('app-scheme');
@@ -104,5 +175,21 @@ describe('resolveDeepLinkTarget', () => {
 
     // Act / Assert
     expect(() => resolveDeepLinkTarget(brand, 'mobile')).toThrow();
+  });
+});
+
+describe('detectPlatform', () => {
+  it('detects iPhone user agents as iOS', () => {
+    mockUserAgent(
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15'
+    );
+
+    expect(detectPlatform()).toBe('ios');
+  });
+
+  it('detects Android user agents as Android', () => {
+    mockUserAgent('Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36');
+
+    expect(detectPlatform()).toBe('android');
   });
 });

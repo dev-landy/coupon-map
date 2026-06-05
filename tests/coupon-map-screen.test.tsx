@@ -425,9 +425,8 @@ describe('CouponMapScreen', () => {
     expect(detail.getAttribute('data-selected-coupon-id')).toBe('fries');
     expect(detail.querySelector('h2')?.textContent).toBe('감자튀김 1,000원 할인');
 
-    fireEvent.click(screen.getByRole('button', { name: '앱에서 열기' }));
-
-    expect(openBrandApp).toHaveBeenLastCalledWith(
+    expect(openBrandApp).toHaveBeenCalledTimes(1);
+    expect(openBrandApp).toHaveBeenCalledWith(
       VIEW.stores[0].brand,
       undefined,
       'mcdonaldskr://coupon/fries'
