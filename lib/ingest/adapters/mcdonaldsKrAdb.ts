@@ -80,7 +80,7 @@ export const mcdonaldsKrAdbAdapter: CrawlAdapter = {
         source: SOURCE,
         external_id: 'mcdonalds',
         name: '맥도날드',
-        app_scheme: 'mcdonaldskr://',
+        app_scheme: 'https://links.mcdonaldsapps.com/',
         store_url: 'https://www.mcdonalds.co.kr',
         app_store_url: 'https://play.google.com/store/apps/details?id=com.mcdonalds.mobileapp',
       },

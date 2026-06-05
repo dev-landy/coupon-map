@@ -73,7 +73,7 @@ describe('resolveDeepLinkTarget', () => {
     const brand = makeBrand({
       external_id: 'burgerking',
       name: '버거킹',
-      app_scheme: 'burgerkingkorea://',
+      app_scheme: 'burgerking://main',
       app_store_url: 'https://play.google.com/store/apps/details?id=kr.co.burgerkinghybrid',
     });
 
@@ -82,7 +82,7 @@ describe('resolveDeepLinkTarget', () => {
 
     // Assert
     expect(target.kind).toBe('app-scheme');
-    expect(target.url).toBe('burgerkingkorea://');
+    expect(target.url).toBe('burgerking://main');
     expect(target.fallbackUrl).toContain('apps.apple.com/kr/app/');
     expect(target.fallbackUrl).toContain('id1017567032');
   });
@@ -92,7 +92,7 @@ describe('resolveDeepLinkTarget', () => {
     const brand = makeBrand({
       external_id: 'burgerking',
       name: '버거킹',
-      app_scheme: 'burgerkingkorea://',
+      app_scheme: 'burgerking://main',
       app_store_url: 'https://apps.apple.com/kr/app/id1017567032',
     });
 
@@ -101,7 +101,7 @@ describe('resolveDeepLinkTarget', () => {
 
     // Assert
     expect(target.kind).toBe('app-scheme');
-    expect(target.url).toBe('burgerkingkorea://');
+    expect(target.url).toBe('burgerking://main');
     expect(target.fallbackUrl).toBe(
       'https://play.google.com/store/apps/details?id=kr.co.burgerkinghybrid'
     );

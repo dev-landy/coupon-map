@@ -103,7 +103,7 @@ export const burgerkingKrAdbAdapter: CrawlAdapter = {
         source: SOURCE,
         external_id: 'burgerking',
         name: '버거킹',
-        app_scheme: 'burgerkingkorea://',
+        app_scheme: 'burgerking://main',
         store_url: 'https://www.burgerking.co.kr',
         app_store_url: 'https://play.google.com/store/apps/details?id=kr.co.burgerkinghybrid',
       },

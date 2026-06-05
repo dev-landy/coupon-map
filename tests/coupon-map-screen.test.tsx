@@ -48,7 +48,7 @@ const VIEW: CouponMapView = {
       brand: {
         id: 'brand-mcdonalds',
         name: '맥도날드',
-        app_scheme: 'mcdonaldskr://',
+        app_scheme: 'https://links.mcdonaldsapps.com/',
         store_url: 'https://www.mcdonalds.co.kr',
         app_store_url: null,
       },
@@ -106,7 +106,7 @@ const VIEW: CouponMapView = {
       brand: {
         id: 'brand-burgerking',
         name: '버거킹',
-        app_scheme: 'burgerkingkorea://',
+        app_scheme: 'burgerking://main',
         store_url: 'https://www.burgerking.co.kr',
         app_store_url: 'https://play.google.com/store/apps/details?id=kr.co.burgerkinghybrid',
       },

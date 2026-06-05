@@ -17,7 +17,7 @@ function makePayload(overrides: Partial<CrawlPayload> = {}): CrawlPayload {
       source: 'mcdonalds-kr',
       external_id: 'mcdonalds',
       name: '맥도날드',
-      app_scheme: 'mcdonaldskr://',
+      app_scheme: 'https://links.mcdonaldsapps.com/',
       store_url: 'https://www.mcdonalds.co.kr',
       app_store_url: null,
     },
