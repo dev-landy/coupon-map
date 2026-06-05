@@ -52,10 +52,6 @@ const MAP_PROGRAMMATIC_MOVE_SUPPRESSION_MS = 900;
 const MOBILE_MAP_LEVEL_OFFSET = 1;
 const DEFAULT_MAP_CONTAINER_WIDTH_PX = 800;
 const DEFAULT_MAP_CONTAINER_HEIGHT_PX = 600;
-const MOBILE_SELECTED_STORE_TOP_PADDING_PX = 96;
-const MOBILE_COUPON_SHEET_HEIGHT_RATIO = 0.74;
-const MOBILE_COUPON_SHEET_MAX_HEIGHT_PX = 620;
-const MOBILE_COUPON_SHEET_TOP_GAP_PX = 92;
 
 interface SelectedCouponSelection {
   storeId: string;
@@ -772,24 +768,16 @@ function getFocusedMapCenter(
   mapContainer: HTMLElement | null,
   options: { isCouponPanelOpen: boolean }
 ): KakaoLatLng {
-  if (!isMobileCouponSheet()) {
-    return getDesktopFocusedMapCenter(
-      targetLatLng,
-      map,
-      kakaoMaps,
-      mapContainer,
-      options.isCouponPanelOpen
-    );
+  if (isMobileCouponSheet()) {
+    return targetLatLng;
   }
 
-  const projection = map.getProjection();
-  const storePoint = projection.containerPointFromCoords(targetLatLng);
-  const height = getMapContainerHeight(mapContainer);
-  const centerY = height / 2;
-  const focusY = getMobileSelectedStoreFocusY(height);
-
-  return projection.coordsFromContainerPoint(
-    new kakaoMaps.Point(storePoint.x, storePoint.y + centerY - focusY)
+  return getDesktopFocusedMapCenter(
+    targetLatLng,
+    map,
+    kakaoMaps,
+    mapContainer,
+    options.isCouponPanelOpen
   );
 }
 
@@ -842,18 +830,4 @@ function getMapContainerHeight(mapContainer: HTMLElement | null): number {
   const rect = mapContainer?.getBoundingClientRect();
 
   return Math.round(rect?.height ?? 0) || DEFAULT_MAP_CONTAINER_HEIGHT_PX;
-}
-
-function getMobileSelectedStoreFocusY(containerHeight: number): number {
-  const sheetHeight = Math.min(
-    containerHeight * MOBILE_COUPON_SHEET_HEIGHT_RATIO,
-    MOBILE_COUPON_SHEET_MAX_HEIGHT_PX,
-    Math.max(0, containerHeight - MOBILE_COUPON_SHEET_TOP_GAP_PX)
-  );
-  const sheetTop = containerHeight - sheetHeight;
-
-  return (
-    MOBILE_SELECTED_STORE_TOP_PADDING_PX +
-    Math.max(0, sheetTop - MOBILE_SELECTED_STORE_TOP_PADDING_PX) / 2
-  );
 }

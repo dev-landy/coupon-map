@@ -754,7 +754,7 @@ describe('CouponMapScreen', () => {
     });
   });
 
-  it('pans a selected mobile store into the visible area above the bottom sheet', async () => {
+  it('centers a selected mobile store without bottom-sheet midpoint offset', async () => {
     vi.stubEnv('NEXT_PUBLIC_KAKAO_MAP_APP_KEY', 'test-key');
     mockMobileViewport();
     mockAnimationFrame();
@@ -776,8 +776,9 @@ describe('CouponMapScreen', () => {
       ?.getProjection()
       .containerPointFromCoords(new MockKakaoLatLng(VIEW.stores[1].lat, VIEW.stores[1].lng));
 
-    expect(selectedPoint).toEqual({ x: 400, y: 126 });
-    expect(latestKakaoMap?.getCenter().getLat()).not.toBe(VIEW.stores[1].lat);
+    expect(selectedPoint).toEqual({ x: 400, y: 300 });
+    expect(latestKakaoMap?.getCenter().getLat()).toBe(VIEW.stores[1].lat);
+    expect(latestKakaoMap?.getCenter().getLng()).toBe(VIEW.stores[1].lng);
   });
 
   it('keeps a selected desktop store centered in the visible map area as the right panel opens and closes', async () => {
