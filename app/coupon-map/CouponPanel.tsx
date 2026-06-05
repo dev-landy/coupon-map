@@ -23,7 +23,6 @@ export interface CouponListItem {
 interface CouponPanelProps {
   isCouponPanelOpen: boolean;
   isCouponSheetLowered: boolean;
-  isCouponSheetExpanded: boolean;
   isSheetDragging: boolean;
   sheetDragY: number;
   panelToggleLabel: string;
@@ -49,7 +48,6 @@ interface CouponPanelProps {
 export const CouponPanel = memo(function CouponPanel({
   isCouponPanelOpen,
   isCouponSheetLowered,
-  isCouponSheetExpanded,
   isSheetDragging,
   sheetDragY,
   panelToggleLabel,
@@ -68,7 +66,7 @@ export const CouponPanel = memo(function CouponPanel({
 }: CouponPanelProps) {
   return (
     <div
-      className={`panelDock ${isCouponPanelOpen ? 'isPanelOpen' : 'isPanelClosed'} ${isCouponSheetLowered ? 'isSheetLowered' : ''} ${isCouponSheetExpanded ? 'isSheetExpanded' : ''} ${isSheetDragging ? 'isSheetDragging' : ''}`}
+      className={`panelDock ${isCouponPanelOpen ? 'isPanelOpen' : 'isPanelClosed'} ${isCouponSheetLowered ? 'isSheetLowered' : ''} ${isSheetDragging ? 'isSheetDragging' : ''}`}
       style={
         {
           '--sheet-base-y': isCouponSheetLowered

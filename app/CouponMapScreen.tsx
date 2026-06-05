@@ -50,6 +50,7 @@ const LOCATION_RELOAD_THRESHOLD_METERS = 50;
 const MAP_RELOAD_DEBOUNCE_MS = 500;
 const MAP_PROGRAMMATIC_MOVE_SUPPRESSION_MS = 900;
 const MOBILE_MAP_LEVEL_OFFSET = 1;
+const DEFAULT_MAP_CONTAINER_WIDTH_PX = 800;
 const DEFAULT_MAP_CONTAINER_HEIGHT_PX = 600;
 const MOBILE_SELECTED_STORE_TOP_PADDING_PX = 96;
 const MOBILE_COUPON_SHEET_HEIGHT_RATIO = 0.74;
@@ -93,7 +94,6 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
   const {
     isCouponPanelOpen,
     isCouponSheetLowered,
-    isCouponSheetExpanded,
     sheetDragY,
     isSheetDragging,
     openPanelForSelection,
@@ -102,7 +102,6 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     startCouponSheetDrag,
     moveCouponSheetDrag,
     finishCouponSheetDrag,
-    lowerExpandedSheetFromMap,
   } = useCouponSheet();
   const userLocation = useUserLocation();
   const storesRef = useRef(displayView.stores);
@@ -222,6 +221,42 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     requestMarkerReproject();
   }, [isCouponPanelOpen, requestMarkerReproject, suppressViewportReload]);
   fitStoreBoundsRef.current = fitStoreBounds;
+
+  const recenterDesktopPanelFocus = useCallback(
+    (nextIsCouponPanelOpen: boolean) => {
+      const map = mapRef.current;
+      const kakaoMaps = kakaoMapsRef.current;
+      if (!map || !kakaoMaps || isMobileCouponSheet()) return;
+
+      const focusLatLng = getCurrentDesktopMapFocus(
+        map,
+        kakaoMaps,
+        mapContainerRef.current,
+        isCouponPanelOpen
+      );
+
+      suppressViewportReload();
+      requestFrame(() => {
+        map.relayout();
+        map.panTo(
+          getDesktopFocusedMapCenter(
+            focusLatLng,
+            map,
+            kakaoMaps,
+            mapContainerRef.current,
+            nextIsCouponPanelOpen
+          )
+        );
+        requestMarkerReproject();
+      });
+    },
+    [isCouponPanelOpen, requestMarkerReproject, suppressViewportReload]
+  );
+
+  const handleToggleCouponPanel = useCallback(() => {
+    recenterDesktopPanelFocus(!isCouponPanelOpen);
+    toggleCouponPanel();
+  }, [isCouponPanelOpen, recenterDesktopPanelFocus, toggleCouponPanel]);
 
   const reloadNearbyCoupons = useCallback(
     async (
@@ -477,7 +512,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
         window.requestAnimationFrame(() => {
           if (!isActive) return;
           map.relayout();
-          fitStoreBounds();
+          fitStoreBoundsRef.current();
         });
       })
       .catch(() => {
@@ -504,7 +539,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
         if (mapContainerRef.current) mapContainerRef.current.innerHTML = '';
       }
     };
-  }, [fitStoreBounds, kakaoMapAppKey, scheduleViewportReload]);
+  }, [kakaoMapAppKey, scheduleViewportReload]);
 
   useEffect(() => {
     if (mapProviderStatus !== 'ready') return;
@@ -542,7 +577,6 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     return () => window.clearTimeout(timeout);
   }, [
     isCouponPanelOpen,
-    isCouponSheetExpanded,
     isCouponSheetLowered,
     mapProviderStatus,
     requestMarkerReproject,
@@ -562,7 +596,11 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
       const storeLatLng = new kakaoMaps.LatLng(store.lat, store.lng);
 
       suppressViewportReload();
-      map.panTo(getSelectedStoreMapCenter(storeLatLng, map, kakaoMaps, mapContainerRef.current));
+      map.panTo(
+        getFocusedMapCenter(storeLatLng, map, kakaoMaps, mapContainerRef.current, {
+          isCouponPanelOpen: true,
+        })
+      );
       requestMarkerReproject();
     },
     [displayView.stores, openPanelForSelection, requestMarkerReproject, suppressViewportReload]
@@ -601,10 +639,19 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     if (!map || !kakaoMaps) return;
 
     suppressViewportReload();
-    map.panTo(new kakaoMaps.LatLng(coords.lat, coords.lng));
+    map.panTo(
+      getFocusedMapCenter(
+        new kakaoMaps.LatLng(coords.lat, coords.lng),
+        map,
+        kakaoMaps,
+        mapContainerRef.current,
+        { isCouponPanelOpen }
+      )
+    );
     requestMarkerReproject();
   }, [
     collapseSheet,
+    isCouponPanelOpen,
     reloadNearbyCoupons,
     requestMarkerReproject,
     suppressViewportReload,
@@ -617,7 +664,6 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
       <section
         className={`mapCanvas ${mapProviderStatus === 'ready' ? 'hasProviderMap' : 'usesFallbackMap'} ${mapProviderStatus === 'loading' ? 'isMapLoading' : ''}`}
         aria-label="coupon map"
-        onClick={lowerExpandedSheetFromMap}
       >
         <div ref={mapContainerRef} className="providerMap" aria-hidden="true" />
         {mapProviderStatus !== 'ready' ? <MapStatusOverlay status={mapProviderStatus} /> : null}
@@ -669,7 +715,6 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
       <CouponPanel
         isCouponPanelOpen={isCouponPanelOpen}
         isCouponSheetLowered={isCouponSheetLowered}
-        isCouponSheetExpanded={isCouponSheetExpanded}
         isSheetDragging={isSheetDragging}
         sheetDragY={sheetDragY}
         panelToggleLabel={panelToggleLabel}
@@ -679,7 +724,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
         selectedStore={selectedStore}
         selectedCoupon={selectedCoupon}
         activeStoreId={activeStoreId}
-        onToggle={toggleCouponPanel}
+        onToggle={handleToggleCouponPanel}
         onSheetPointerDown={startCouponSheetDrag}
         onSheetPointerMove={moveCouponSheetDrag}
         onSheetPointerEnd={finishCouponSheetDrag}
@@ -715,16 +760,25 @@ function getAutoFitMapLevel(level: number): number {
   return isMobileCouponSheet() ? level + MOBILE_MAP_LEVEL_OFFSET : level;
 }
 
-function getSelectedStoreMapCenter(
-  storeLatLng: KakaoLatLng,
+function getFocusedMapCenter(
+  targetLatLng: KakaoLatLng,
   map: KakaoMap,
   kakaoMaps: KakaoMapsNamespace,
-  mapContainer: HTMLElement | null
+  mapContainer: HTMLElement | null,
+  options: { isCouponPanelOpen: boolean }
 ): KakaoLatLng {
-  if (!isMobileCouponSheet()) return storeLatLng;
+  if (!isMobileCouponSheet()) {
+    return getDesktopFocusedMapCenter(
+      targetLatLng,
+      map,
+      kakaoMaps,
+      mapContainer,
+      options.isCouponPanelOpen
+    );
+  }
 
   const projection = map.getProjection();
-  const storePoint = projection.containerPointFromCoords(storeLatLng);
+  const storePoint = projection.containerPointFromCoords(targetLatLng);
   const height = getMapContainerHeight(mapContainer);
   const centerY = height / 2;
   const focusY = getMobileSelectedStoreFocusY(height);
@@ -732,6 +786,51 @@ function getSelectedStoreMapCenter(
   return projection.coordsFromContainerPoint(
     new kakaoMaps.Point(storePoint.x, storePoint.y + centerY - focusY)
   );
+}
+
+function getCurrentDesktopMapFocus(
+  map: KakaoMap,
+  kakaoMaps: KakaoMapsNamespace,
+  mapContainer: HTMLElement | null,
+  isCouponPanelOpen: boolean
+): KakaoLatLng {
+  const width = getMapContainerWidth(mapContainer);
+  const height = getMapContainerHeight(mapContainer);
+
+  return map.getProjection().coordsFromContainerPoint(
+    new kakaoMaps.Point(getDesktopMapFocusX(width, isCouponPanelOpen), height / 2)
+  );
+}
+
+function getDesktopFocusedMapCenter(
+  targetLatLng: KakaoLatLng,
+  map: KakaoMap,
+  kakaoMaps: KakaoMapsNamespace,
+  mapContainer: HTMLElement | null,
+  isCouponPanelOpen: boolean
+): KakaoLatLng {
+  const projection = map.getProjection();
+  const targetPoint = projection.containerPointFromCoords(targetLatLng);
+  const width = getMapContainerWidth(mapContainer);
+  const centerX = width / 2;
+  const focusX = getDesktopMapFocusX(width, isCouponPanelOpen);
+
+  return projection.coordsFromContainerPoint(
+    new kakaoMaps.Point(targetPoint.x + centerX - focusX, targetPoint.y)
+  );
+}
+
+function getDesktopMapFocusX(width: number, isCouponPanelOpen: boolean): number {
+  const [, paddingRight, , paddingLeft] = getMapPadding(isCouponPanelOpen);
+  const visibleWidth = Math.max(1, width - paddingLeft - paddingRight);
+
+  return paddingLeft + visibleWidth / 2;
+}
+
+function getMapContainerWidth(mapContainer: HTMLElement | null): number {
+  const rect = mapContainer?.getBoundingClientRect();
+
+  return Math.round(rect?.width ?? 0) || DEFAULT_MAP_CONTAINER_WIDTH_PX;
 }
 
 function getMapContainerHeight(mapContainer: HTMLElement | null): number {

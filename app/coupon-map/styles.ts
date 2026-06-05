@@ -1,5 +1,3 @@
-import { COUPON_SHEET_EXPANDED_TOP_GAP_PX } from '../../lib/couponSheet';
-
 export const styles = `
   * {
     box-sizing: border-box;
@@ -960,11 +958,6 @@ export const styles = `
       width: auto;
       height: min(74dvh, 620px);
       max-height: calc(100dvh - 92px);
-    }
-
-    .panelDock.isSheetExpanded {
-      height: calc(100dvh - ${COUPON_SHEET_EXPANDED_TOP_GAP_PX}px - env(safe-area-inset-top));
-      max-height: calc(100dvh - ${COUPON_SHEET_EXPANDED_TOP_GAP_PX}px);
     }
 
     .panelDock.isPanelClosed {

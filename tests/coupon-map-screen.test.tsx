@@ -289,13 +289,19 @@ class MockKakaoMap {
 
   relayout(): void {}
 
-  setBounds(bounds: MockKakaoLatLngBounds): void {
+  setBounds(
+    bounds: MockKakaoLatLngBounds,
+    _paddingTop = 0,
+    paddingRight = 0,
+    _paddingBottom = 0,
+    paddingLeft = 0
+  ): void {
     if (bounds.points.length > 0) {
       const latSum = bounds.points.reduce((sum, point) => sum + point.getLat(), 0);
       const lngSum = bounds.points.reduce((sum, point) => sum + point.getLng(), 0);
       this.center = new MockKakaoLatLng(
         latSum / bounds.points.length,
-        lngSum / bounds.points.length
+        lngSum / bounds.points.length + (paddingRight - paddingLeft) / 200_000
       );
     }
     this.emit('bounds_changed');
@@ -528,7 +534,7 @@ describe('CouponMapScreen', () => {
     expect(panelDock.className).not.toContain('isSheetLowered');
   });
 
-  it('expands the mobile coupon sheet to the top when dragged upward', () => {
+  it('keeps the mobile coupon sheet at the middle when dragged upward', () => {
     mockMobileViewport();
 
     const { container } = render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
@@ -538,21 +544,39 @@ describe('CouponMapScreen', () => {
     firePointer(sheetDragArea, 'pointerdown', 240);
     firePointer(sheetDragArea, 'pointermove', 120);
 
+    expect(panelDock.style.getPropertyValue('--sheet-drag-y')).toBe('0px');
+
+    firePointer(sheetDragArea, 'pointerup', 120);
+
+    expect(panelDock.className).not.toContain('isSheetExpanded');
+    expect(panelDock.className).not.toContain('isSheetLowered');
+  });
+
+  it('restores the lowered mobile coupon sheet when dragged upward', () => {
+    mockMobileViewport();
+
+    const { container } = render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+    const sheetDragArea = container.querySelector('.sheetDragArea') as HTMLElement;
+    const panelDock = container.querySelector('.panelDock') as HTMLElement;
+
+    firePointer(sheetDragArea, 'pointerdown', 120);
+    firePointer(sheetDragArea, 'pointermove', 240);
+    firePointer(sheetDragArea, 'pointerup', 240);
+
+    expect(panelDock.className).toContain('isSheetLowered');
+
+    firePointer(sheetDragArea, 'pointerdown', 240);
+    firePointer(sheetDragArea, 'pointermove', 120);
+
     expect(panelDock.style.getPropertyValue('--sheet-drag-y')).toBe('-120px');
 
     firePointer(sheetDragArea, 'pointerup', 120);
 
-    expect(panelDock.className).toContain('isSheetExpanded');
-    expect(panelDock.className).not.toContain('isSheetLowered');
-
-    firePointer(sheetDragArea, 'pointerdown', 120);
-    firePointer(sheetDragArea, 'pointermove', 220);
-    firePointer(sheetDragArea, 'pointerup', 220);
-
     expect(panelDock.className).not.toContain('isSheetExpanded');
+    expect(panelDock.className).not.toContain('isSheetLowered');
   });
 
-  it('lowers the expanded mobile coupon sheet when the map is tapped', () => {
+  it('keeps the middle mobile coupon sheet in place when the map is tapped', () => {
     mockMobileViewport();
 
     const { container } = render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
@@ -564,13 +588,13 @@ describe('CouponMapScreen', () => {
     firePointer(sheetDragArea, 'pointermove', 120);
     firePointer(sheetDragArea, 'pointerup', 120);
 
-    expect(panelDock.className).toContain('isSheetExpanded');
+    expect(panelDock.className).not.toContain('isSheetExpanded');
 
     fireEvent.click(mapCanvas);
 
     expect(panelDock.className).not.toContain('isSheetExpanded');
-    expect(panelDock.className).toContain('isSheetLowered');
-    expect(panelDock.style.getPropertyValue('--sheet-base-y')).toBe('calc(100% - 124px)');
+    expect(panelDock.className).not.toContain('isSheetLowered');
+    expect(panelDock.style.getPropertyValue('--sheet-base-y')).toBe('0px');
   });
 
   it('keeps the empty state visible when there are no stores', () => {
@@ -704,6 +728,47 @@ describe('CouponMapScreen', () => {
 
     expect(selectedPoint).toEqual({ x: 400, y: 126 });
     expect(latestKakaoMap?.getCenter().getLat()).not.toBe(VIEW.stores[1].lat);
+  });
+
+  it('keeps a selected desktop store centered in the visible map area as the right panel opens and closes', async () => {
+    vi.stubEnv('NEXT_PUBLIC_KAKAO_MAP_APP_KEY', 'test-key');
+    mockAnimationFrame();
+    mockKakaoMaps();
+
+    render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+
+    const gangnamMarker = await screen.findByRole('button', {
+      name: '버거킹 강남점 3,000원',
+    });
+
+    await waitFor(() => {
+      expect(gangnamMarker.className).toContain('isProjected');
+    });
+
+    fireEvent.click(gangnamMarker);
+
+    const projectGangnam = () =>
+      latestKakaoMap
+        ?.getProjection()
+        .containerPointFromCoords(new MockKakaoLatLng(VIEW.stores[1].lat, VIEW.stores[1].lng));
+
+    expect(projectGangnam()).toEqual({ x: 186, y: 300 });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: '쿠폰 패널 닫기' }));
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+
+    expect(screen.getByRole('button', { name: '쿠폰 패널 열기' })).toBeTruthy();
+    expect(projectGangnam()).toEqual({ x: 400, y: 300 });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: '쿠폰 패널 열기' }));
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+
+    expect(screen.getByRole('button', { name: '쿠폰 패널 닫기' })).toBeTruthy();
+    expect(projectGangnam()).toEqual({ x: 186, y: 300 });
   });
 
   it('reloads coupon data when the browser reports a moved location', async () => {

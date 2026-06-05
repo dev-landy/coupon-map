@@ -2,7 +2,6 @@ import { useCallback, useRef, useState } from 'react';
 
 import {
   COUPON_SHEET_DRAG_THRESHOLD_PX,
-  COUPON_SHEET_EXPAND_DRAG_THRESHOLD_PX,
   type CouponSheetDragState,
   getPointerY,
   resolveCouponSheetDragY,
@@ -10,26 +9,23 @@ import {
 import { isMobileCouponSheet } from '../../lib/kakaoMap';
 
 /**
- * Open/lowered/expanded state and pointer-drag handling for the mobile coupon
- * bottom sheet. `openPanelForSelection` and `collapseSheet` let the orchestrator
- * reset the sheet when a store is selected or the map recenters.
+ * Open/lowered state and pointer-drag handling for the mobile coupon bottom
+ * sheet. `openPanelForSelection` and `collapseSheet` let the orchestrator reset
+ * the sheet when a store is selected or the map recenters.
  */
 export function useCouponSheet() {
   const sheetDragRef = useRef<CouponSheetDragState | null>(null);
   const [isCouponPanelOpen, setIsCouponPanelOpen] = useState(true);
   const [isCouponSheetLowered, setIsCouponSheetLowered] = useState(false);
-  const [isCouponSheetExpanded, setIsCouponSheetExpanded] = useState(false);
   const [sheetDragY, setSheetDragY] = useState(0);
   const [isSheetDragging, setIsSheetDragging] = useState(false);
 
   const openPanelForSelection = useCallback(() => {
     setIsCouponPanelOpen(true);
     setIsCouponSheetLowered(false);
-    setIsCouponSheetExpanded(false);
   }, []);
 
   const collapseSheet = useCallback(() => {
-    setIsCouponSheetExpanded(false);
     setIsCouponSheetLowered(false);
   }, []);
 
@@ -38,7 +34,6 @@ export function useCouponSheet() {
       const nextIsOpen = !isOpen;
       if (nextIsOpen) {
         setIsCouponSheetLowered(false);
-        setIsCouponSheetExpanded(false);
       }
       return nextIsOpen;
     });
@@ -72,13 +67,12 @@ export function useCouponSheet() {
       drag.lastY = pointerY;
       const rawDragY = pointerY - drag.startY;
       const nextDragY = resolveCouponSheetDragY(rawDragY, {
-        isExpanded: isCouponSheetExpanded,
         isLowered: isCouponSheetLowered,
       });
       setSheetDragY(nextDragY);
       if (nextDragY !== 0) event.preventDefault();
     },
-    [isCouponSheetExpanded, isCouponSheetLowered]
+    [isCouponSheetLowered]
   );
 
   const finishCouponSheetDrag = useCallback(
@@ -95,25 +89,10 @@ export function useCouponSheet() {
 
       if (event.type === 'pointercancel') return;
 
-      if (isCouponSheetExpanded) {
-        if (finalDragY >= COUPON_SHEET_DRAG_THRESHOLD_PX) {
-          setIsCouponSheetExpanded(false);
-        }
-        return;
-      }
-
       if (isCouponSheetLowered) {
-        if (signedDragY <= -COUPON_SHEET_EXPAND_DRAG_THRESHOLD_PX) {
-          setIsCouponSheetLowered(false);
-          setIsCouponSheetExpanded(true);
-        } else if (signedDragY <= -COUPON_SHEET_DRAG_THRESHOLD_PX || Math.abs(signedDragY) < 8) {
+        if (signedDragY <= -COUPON_SHEET_DRAG_THRESHOLD_PX || Math.abs(signedDragY) < 8) {
           setIsCouponSheetLowered(false);
         }
-        return;
-      }
-
-      if (signedDragY <= -COUPON_SHEET_DRAG_THRESHOLD_PX) {
-        setIsCouponSheetExpanded(true);
         return;
       }
 
@@ -121,25 +100,12 @@ export function useCouponSheet() {
         setIsCouponSheetLowered(true);
       }
     },
-    [isCouponSheetExpanded, isCouponSheetLowered]
-  );
-
-  const lowerExpandedSheetFromMap = useCallback(
-    (event: React.MouseEvent<HTMLElement>) => {
-      if (!isCouponPanelOpen || !isCouponSheetExpanded || !isMobileCouponSheet()) return;
-      if (event.target instanceof Element && event.target.closest('.marker')) return;
-
-      setIsCouponSheetExpanded(false);
-      setIsCouponSheetLowered(true);
-      setSheetDragY(0);
-    },
-    [isCouponPanelOpen, isCouponSheetExpanded]
+    [isCouponSheetLowered]
   );
 
   return {
     isCouponPanelOpen,
     isCouponSheetLowered,
-    isCouponSheetExpanded,
     sheetDragY,
     isSheetDragging,
     openPanelForSelection,
@@ -148,6 +114,5 @@ export function useCouponSheet() {
     startCouponSheetDrag,
     moveCouponSheetDrag,
     finishCouponSheetDrag,
-    lowerExpandedSheetFromMap,
   };
 }
