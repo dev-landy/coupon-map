@@ -108,6 +108,7 @@ describe('loadCouponRows', () => {
       coupons: [COUPON],
     });
     expect(selectColumnsByTable.brands).toContain('name');
+    expect(selectColumnsByTable.brands).toContain('iphone_store_url');
     expect(selectColumnsByTable.stores).toContain('lat');
     expect(selectColumnsByTable.coupons).toContain('raw_payload');
     expect(selectColumnsByTable.brands).not.toBe('*');

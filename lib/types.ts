@@ -18,8 +18,10 @@ export interface Brand {
   app_scheme: string | null;
   /** Web URL used as the desktop / no-scheme fallback. */
   store_url: string;
-  /** App Store / Play Store URL used as the mobile fallback. */
+  /** Legacy mobile store URL; Play Store for Android fallback. */
   app_store_url: string | null;
+  /** iPhone App Store URL used as the iOS fallback. */
+  iphone_store_url?: string | null;
   updated_at?: string;
   last_seen_at?: string | null;
   created_at?: string;

@@ -9,6 +9,7 @@ export interface BrandUpsertRow {
   app_scheme: string | null;
   store_url: string;
   app_store_url: string | null;
+  iphone_store_url: string | null;
   updated_at: string;
   last_seen_at: string;
 }
@@ -48,6 +49,7 @@ export function buildBrandUpsertRow(payload: NormalizedCrawlPayload): BrandUpser
     app_scheme: payload.brand.app_scheme,
     store_url: payload.brand.store_url,
     app_store_url: payload.brand.app_store_url,
+    iphone_store_url: payload.brand.iphone_store_url ?? null,
     updated_at: payload.fetched_at,
     last_seen_at: payload.fetched_at,
   };

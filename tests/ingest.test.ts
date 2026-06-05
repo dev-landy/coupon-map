@@ -41,6 +41,7 @@ function makePayload(overrides: Partial<CrawlPayload> = {}): CrawlPayload {
       app_scheme: 'https://links.mcdonaldsapps.com/',
       store_url: 'https://www.mcdonalds.co.kr',
       app_store_url: 'https://play.google.com/store/apps/details?id=kr.co.mcdonalds',
+      iphone_store_url: 'https://apps.apple.com/kr/app/id1217507712',
     },
     stores: [
       {
@@ -76,6 +77,7 @@ describe('normalizeCrawlPayload', () => {
         app_scheme: ' ',
         store_url: 'https://www.mcdonalds.co.kr ',
         app_store_url: null,
+        iphone_store_url: ' https://apps.apple.com/kr/app/id1217507712 ',
       },
       coupons: [
         {
@@ -96,6 +98,9 @@ describe('normalizeCrawlPayload', () => {
     expect(normalized.brand.source).toBe('mcdonalds-kr');
     expect(normalized.brand.external_id).toBe('mcdonalds');
     expect(normalized.brand.app_scheme).toBeNull();
+    expect(normalized.brand.iphone_store_url).toBe(
+      'https://apps.apple.com/kr/app/id1217507712'
+    );
     expect(normalized.coupons[0]).toMatchObject({
       external_id: 'c1',
       title: '쿠폰',
@@ -250,6 +255,7 @@ describe('ingest row builders', () => {
       source: 'mcdonalds-kr',
       external_id: 'mcdonalds',
       name: '맥도날드',
+      iphone_store_url: 'https://apps.apple.com/kr/app/id1217507712',
       last_seen_at: '2026-06-02T03:00:00.000Z',
     });
     expect(storeRows).toEqual([

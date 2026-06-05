@@ -86,6 +86,7 @@ export const yogiyoKrAdbAdapter: CrawlAdapter = {
         app_scheme: null,
         store_url: 'https://www.yogiyo.co.kr',
         app_store_url: 'https://play.google.com/store/apps/details?id=com.fineapp.yogiyo',
+        iphone_store_url: 'https://apps.apple.com/kr/app/%EB%B0%B0%EB%8B%AC%EC%9A%94%EA%B8%B0%EC%9A%94-%EA%B8%B0%EB%8B%A4%EB%A6%BC-%EC%97%86%EB%8A%94-%EB%A7%9B%EC%A7%91-%EB%B0%B0%EB%8B%AC%EC%95%B1/id543831532',
       },
       stores: [],
       coupons: toCrawlCoupons(parsedCoupons),

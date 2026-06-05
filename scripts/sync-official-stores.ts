@@ -26,6 +26,7 @@ const BRAND_METADATA: Record<StoreBrand, {
   app_scheme: string | null;
   store_url: string;
   app_store_url: string | null;
+  iphone_store_url: string | null;
 }> = {
   burgerking: {
     source: 'burgerking-kr-adb',
@@ -34,6 +35,7 @@ const BRAND_METADATA: Record<StoreBrand, {
     app_scheme: 'burgerking://main',
     store_url: 'https://www.burgerking.co.kr',
     app_store_url: 'https://play.google.com/store/apps/details?id=kr.co.burgerkinghybrid',
+    iphone_store_url: 'https://apps.apple.com/kr/app/%EB%B2%84%EA%B1%B0%ED%82%B9-%ED%96%84%EB%B2%84%EA%B1%B0-%ED%82%B9%EC%98%A4%EB%8D%94-%EB%94%9C%EB%A6%AC%EB%B2%84%EB%A6%AC/id1017567032',
   },
   kfc: {
     source: 'kfc-kr-adb',
@@ -42,6 +44,7 @@ const BRAND_METADATA: Record<StoreBrand, {
     app_scheme: 'kfcremaster://main',
     store_url: 'https://www.kfckorea.com',
     app_store_url: 'https://play.google.com/store/apps/details?id=kfc_ko.kore.kg.kfc_korea',
+    iphone_store_url: 'https://apps.apple.com/kr/app/kfc-korea/id1255799839',
   },
   mcdonalds: {
     source: 'mcdonalds-kr-adb',
@@ -50,6 +53,7 @@ const BRAND_METADATA: Record<StoreBrand, {
     app_scheme: 'https://links.mcdonaldsapps.com/',
     store_url: 'https://www.mcdonalds.co.kr',
     app_store_url: 'https://play.google.com/store/apps/details?id=com.mcdonalds.mobileapp',
+    iphone_store_url: 'https://apps.apple.com/kr/app/%EB%A7%A5%EB%8F%84%EB%82%A0%EB%93%9C/id1217507712',
   },
 };
 

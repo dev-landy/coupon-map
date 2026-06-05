@@ -14,7 +14,12 @@ export const DEEPLINK_FALLBACK_TIMEOUT_MS = 1500;
 
 export type Platform = 'ios' | 'android' | 'mobile' | 'desktop';
 
-export type DeepLinkKind = 'coupon-app-link' | 'app-scheme' | 'app-store-fallback' | 'web';
+export type DeepLinkKind =
+  | 'coupon-app-link'
+  | 'coupon-screen-link'
+  | 'app-scheme'
+  | 'app-store-fallback'
+  | 'web';
 
 export interface DeepLinkTarget {
   /** The URL/scheme to navigate to immediately. */
@@ -56,6 +61,29 @@ const KNOWN_BRAND_APP_STORE_URLS = [
   },
 ];
 
+const KNOWN_BRAND_COUPON_SCREEN_LINKS = [
+  {
+    keys: ['kfc', 'kfc-kr-adb'],
+    android: 'kfcremaster://coupon',
+  },
+];
+
+function resolveKnownBrandCouponScreenLink(brand: Brand, platform: Platform): string | null {
+  if (platform !== 'android') return null;
+
+  const brandKeys = [
+    brand.external_id,
+    brand.source,
+    brand.name,
+  ].flatMap((value) => normalizeBrandKey(value));
+
+  const match = KNOWN_BRAND_COUPON_SCREEN_LINKS.find((candidate) =>
+    candidate.keys.some((key) => brandKeys.includes(normalizeBrandKey(key)[0] ?? ''))
+  );
+
+  return match?.android ?? null;
+}
+
 function resolveKnownBrandAppStoreUrl(
   brand: Brand,
   platform: Extract<Platform, 'ios' | 'android'>
@@ -87,11 +115,30 @@ function isGooglePlayStoreUrl(value: string | null | undefined): value is string
   return isNonEmpty(value) && /^https:\/\/play\.google\.com\/store\/apps\//i.test(value.trim());
 }
 
+function readGooglePlayPackageName(value: string | null | undefined): string | null {
+  if (!isGooglePlayStoreUrl(value)) return null;
+
+  try {
+    const packageName = new URL(value.trim()).searchParams.get('id');
+    return isNonEmpty(packageName) ? packageName : null;
+  } catch {
+    return null;
+  }
+}
+
+function resolveAndroidPackageName(brand: Brand): string | null {
+  return (
+    readGooglePlayPackageName(resolveKnownBrandAppStoreUrl(brand, 'android')) ??
+    readGooglePlayPackageName(brand.app_store_url)
+  );
+}
+
 function resolveMobileFallbackUrl(brand: Brand, platform: Platform): string | null {
   const hasWeb = isNonEmpty(brand.store_url);
 
   if (platform === 'ios') {
     return (
+      (isAppleAppStoreUrl(brand.iphone_store_url) ? brand.iphone_store_url : null) ??
       resolveKnownBrandAppStoreUrl(brand, 'ios') ??
       (isAppleAppStoreUrl(brand.app_store_url) ? brand.app_store_url : null) ??
       (hasWeb ? brand.store_url : null)
@@ -111,6 +158,37 @@ function resolveMobileFallbackUrl(brand: Brand, platform: Platform): string | nu
     : hasWeb
       ? brand.store_url
       : null;
+}
+
+function resolvePlatformAppUrl(
+  appUrl: string,
+  brand: Brand,
+  platform: Platform,
+  fallbackUrl: string | null
+): string {
+  if (platform !== 'android') return appUrl;
+  return buildAndroidIntentUrl(appUrl, resolveAndroidPackageName(brand), fallbackUrl) ?? appUrl;
+}
+
+function buildAndroidIntentUrl(
+  appUrl: string,
+  packageName: string | null,
+  fallbackUrl: string | null
+): string | null {
+  if (!isNonEmpty(packageName)) return null;
+
+  const match = appUrl.trim().match(/^([a-z][a-z0-9+.-]*):\/\/(.*)$/i);
+  if (!match) return null;
+
+  const scheme = match[1].toLowerCase();
+  if (scheme === 'http' || scheme === 'https' || scheme === 'intent') return null;
+
+  const path = match[2].replace(/#/g, '%23');
+  const fallbackPart = isNonEmpty(fallbackUrl)
+    ? `;S.browser_fallback_url=${encodeURIComponent(fallbackUrl)}`
+    : '';
+
+  return `intent://${path}#Intent;scheme=${scheme};package=${packageName}${fallbackPart};end`;
 }
 
 /**
@@ -133,11 +211,23 @@ export function resolveDeepLinkTarget(
   const fallbackUrl = resolveMobileFallbackUrl(brand, platform);
 
   if (isNonEmpty(couponAppLink)) {
+    const appUrl = couponAppLink.trim();
     return {
-      url: couponAppLink.trim(),
+      url: resolvePlatformAppUrl(appUrl, brand, platform, fallbackUrl),
       kind: 'coupon-app-link',
       fallbackUrl,
     };
+  }
+
+  if (platform !== 'desktop') {
+    const couponScreenLink = resolveKnownBrandCouponScreenLink(brand, platform);
+    if (isNonEmpty(couponScreenLink)) {
+      return {
+        url: resolvePlatformAppUrl(couponScreenLink, brand, platform, fallbackUrl),
+        kind: 'coupon-screen-link',
+        fallbackUrl,
+      };
+    }
   }
 
   if (platform === 'desktop') {
@@ -149,7 +239,12 @@ export function resolveDeepLinkTarget(
 
   // mobile
   if (isNonEmpty(brand.app_scheme)) {
-    return { url: brand.app_scheme, kind: 'app-scheme', fallbackUrl };
+    const appUrl = brand.app_scheme.trim();
+    return {
+      url: resolvePlatformAppUrl(appUrl, brand, platform, fallbackUrl),
+      kind: 'app-scheme',
+      fallbackUrl,
+    };
   }
 
   // mobile, no scheme -> web fallback
@@ -187,7 +282,11 @@ export function openBrandApp(
   const target = resolveDeepLinkTarget(brand, platform, couponAppLink);
 
   if (
-    (target.kind !== 'app-scheme' && target.kind !== 'coupon-app-link') ||
+    (
+      target.kind !== 'app-scheme' &&
+      target.kind !== 'coupon-app-link' &&
+      target.kind !== 'coupon-screen-link'
+    ) ||
     target.fallbackUrl === null
   ) {
     window.location.href = target.url;

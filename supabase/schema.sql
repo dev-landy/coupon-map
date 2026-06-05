@@ -15,7 +15,8 @@ create table if not exists brands (
   name          text not null,
   app_scheme    text,          -- e.g. 'mybrandapp://' ; nullable (web-only brands)
   store_url     text not null, -- web URL used as desktop / no-scheme fallback
-  app_store_url text,          -- App Store / Play Store URL for mobile fallback
+  app_store_url text,          -- Legacy mobile store URL; Play Store for Android fallback
+  iphone_store_url text,       -- iPhone App Store URL for iOS fallback
   updated_at    timestamptz not null default now(),
   last_seen_at  timestamptz,
   created_at    timestamptz not null default now()
@@ -79,6 +80,7 @@ create table if not exists feedback_reports (
 -- Keep re-running this setup file useful for existing databases.
 alter table brands add column if not exists source text not null default 'manual';
 alter table brands add column if not exists external_id text;
+alter table brands add column if not exists iphone_store_url text;
 alter table brands add column if not exists updated_at timestamptz not null default now();
 alter table brands add column if not exists last_seen_at timestamptz;
 

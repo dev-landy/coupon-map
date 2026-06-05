@@ -18,6 +18,7 @@ function makeBrand(overrides: Partial<Brand> = {}): Brand {
     app_scheme: 'testapp://open',
     store_url: 'https://brand.example.com',
     app_store_url: 'https://apps.apple.com/test',
+    iphone_store_url: null,
     ...overrides,
   };
 }
@@ -43,6 +44,64 @@ describe('resolveDeepLinkTarget', () => {
     expect(target.fallbackUrl).toBe('https://apps.apple.com/test');
   });
 
+  it('prefers a verified brand coupon screen link when a coupon has no app_link', () => {
+    // Arrange
+    const brand = makeBrand({
+      source: 'kfc-kr-adb',
+      external_id: 'kfc',
+      name: 'KFC',
+      app_scheme: 'kfcremaster://main',
+      app_store_url: 'https://play.google.com/store/apps/details?id=kfc_ko.kore.kg.kfc_korea',
+    });
+
+    // Act
+    const target = resolveDeepLinkTarget(brand, 'android');
+
+    // Assert
+    expect(target.kind).toBe('coupon-screen-link');
+    expect(target.url).toBe(
+      'intent://coupon#Intent;scheme=kfcremaster;package=kfc_ko.kore.kg.kfc_korea;S.browser_fallback_url=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dkfc_ko.kore.kg.kfc_korea;end'
+    );
+    expect(target.fallbackUrl).toBe(
+      'https://play.google.com/store/apps/details?id=kfc_ko.kore.kg.kfc_korea'
+    );
+  });
+
+  it('keeps an explicit coupon app_link ahead of a verified brand coupon screen link', () => {
+    // Arrange
+    const brand = makeBrand({
+      external_id: 'kfc',
+      name: 'KFC',
+      app_scheme: 'kfcremaster://main',
+    });
+
+    // Act
+    const target = resolveDeepLinkTarget(brand, 'android', 'kfcremaster://coupon/123');
+
+    // Assert
+    expect(target.kind).toBe('coupon-app-link');
+    expect(target.url).toBe(
+      'intent://coupon/123#Intent;scheme=kfcremaster;package=kfc_ko.kore.kg.kfc_korea;S.browser_fallback_url=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dkfc_ko.kore.kg.kfc_korea;end'
+    );
+  });
+
+  it('keeps Android-only coupon screen links off iOS', () => {
+    // Arrange
+    const brand = makeBrand({
+      source: 'kfc-kr-adb',
+      external_id: 'kfc',
+      name: 'KFC',
+      app_scheme: 'kfcremaster://main',
+    });
+
+    // Act
+    const target = resolveDeepLinkTarget(brand, 'ios');
+
+    // Assert
+    expect(target.kind).toBe('app-scheme');
+    expect(target.url).toBe('kfcremaster://main');
+  });
+
   it('returns the app scheme with a store fallback on mobile when a scheme exists', () => {
     // Arrange
     const brand = makeBrand();
@@ -54,6 +113,22 @@ describe('resolveDeepLinkTarget', () => {
     expect(target.kind).toBe('app-scheme');
     expect(target.url).toBe('testapp://open');
     expect(target.fallbackUrl).toBe('https://apps.apple.com/test');
+  });
+
+  it('does not invent an unverified coupon screen route for known brands', () => {
+    // Arrange
+    const brand = makeBrand({
+      external_id: 'burgerking',
+      name: '버거킹',
+      app_scheme: 'burgerking://main',
+    });
+
+    // Act
+    const target = resolveDeepLinkTarget(brand, 'mobile');
+
+    // Assert
+    expect(target.kind).toBe('app-scheme');
+    expect(target.url).toBe('burgerking://main');
   });
 
   it('falls back to store_url on mobile when app_store_url is missing', () => {
@@ -87,6 +162,25 @@ describe('resolveDeepLinkTarget', () => {
     expect(target.fallbackUrl).toContain('id1017567032');
   });
 
+  it('uses the iPhone store URL before the legacy app_store_url on iPhone', () => {
+    // Arrange
+    const brand = makeBrand({
+      external_id: 'unknown',
+      name: 'Unknown Brand',
+      app_store_url: 'https://play.google.com/store/apps/details?id=com.example.app',
+      iphone_store_url: 'https://apps.apple.com/kr/app/test-brand/id1234567890',
+    });
+
+    // Act
+    const target = resolveDeepLinkTarget(brand, 'ios');
+
+    // Assert
+    expect(target.kind).toBe('app-scheme');
+    expect(target.fallbackUrl).toBe(
+      'https://apps.apple.com/kr/app/test-brand/id1234567890'
+    );
+  });
+
   it('uses the Play Store fallback for a known brand on Android', () => {
     // Arrange
     const brand = makeBrand({
@@ -101,9 +195,54 @@ describe('resolveDeepLinkTarget', () => {
 
     // Assert
     expect(target.kind).toBe('app-scheme');
-    expect(target.url).toBe('burgerking://main');
+    expect(target.url).toContain('intent://main#Intent;scheme=burgerking');
+    expect(target.url).toContain('package=kr.co.burgerkinghybrid');
+    expect(target.url).toContain('S.browser_fallback_url=');
     expect(target.fallbackUrl).toBe(
       'https://play.google.com/store/apps/details?id=kr.co.burgerkinghybrid'
+    );
+  });
+
+  it('keeps the iPhone store URL off Android fallbacks', () => {
+    // Arrange
+    const brand = makeBrand({
+      external_id: 'unknown',
+      name: 'Unknown Brand',
+      app_store_url: 'https://play.google.com/store/apps/details?id=com.example.app',
+      iphone_store_url: 'https://apps.apple.com/kr/app/test-brand/id1234567890',
+    });
+
+    // Act
+    const target = resolveDeepLinkTarget(brand, 'android');
+
+    // Assert
+    expect(target.kind).toBe('app-scheme');
+    expect(target.url).toContain('package=com.example.app');
+    expect(target.fallbackUrl).toBe(
+      'https://play.google.com/store/apps/details?id=com.example.app'
+    );
+  });
+
+  it('uses a package-specific Android intent URL for the KFC coupon screen', () => {
+    // Arrange
+    const brand = makeBrand({
+      source: 'kfc-kr-adb',
+      external_id: 'kfc',
+      name: 'KFC',
+      app_scheme: 'kfcremaster://main',
+      app_store_url: null,
+    });
+
+    // Act
+    const target = resolveDeepLinkTarget(brand, 'android');
+
+    // Assert
+    expect(target.kind).toBe('coupon-screen-link');
+    expect(target.url).toBe(
+      'intent://coupon#Intent;scheme=kfcremaster;package=kfc_ko.kore.kg.kfc_korea;S.browser_fallback_url=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dkfc_ko.kore.kg.kfc_korea;end'
+    );
+    expect(target.fallbackUrl).toBe(
+      'https://play.google.com/store/apps/details?id=kfc_ko.kore.kg.kfc_korea'
     );
   });
 

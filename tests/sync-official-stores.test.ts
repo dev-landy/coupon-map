@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   parseArgs,
   runSyncOfficialStores,
+  upsertOfficialStoreBrands,
 } from '../scripts/sync-official-stores';
 import type { ImportStoresArgs } from '../scripts/import-stores';
 import type { ManualStoreImportSummary } from '../lib/ingest/manualStores';
@@ -123,6 +124,38 @@ describe('official store Supabase sync', () => {
       counts: { burgerking: 1, kfc: 1, mcdonalds: 1 },
     });
     expect(summary.import.upserted).toBe(3);
+  });
+
+  it('upserts official brand metadata with separate iPhone store URLs', async () => {
+    let upsertRows: unknown[] = [];
+    let upsertOptions: unknown = null;
+    const client = {
+      from: (table: string) => {
+        expect(table).toBe('brands');
+        return {
+          upsert: async (rows: unknown[], options: unknown) => {
+            upsertRows = rows;
+            upsertOptions = options;
+            return { error: null };
+          },
+        };
+      },
+    } as unknown as SupabaseClient;
+
+    await upsertOfficialStoreBrands(
+      client,
+      ['burgerking'],
+      new Date('2026-06-02T03:00:00.000Z')
+    );
+
+    expect(upsertOptions).toEqual({ onConflict: 'source,external_id' });
+    expect(upsertRows).toEqual([
+      expect.objectContaining({
+        external_id: 'burgerking',
+        app_store_url: 'https://play.google.com/store/apps/details?id=kr.co.burgerkinghybrid',
+        iphone_store_url: expect.stringContaining('apps.apple.com'),
+      }),
+    ]);
   });
 });
 

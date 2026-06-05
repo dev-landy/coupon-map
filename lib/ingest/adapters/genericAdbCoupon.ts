@@ -99,6 +99,7 @@ export interface GenericAdbCouponConfig {
     app_scheme: string | null;
     store_url: string;
     app_store_url: string | null;
+    iphone_store_url?: string | null;
   };
   couponButtonTexts: string[];
   couponScreenTexts?: string[];

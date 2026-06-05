@@ -83,6 +83,7 @@ export const mcdonaldsKrAdbAdapter: CrawlAdapter = {
         app_scheme: 'https://links.mcdonaldsapps.com/',
         store_url: 'https://www.mcdonalds.co.kr',
         app_store_url: 'https://play.google.com/store/apps/details?id=com.mcdonalds.mobileapp',
+        iphone_store_url: 'https://apps.apple.com/kr/app/%EB%A7%A5%EB%8F%84%EB%82%A0%EB%93%9C/id1217507712',
       },
       stores: [],
       coupons: toCrawlCoupons(parsedCoupons),

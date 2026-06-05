@@ -31,6 +31,7 @@ export interface UiBrand {
   app_scheme: string | null;
   store_url: string;
   app_store_url: string | null;
+  iphone_store_url: string | null;
 }
 
 export interface UiCoupon {
@@ -62,14 +63,14 @@ export interface UiStore {
 }
 
 export const BRANDS: Record<string, UiBrand> = {
-  mcdonalds: { id: 'mcdonalds', name: '맥도날드', short: '맥도날드', bg: '#DA291C', fg: '#FFC72C', initial: 'M', app_scheme: 'https://links.mcdonaldsapps.com/', store_url: 'https://www.mcdonalds.co.kr', app_store_url: 'https://apps.apple.com/kr/app/id1255284387' },
-  burgerking: { id: 'burgerking', name: '버거킹', short: '버거킹', bg: '#3A2317', fg: '#F5A623', initial: 'BK', app_scheme: 'burgerking://main', store_url: 'https://www.burgerking.co.kr', app_store_url: 'https://apps.apple.com/kr/app/id1364917496' },
-  lotteria: { id: 'lotteria', name: '롯데리아', short: '롯데리아', bg: '#E51937', fg: '#FFFFFF', initial: 'L', app_scheme: 'lotteeatz://', store_url: 'https://www.lotteeatz.com', app_store_url: null },
-  momstouch: { id: 'momstouch', name: '맘스터치', short: '맘스터치', bg: '#1A1A1E', fg: '#FFD400', initial: '맘', app_scheme: null, store_url: 'https://www.momstouch.co.kr', app_store_url: null },
-  subway: { id: 'subway', name: '써브웨이', short: '써브웨이', bg: '#006E33', fg: '#FFC600', initial: 'S', app_scheme: null, store_url: 'https://www.subway.co.kr', app_store_url: null },
-  bbq: { id: 'bbq', name: 'BBQ', short: 'BBQ', bg: '#C8102E', fg: '#FFD200', initial: 'BBQ', app_scheme: null, store_url: 'https://www.bbq.co.kr', app_store_url: null },
-  kyochon: { id: 'kyochon', name: '교촌치킨', short: '교촌', bg: '#E60012', fg: '#FFFFFF', initial: '교촌', app_scheme: null, store_url: 'https://www.kyochon.com', app_store_url: null },
-  bhc: { id: 'bhc', name: 'bhc치킨', short: 'bhc', bg: '#ED1A22', fg: '#FFFFFF', initial: 'bhc', app_scheme: null, store_url: 'https://www.bhc.co.kr', app_store_url: null },
+  mcdonalds: { id: 'mcdonalds', name: '맥도날드', short: '맥도날드', bg: '#DA291C', fg: '#FFC72C', initial: 'M', app_scheme: 'https://links.mcdonaldsapps.com/', store_url: 'https://www.mcdonalds.co.kr', app_store_url: null, iphone_store_url: 'https://apps.apple.com/kr/app/id1255284387' },
+  burgerking: { id: 'burgerking', name: '버거킹', short: '버거킹', bg: '#3A2317', fg: '#F5A623', initial: 'BK', app_scheme: 'burgerking://main', store_url: 'https://www.burgerking.co.kr', app_store_url: null, iphone_store_url: 'https://apps.apple.com/kr/app/id1364917496' },
+  lotteria: { id: 'lotteria', name: '롯데리아', short: '롯데리아', bg: '#E51937', fg: '#FFFFFF', initial: 'L', app_scheme: 'lotteeatz://', store_url: 'https://www.lotteeatz.com', app_store_url: null, iphone_store_url: null },
+  momstouch: { id: 'momstouch', name: '맘스터치', short: '맘스터치', bg: '#1A1A1E', fg: '#FFD400', initial: '맘', app_scheme: null, store_url: 'https://www.momstouch.co.kr', app_store_url: null, iphone_store_url: null },
+  subway: { id: 'subway', name: '써브웨이', short: '써브웨이', bg: '#006E33', fg: '#FFC600', initial: 'S', app_scheme: null, store_url: 'https://www.subway.co.kr', app_store_url: null, iphone_store_url: null },
+  bbq: { id: 'bbq', name: 'BBQ', short: 'BBQ', bg: '#C8102E', fg: '#FFD200', initial: 'BBQ', app_scheme: null, store_url: 'https://www.bbq.co.kr', app_store_url: null, iphone_store_url: null },
+  kyochon: { id: 'kyochon', name: '교촌치킨', short: '교촌', bg: '#E60012', fg: '#FFFFFF', initial: '교촌', app_scheme: null, store_url: 'https://www.kyochon.com', app_store_url: null, iphone_store_url: null },
+  bhc: { id: 'bhc', name: 'bhc치킨', short: 'bhc', bg: '#ED1A22', fg: '#FFFFFF', initial: 'bhc', app_scheme: null, store_url: 'https://www.bhc.co.kr', app_store_url: null, iphone_store_url: null },
 };
 
 /** Adapt a UiBrand to the deeplink-facing Brand shape from types.ts. */
@@ -80,6 +81,7 @@ export function toBrand(ui: UiBrand): Brand {
     app_scheme: ui.app_scheme,
     store_url: ui.store_url,
     app_store_url: ui.app_store_url,
+    iphone_store_url: ui.iphone_store_url,
   };
 }
 

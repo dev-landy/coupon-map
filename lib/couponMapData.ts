@@ -55,7 +55,7 @@ type NearbyStoreRpcRow = Store & {
 const COUPON_ROWS_CACHE_TTL_MS = 60 * 1000;
 const SUPABASE_SELECT_PAGE_SIZE = 1000;
 const BRAND_SELECT_COLUMNS =
-  'id, source, external_id, name, app_scheme, store_url, app_store_url, updated_at, last_seen_at, created_at';
+  'id, source, external_id, name, app_scheme, store_url, app_store_url, iphone_store_url, updated_at, last_seen_at, created_at';
 const STORE_SELECT_COLUMNS =
   'id, brand_id, source, external_id, name, lat, lng, address, updated_at, last_seen_at, created_at';
 const COUPON_SELECT_COLUMNS =

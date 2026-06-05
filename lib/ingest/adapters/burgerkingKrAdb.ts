@@ -106,6 +106,7 @@ export const burgerkingKrAdbAdapter: CrawlAdapter = {
         app_scheme: 'burgerking://main',
         store_url: 'https://www.burgerking.co.kr',
         app_store_url: 'https://play.google.com/store/apps/details?id=kr.co.burgerkinghybrid',
+        iphone_store_url: 'https://apps.apple.com/kr/app/%EB%B2%84%EA%B1%B0%ED%82%B9-%ED%96%84%EB%B2%84%EA%B1%B0-%ED%82%B9%EC%98%A4%EB%8D%94-%EB%94%9C%EB%A6%AC%EB%B2%84%EB%A6%AC/id1017567032',
       },
       stores: [],
       coupons,

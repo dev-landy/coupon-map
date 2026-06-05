@@ -40,6 +40,7 @@ function normalizeBrand(brand: CrawlBrandInput): CrawlBrandInput {
     app_scheme: optionalText(brand.app_scheme),
     store_url: requiredText(brand.store_url, 'brand.store_url'),
     app_store_url: optionalText(brand.app_store_url),
+    iphone_store_url: optionalText(brand.iphone_store_url),
   };
 
   if (!isHttpUrl(normalized.store_url)) {
@@ -48,6 +49,11 @@ function normalizeBrand(brand: CrawlBrandInput): CrawlBrandInput {
   if (normalized.app_store_url !== null && !isHttpUrl(normalized.app_store_url)) {
     throw new Error(
       `brand.app_store_url must be an http(s) URL: ${normalized.app_store_url}`
+    );
+  }
+  if (normalized.iphone_store_url !== null && !isHttpUrl(normalized.iphone_store_url)) {
+    throw new Error(
+      `brand.iphone_store_url must be an http(s) URL: ${normalized.iphone_store_url}`
     );
   }
 

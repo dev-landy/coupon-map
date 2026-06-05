@@ -7,6 +7,7 @@ export interface CrawlBrandInput {
   app_scheme: string | null;
   store_url: string;
   app_store_url: string | null;
+  iphone_store_url?: string | null;
 }
 
 export interface CrawlStoreInput {
