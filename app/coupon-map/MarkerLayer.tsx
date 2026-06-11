@@ -5,7 +5,6 @@ import {
   useEffect,
   useImperativeHandle,
   useRef,
-  useState,
 } from 'react';
 
 import type { CouponMapStore } from '../../lib/frontendData';
@@ -36,10 +35,10 @@ interface MarkerLayerProps {
 }
 
 /**
- * Owns high-frequency marker projection state so map pans/zooms re-render only
- * this layer, not the surrounding coupon panel. Subscribes to map movement
- * directly and exposes an imperative `reproject()` for parent-driven map
- * mutations (relayout/fit/pan).
+ * Owns high-frequency marker projection outside React state so map pans/zooms
+ * update CSS variables without re-rendering the surrounding coupon UI.
+ * Subscribes to map movement directly and exposes an imperative `reproject()`
+ * for parent-driven map mutations (relayout/fit/pan).
  */
 export const MarkerLayer = memo(
   forwardRef<MarkerLayerHandle, MarkerLayerProps>(function MarkerLayer(
@@ -55,14 +54,26 @@ export const MarkerLayer = memo(
     },
     ref
   ) {
-    const [markerPoints, setMarkerPoints] = useState<Record<string, MarkerScreenPoint>>({});
-    const [locationPoint, setLocationPoint] = useState<MarkerScreenPoint | null>(null);
     const frameRef = useRef<number | null>(null);
+    const markerRefs = useRef(new Map<string, HTMLButtonElement>());
+    const locationRef = useRef<HTMLDivElement | null>(null);
     const storesRef = useRef(stores);
     const coordsRef = useRef(userCoords);
 
     storesRef.current = stores;
     coordsRef.current = userCoords;
+
+    const setMarkerElement = useCallback(
+      (storeId: string, element: HTMLButtonElement | null) => {
+        if (element) {
+          markerRefs.current.set(storeId, element);
+          return;
+        }
+
+        markerRefs.current.delete(storeId);
+      },
+      []
+    );
 
     const reproject = useCallback(() => {
       if (frameRef.current !== null) return;
@@ -72,20 +83,26 @@ export const MarkerLayer = memo(
         if (!map || !kakaoMaps) return;
 
         const projection = map.getProjection();
-        const nextPoints: Record<string, MarkerScreenPoint> = {};
         for (const store of storesRef.current) {
-          nextPoints[store.id] = projection.containerPointFromCoords(
-            new kakaoMaps.LatLng(store.lat, store.lng)
+          const marker = markerRefs.current.get(store.id);
+          if (!marker) continue;
+
+          setProjectedPoint(
+            marker,
+            projection.containerPointFromCoords(new kakaoMaps.LatLng(store.lat, store.lng))
           );
         }
 
         const coords = coordsRef.current;
-        const nextLocation = projection.containerPointFromCoords(
-          new kakaoMaps.LatLng(coords.lat, coords.lng)
-        );
-
-        setMarkerPoints((prev) => (arePointMapsEqual(prev, nextPoints) ? prev : nextPoints));
-        setLocationPoint((prev) => (arePointsEqual(prev, nextLocation) ? prev : nextLocation));
+        const location = locationRef.current;
+        if (location) {
+          setProjectedPoint(
+            location,
+            projection.containerPointFromCoords(new kakaoMaps.LatLng(coords.lat, coords.lng)),
+            '--user-x',
+            '--user-y'
+          );
+        }
       });
     }, [kakaoMaps, map]);
 
@@ -124,28 +141,16 @@ export const MarkerLayer = memo(
     return (
       <>
         <div
+          ref={locationRef}
           className="myLocation"
-          style={
-            locationPoint
-              ? ({
-                  '--user-x': `${locationPoint.x}px`,
-                  '--user-y': `${locationPoint.y}px`,
-                } as React.CSSProperties)
-              : undefined
-          }
           aria-hidden="true"
         >
           <span />
         </div>
         {stores.map((store) => {
-          const markerPoint =
-            mapProviderStatus === 'ready' ? markerPoints[store.id] : undefined;
-          if (mapProviderStatus === 'ready' && !markerPoint) return null;
-
-          const markerStyle = markerPoint
+          const isProjected = mapProviderStatus === 'ready';
+          const markerStyle = isProjected
             ? ({
-                '--pin-x': `${markerPoint.x}px`,
-                '--pin-y': `${markerPoint.y}px`,
                 '--brand-color': store.brandColor,
               } as React.CSSProperties)
             : ({
@@ -159,8 +164,9 @@ export const MarkerLayer = memo(
           return (
             <button
               key={store.id}
+              ref={(element) => setMarkerElement(store.id, element)}
               type="button"
-              className={`marker ${markerPoint ? 'isProjected' : 'isFallbackPosition'} ${store.id === activeStoreId ? 'selected' : ''}`}
+              className={`marker ${isProjected ? 'isProjected' : 'isFallbackPosition'} ${store.id === activeStoreId ? 'selected' : ''}`}
               style={markerStyle}
               aria-label={`${store.brandName} ${store.name} ${store.bestCoupon.headline}`}
               aria-pressed={store.id === activeStoreId}
@@ -183,22 +189,18 @@ export const MarkerLayer = memo(
   })
 );
 
-function arePointsEqual(a: MarkerScreenPoint | null, b: MarkerScreenPoint | null): boolean {
-  if (a === b) return true;
-  if (!a || !b) return false;
-  return a.x === b.x && a.y === b.y;
+function setProjectedPoint(
+  element: HTMLElement,
+  point: MarkerScreenPoint,
+  xProperty = '--pin-x',
+  yProperty = '--pin-y'
+) {
+  setStyleProperty(element, xProperty, `${point.x}px`);
+  setStyleProperty(element, yProperty, `${point.y}px`);
+  element.dataset.projected = 'true';
 }
 
-function arePointMapsEqual(
-  a: Record<string, MarkerScreenPoint>,
-  b: Record<string, MarkerScreenPoint>
-): boolean {
-  const aKeys = Object.keys(a);
-  if (aKeys.length !== Object.keys(b).length) return false;
-  for (const key of aKeys) {
-    const av = a[key];
-    const bv = b[key];
-    if (!bv || av.x !== bv.x || av.y !== bv.y) return false;
-  }
-  return true;
+function setStyleProperty(element: HTMLElement, property: string, value: string) {
+  if (element.style.getPropertyValue(property) === value) return;
+  element.style.setProperty(property, value);
 }

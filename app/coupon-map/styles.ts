@@ -159,14 +159,15 @@ export const styles = `
   .myLocation {
     position: absolute;
     z-index: 5;
-    left: var(--user-x, 50%);
-    top: var(--user-y, 50%);
+    left: 0;
+    top: 0;
     width: 46px;
     height: 46px;
-    transform: translate(-50%, -50%);
+    transform: translate3d(var(--user-x, 50vw), var(--user-y, 50vh), 0) translate(-50%, -50%);
     border-radius: 50%;
     background: rgba(46,118,255,.12);
     pointer-events: none;
+    will-change: transform;
   }
 
   .myLocation::before {
@@ -267,18 +268,30 @@ export const styles = `
   .marker {
     position: absolute;
     z-index: 20;
-    left: var(--pin-x);
-    top: var(--pin-y);
+    left: 0;
+    top: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    transform: translate(-50%, -100%);
+    transform: translate3d(var(--pin-x, 0px), var(--pin-y, 0px), 0) translate(-50%, -100%);
     border: 0;
     padding: 0;
     background: transparent;
     color: #15151a;
     cursor: pointer;
-    transition: opacity .16s ease, transform .16s ease;
+    transition: opacity .16s ease;
+    will-change: transform;
+  }
+
+  .marker.isFallbackPosition {
+    left: var(--pin-x);
+    top: var(--pin-y);
+    transform: translate(-50%, -100%);
+  }
+
+  .marker.isProjected:not([data-projected="true"]) {
+    opacity: 0;
+    pointer-events: none;
   }
 
   .pinBubble {
