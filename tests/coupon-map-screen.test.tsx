@@ -10,11 +10,6 @@ vi.mock('../lib/deeplink', () => ({
 }));
 
 vi.mock('../lib/amplitude', () => ({
-  DEFAULT_AMPLITUDE_CONFIG: {
-    apiKey: null,
-    serverZone: 'US',
-  },
-  configureAmplitude: vi.fn(),
   trackAmplitudeEvent: vi.fn(),
 }));
 

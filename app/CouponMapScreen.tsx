@@ -17,12 +17,7 @@ import {
 } from '../lib/couponResponseCache';
 import { formatNearbyEmptyMessage } from '../lib/format';
 import { cancelFrame, requestFrame } from '../lib/domFrame';
-import {
-  configureAmplitude,
-  DEFAULT_AMPLITUDE_CONFIG,
-  trackAmplitudeEvent,
-  type AmplitudeConfig,
-} from '../lib/amplitude';
+import { trackAmplitudeEvent } from '../lib/amplitude';
 import {
   DEFAULT_CENTER,
   getMapPadding,
@@ -50,7 +45,6 @@ interface CouponMapScreenProps {
   view: CouponMapView;
   status: CouponMapLoadStatus;
   message: string | null;
-  amplitudeConfig?: AmplitudeConfig;
 }
 
 const LOCATION_RELOAD_THRESHOLD_METERS = 50;
@@ -79,10 +73,7 @@ export default function CouponMapScreen({
   view,
   status,
   message,
-  amplitudeConfig = DEFAULT_AMPLITUDE_CONFIG,
 }: CouponMapScreenProps) {
-  configureAmplitude(amplitudeConfig);
-
   const kakaoMapAppKey = readKakaoMapAppKey();
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<KakaoMap | null>(null);

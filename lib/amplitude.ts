@@ -15,8 +15,18 @@ export const DEFAULT_AMPLITUDE_CONFIG: AmplitudeConfig = {
   serverZone: 'US',
 };
 
+interface QueuedAmplitudeEvent {
+  eventName: string;
+  properties?: AmplitudeEventProperties;
+}
+
+const AMPLITUDE_CONFIG_ENDPOINT = '/api/amplitude-config';
+const MAX_QUEUED_EVENTS = 20;
+
 let currentConfig = DEFAULT_AMPLITUDE_CONFIG;
 let isInitialized = false;
+let configRequest: Promise<AmplitudeConfig> | null = null;
+let queuedEvents: QueuedAmplitudeEvent[] = [];
 
 export function configureAmplitude(config: AmplitudeConfig = DEFAULT_AMPLITUDE_CONFIG): void {
   const nextConfig = {
@@ -61,8 +71,65 @@ export function trackAmplitudeEvent(
   eventName: string,
   properties?: AmplitudeEventProperties
 ): void {
-  if (!initAmplitude()) return;
-  amplitude.track(eventName, compactProperties(properties));
+  if (initAmplitude()) {
+    amplitude.track(eventName, compactProperties(properties));
+    return;
+  }
+
+  if (typeof window === 'undefined') return;
+  queueAmplitudeEvent(eventName, properties);
+  void loadAmplitudeConfig().then((config) => {
+    configureAmplitude(config);
+    if (!initAmplitude()) {
+      queuedEvents = [];
+      return;
+    }
+    flushQueuedEvents();
+  });
+}
+
+async function loadAmplitudeConfig(): Promise<AmplitudeConfig> {
+  if (configRequest) return configRequest;
+
+  configRequest = fetch(AMPLITUDE_CONFIG_ENDPOINT, {
+    cache: 'no-store',
+    credentials: 'same-origin',
+  })
+    .then(async (response) => {
+      if (!response.ok) return DEFAULT_AMPLITUDE_CONFIG;
+      return parseAmplitudeConfig(await response.json().catch(() => null));
+    })
+    .catch(() => DEFAULT_AMPLITUDE_CONFIG);
+
+  return configRequest;
+}
+
+function queueAmplitudeEvent(
+  eventName: string,
+  properties: AmplitudeEventProperties | undefined
+): void {
+  queuedEvents.push({ eventName, properties });
+  if (queuedEvents.length > MAX_QUEUED_EVENTS) {
+    queuedEvents = queuedEvents.slice(-MAX_QUEUED_EVENTS);
+  }
+}
+
+function flushQueuedEvents(): void {
+  const events = queuedEvents;
+  queuedEvents = [];
+  for (const event of events) {
+    amplitude.track(event.eventName, compactProperties(event.properties));
+  }
+}
+
+function parseAmplitudeConfig(value: unknown): AmplitudeConfig {
+  if (!value || typeof value !== 'object') return DEFAULT_AMPLITUDE_CONFIG;
+  const config = value as Partial<AmplitudeConfig>;
+
+  return {
+    apiKey: typeof config.apiKey === 'string' && config.apiKey.trim() ? config.apiKey : null,
+    serverZone: config.serverZone === 'EU' ? 'EU' : 'US',
+  };
 }
 
 function compactProperties(
