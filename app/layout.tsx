@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
+import { AmplitudeInitializer } from './AmplitudeInitializer';
 import {
   SITE_DESCRIPTION,
   SITE_ICON,
@@ -113,6 +114,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <AmplitudeInitializer />
         {children}
         <Analytics />
         <SpeedInsights />
