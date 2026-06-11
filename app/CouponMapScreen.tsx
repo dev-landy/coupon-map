@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { useUserLocation } from '../lib/geo';
+import { useUserLocation, type UserLocationSource } from '../lib/geo';
 import type { CouponMapLoadStatus, CouponMapView } from '../lib/frontendData';
 import { DEFAULT_LOCATION, type Coords } from '../lib/location';
 import { radiusMetersForMapLevel } from '../lib/mapScale';
@@ -17,6 +17,12 @@ import {
 } from '../lib/couponResponseCache';
 import { formatNearbyEmptyMessage } from '../lib/format';
 import { cancelFrame, requestFrame } from '../lib/domFrame';
+import {
+  configureAmplitude,
+  DEFAULT_AMPLITUDE_CONFIG,
+  trackAmplitudeEvent,
+  type AmplitudeConfig,
+} from '../lib/amplitude';
 import {
   DEFAULT_CENTER,
   getMapPadding,
@@ -44,6 +50,7 @@ interface CouponMapScreenProps {
   view: CouponMapView;
   status: CouponMapLoadStatus;
   message: string | null;
+  amplitudeConfig?: AmplitudeConfig;
 }
 
 const LOCATION_RELOAD_THRESHOLD_METERS = 50;
@@ -58,8 +65,24 @@ interface SelectedCouponSelection {
   couponId: string;
 }
 
+type CouponSearchSource =
+  | 'cache'
+  | 'current_location_button'
+  | 'map_viewport'
+  | 'user_location_default'
+  | 'user_location_geolocation'
+  | 'user_location_stored';
 
-export default function CouponMapScreen({ view, status, message }: CouponMapScreenProps) {
+type StoreSelectionSource = 'coupon_list' | 'map_marker';
+
+export default function CouponMapScreen({
+  view,
+  status,
+  message,
+  amplitudeConfig = DEFAULT_AMPLITUDE_CONFIG,
+}: CouponMapScreenProps) {
+  configureAmplitude(amplitudeConfig);
+
   const kakaoMapAppKey = readKakaoMapAppKey();
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<KakaoMap | null>(null);
@@ -74,7 +97,11 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
   const fitStoreBoundsRef = useRef<() => void>(() => undefined);
   const activeRequestRef = useRef<AbortController | null>(null);
   const reloadCacheRef = useRef(new Map<string, CachedCouponMapApiResponse>());
-  const lastLoadedSearchRef = useRef({ center: DEFAULT_LOCATION, radiusMeters: DEFAULT_RADIUS_METERS });
+  const lastLoadedSearchRef = useRef({
+    center: DEFAULT_LOCATION,
+    radiusMeters: DEFAULT_RADIUS_METERS,
+  });
+  const hasTrackedInitialViewRef = useRef(false);
   const [selectedStoreId, setSelectedStoreId] = useState<string | null>(
     view.stores[0]?.id ?? null
   );
@@ -174,6 +201,18 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     markerLayerRef.current?.reproject();
   }, []);
 
+  useEffect(() => {
+    if (hasTrackedInitialViewRef.current) return;
+    hasTrackedInitialViewRef.current = true;
+
+    trackAmplitudeEvent('coupon_map_viewed', {
+      active_coupon_count: view.totals.activeCoupons,
+      initial_status: status,
+      search_radius_meters: DEFAULT_RADIUS_METERS,
+      store_count: view.totals.stores,
+    });
+  }, [status, view.totals.activeCoupons, view.totals.stores]);
+
   const fitStoreBounds = useCallback(() => {
     const map = mapRef.current;
     const kakaoMaps = kakaoMapsRef.current;
@@ -262,7 +301,12 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
   const reloadNearbyCoupons = useCallback(
     async (
       center: Coords,
-      options: { force?: boolean; radiusMeters?: number; selectFirstStore?: boolean } = {}
+      options: {
+        force?: boolean;
+        radiusMeters?: number;
+        selectFirstStore?: boolean;
+        source?: CouponSearchSource;
+      } = {}
     ) => {
       const radiusMeters = options.radiusMeters ?? searchRadiusRef.current;
       const previousSearch = lastLoadedSearchRef.current;
@@ -300,6 +344,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
           setSelectedCouponSelection(null);
         }
         lastLoadedSearchRef.current = { center, radiusMeters };
+        trackCouponSearchLoaded('cache', radiusMeters, cachedResponse);
         return;
       }
 
@@ -336,6 +381,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
           nextState,
           Date.now()
         );
+        trackCouponSearchLoaded(options.source ?? 'map_viewport', radiusMeters, nextState);
       } catch (error) {
         if (isAbortError(error)) return;
         setLoadStatus('error');
@@ -356,7 +402,10 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     const center = map.getCenter();
     void reloadNearbyCoupons(
       { lat: center.getLat(), lng: center.getLng() },
-      { radiusMeters: radiusMetersForMapLevel(map.getLevel()) }
+      {
+        radiusMeters: radiusMetersForMapLevel(map.getLevel()),
+        source: 'map_viewport',
+      }
     );
   }, [reloadNearbyCoupons]);
 
@@ -400,6 +449,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
     void reloadNearbyCoupons(userLocation.coords, {
       radiusMeters: searchRadiusRef.current,
       selectFirstStore: shouldFocusUserLocation,
+      source: getUserLocationSearchSource(userLocation.source),
     }).then(() => {
       if (!shouldFocusUserLocation) return;
       pendingUserLocationMapFitRef.current = true;
@@ -584,12 +634,23 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
   ]);
 
   const selectStore = useCallback(
-    (storeId: string) => {
+    (storeId: string, source: StoreSelectionSource = 'map_marker') => {
       setSelectedStoreId(storeId);
       setSelectedCouponSelection(null);
       openPanelForSelection();
 
       const store = displayView.stores.find((candidate) => candidate.id === storeId);
+      if (store) {
+        trackAmplitudeEvent('coupon_store_selected', {
+          best_coupon_id: store.bestCoupon.id,
+          brand_id: store.brand.id,
+          brand_name: store.brandName,
+          coupon_count: store.coupons.length,
+          source,
+          store_id: store.id,
+        });
+      }
+
       const map = mapRef.current;
       const kakaoMaps = kakaoMapsRef.current;
       if (!store || !map || !kakaoMaps) return;
@@ -609,10 +670,22 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
 
   const selectCoupon = useCallback(
     (storeId: string, couponId: string) => {
-      selectStore(storeId);
+      selectStore(storeId, 'coupon_list');
+      const store = displayView.stores.find((candidate) => candidate.id === storeId);
+      const coupon = store?.coupons.find((candidate) => candidate.id === couponId);
+      if (store && coupon) {
+        trackAmplitudeEvent('coupon_selected', {
+          brand_id: store.brand.id,
+          brand_name: store.brandName,
+          coupon_id: coupon.id,
+          discount_type: coupon.discountType,
+          source: 'coupon_list',
+          store_id: store.id,
+        });
+      }
       setSelectedCouponSelection({ storeId, couponId });
     },
-    [selectStore]
+    [displayView.stores, selectStore]
   );
 
   const returnToUserLocation = useCallback(async () => {
@@ -635,6 +708,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
       force: true,
       radiusMeters,
       selectFirstStore: true,
+      source: 'current_location_button',
     });
 
     if (!map || !kakaoMaps) return;
@@ -678,7 +752,7 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
           mapProviderStatus={mapProviderStatus}
           showFallbackPins={showFallbackPins}
           activeStoreId={activeStoreId}
-          onSelectStore={selectStore}
+          onSelectStore={(storeId) => selectStore(storeId, 'map_marker')}
         />
         <button
           type="button"
@@ -751,6 +825,26 @@ export default function CouponMapScreen({ view, status, message }: CouponMapScre
       <style dangerouslySetInnerHTML={{ __html: styles }} />
     </main>
   );
+}
+
+function trackCouponSearchLoaded(
+  source: CouponSearchSource,
+  radiusMeters: number,
+  response: CouponMapApiResponse
+): void {
+  trackAmplitudeEvent('coupon_search_loaded', {
+    active_coupon_count: response.view.totals.activeCoupons,
+    result_status: response.status,
+    search_radius_meters: radiusMeters,
+    source,
+    store_count: response.view.totals.stores,
+  });
+}
+
+function getUserLocationSearchSource(source: UserLocationSource): CouponSearchSource {
+  if (source === 'geolocation') return 'user_location_geolocation';
+  if (source === 'stored') return 'user_location_stored';
+  return 'user_location_default';
 }
 
 function isAbortError(error: unknown): boolean {

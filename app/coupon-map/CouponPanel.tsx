@@ -1,6 +1,7 @@
 import { memo, useCallback } from 'react';
 
 import { openBrandApp } from '../../lib/deeplink';
+import { trackAmplitudeEvent } from '../../lib/amplitude';
 import { COUPON_SHEET_PEEK_HEIGHT_PX } from '../../lib/couponSheet';
 import { formatRadiusLabel } from '../../lib/format';
 import type {
@@ -64,9 +65,25 @@ export const CouponPanel = memo(function CouponPanel({
   onSelectCoupon,
   onOpenFeedback,
 }: CouponPanelProps) {
-  const openCouponApp = useCallback((store: CouponMapStore, coupon: CouponMapCoupon) => {
-    openBrandApp(store.brand, undefined, coupon.appLink);
-  }, []);
+  const openCouponApp = useCallback(
+    (
+      store: CouponMapStore,
+      coupon: CouponMapCoupon,
+      source: 'coupon_list' | 'selected_detail' = 'coupon_list'
+    ) => {
+      trackAmplitudeEvent('coupon_app_opened', {
+        brand_id: store.brand.id,
+        brand_name: store.brandName,
+        coupon_id: coupon.id,
+        discount_type: coupon.discountType,
+        has_app_link: Boolean(coupon.appLink),
+        source,
+        store_id: store.id,
+      });
+      openBrandApp(store.brand, undefined, coupon.appLink);
+    },
+    []
+  );
 
   return (
     <div
@@ -153,7 +170,9 @@ export const CouponPanel = memo(function CouponPanel({
                     <button
                       type="button"
                       className="openAppButton"
-                      onClick={() => openCouponApp(selectedStore, selectedCoupon)}
+                      onClick={() =>
+                        openCouponApp(selectedStore, selectedCoupon, 'selected_detail')
+                      }
                     >
                       앱에서 열기
                       <ArrowIcon />

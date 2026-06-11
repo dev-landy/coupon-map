@@ -5,6 +5,7 @@ import {
   readLastFeedbackSubmittedAt,
   writeLastFeedbackSubmittedAt,
 } from '../../lib/feedbackStorage';
+import { trackAmplitudeEvent } from '../../lib/amplitude';
 import type { CouponMapCoupon, CouponMapStore } from '../../lib/frontendData';
 import type { FeedbackSubmitStatus, FeedbackType } from './FeedbackDialog';
 
@@ -29,12 +30,21 @@ export function useFeedbackForm({
 
   const openFeedback = useCallback(
     (initialType: FeedbackType = selectedStore ? 'coupon_incorrect' : 'feature_request') => {
+      trackAmplitudeEvent('feedback_opened', {
+        brand_id: selectedStore?.brand.id,
+        brand_name: selectedStore?.brandName,
+        coupon_id: selectedCoupon?.id,
+        feedback_type: initialType,
+        has_selected_coupon: Boolean(selectedCoupon),
+        has_selected_store: Boolean(selectedStore),
+        store_id: selectedStore?.id,
+      });
       setFeedbackType(initialType);
       setFeedbackSubmitStatus('idle');
       setFeedbackError(null);
       setIsFeedbackOpen(true);
     },
-    [selectedStore]
+    [selectedCoupon, selectedStore]
   );
 
   const closeFeedback = useCallback(() => {
@@ -113,6 +123,15 @@ export function useFeedbackForm({
         }
 
         writeLastFeedbackSubmittedAt(now);
+        trackAmplitudeEvent('feedback_submitted', {
+          brand_id: selectedStore?.brand.id,
+          brand_name: selectedStore?.brandName,
+          coupon_id: selectedCoupon?.id,
+          feedback_type: feedbackType,
+          has_contact: Boolean(trimmedContact),
+          search_radius_meters: searchRadiusMeters,
+          store_id: selectedStore?.id,
+        });
         setFeedbackSubmitStatus('success');
         setFeedbackError(null);
         setFeedbackMessage('');

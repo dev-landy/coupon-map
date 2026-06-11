@@ -9,7 +9,17 @@ vi.mock('../lib/deeplink', () => ({
   openBrandApp: vi.fn(),
 }));
 
+vi.mock('../lib/amplitude', () => ({
+  DEFAULT_AMPLITUDE_CONFIG: {
+    apiKey: null,
+    serverZone: 'US',
+  },
+  configureAmplitude: vi.fn(),
+  trackAmplitudeEvent: vi.fn(),
+}));
+
 const { openBrandApp } = await import('../lib/deeplink');
+const { trackAmplitudeEvent } = await import('../lib/amplitude');
 const originalGeolocation = navigator.geolocation;
 const originalMatchMedia = window.matchMedia;
 const originalLocalStorage = window.localStorage;
@@ -431,6 +441,35 @@ describe('CouponMapScreen', () => {
       undefined,
       'mcdonaldskr://coupon/fries'
     );
+    expect(trackAmplitudeEvent).toHaveBeenCalledWith(
+      'coupon_selected',
+      expect.objectContaining({
+        brand_id: 'brand-mcdonalds',
+        coupon_id: 'fries',
+        source: 'coupon_list',
+        store_id: 'hongdae',
+      })
+    );
+    expect(trackAmplitudeEvent).toHaveBeenCalledWith(
+      'coupon_app_opened',
+      expect.objectContaining({
+        brand_id: 'brand-mcdonalds',
+        coupon_id: 'fries',
+        source: 'coupon_list',
+        store_id: 'hongdae',
+      })
+    );
+  });
+
+  it('tracks the coupon map view event for retention analysis', () => {
+    render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+
+    expect(trackAmplitudeEvent).toHaveBeenCalledWith('coupon_map_viewed', {
+      active_coupon_count: 3,
+      initial_status: 'ready',
+      search_radius_meters: 1000,
+      store_count: 2,
+    });
   });
 
   it('uses the same KFC brand badge in the selected detail and coupon list', () => {
@@ -659,6 +698,16 @@ describe('CouponMapScreen', () => {
       searchRadiusMeters: 1000,
     });
     expect(screen.getByText('피드백을 보냈습니다')).toBeTruthy();
+    expect(trackAmplitudeEvent).toHaveBeenCalledWith(
+      'feedback_submitted',
+      expect.objectContaining({
+        brand_id: 'brand-mcdonalds',
+        coupon_id: 'bigmac',
+        feedback_type: 'coupon_incorrect',
+        search_radius_meters: 1000,
+        store_id: 'hongdae',
+      })
+    );
   });
 
   it('does not render the old illustrated map fallback before the map provider is ready', () => {

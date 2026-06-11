@@ -5,6 +5,7 @@ import { DEFAULT_LOCATION } from '../lib/location';
 import { buildHomePageJsonLd, serializeJsonLd } from '../lib/seo';
 import { DEFAULT_RADIUS_METERS } from '../lib/stores';
 import CouponMapScreen from './CouponMapScreen';
+import type { AmplitudeConfig } from '../lib/amplitude';
 
 export const revalidate = 300;
 
@@ -25,7 +26,19 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(buildHomePageJsonLd(view)) }}
       />
-      <CouponMapScreen view={view} status={status} message={message} />
+      <CouponMapScreen
+        view={view}
+        status={status}
+        message={message}
+        amplitudeConfig={readAmplitudeConfig()}
+      />
     </>
   );
+}
+
+function readAmplitudeConfig(): AmplitudeConfig {
+  return {
+    apiKey: process.env.AMPLITUDE_API_KEY?.trim() || null,
+    serverZone: process.env.AMPLITUDE_SERVER_ZONE?.toUpperCase() === 'EU' ? 'EU' : 'US',
+  };
 }
