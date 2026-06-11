@@ -8,23 +8,31 @@ export type AmplitudeEventProperties = Record<string, AmplitudePropertyValue>;
 
 const AMPLITUDE_API_KEY = '19445bfc8856391e9e23cfa3d76f7c60';
 const AMPLITUDE_OPTIONS = {
+  serverZone: 'US',
   analytics: {
     autocapture: true,
+    flushIntervalMillis: 1000,
+    flushQueueSize: 1,
+    remoteConfig: {
+      fetchRemoteConfig: false,
+    },
+    transport: 'beacon',
   },
   sessionReplay: {
     sampleRate: 1,
   },
-};
+} as const;
 
 let initPromise: Promise<void> | null = null;
-let hasInitializationFailed = false;
 
 export function initAmplitude(): Promise<void> | null {
   if (typeof window === 'undefined') return null;
 
   if (!initPromise) {
-    initPromise = amplitude.initAll(AMPLITUDE_API_KEY, AMPLITUDE_OPTIONS).catch(() => {
-      hasInitializationFailed = true;
+    initPromise = amplitude.initAll(AMPLITUDE_API_KEY, AMPLITUDE_OPTIONS).catch((error) => {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('Amplitude initialization failed; analytics tracking will still be attempted.', error);
+      }
     });
   }
 
@@ -39,7 +47,6 @@ export function trackAmplitudeEvent(
   if (!initialization) return;
 
   void initialization.then(() => {
-    if (hasInitializationFailed) return;
     amplitude.track(eventName, compactProperties(properties));
   });
 }

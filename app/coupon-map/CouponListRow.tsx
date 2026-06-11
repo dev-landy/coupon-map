@@ -10,18 +10,12 @@ export const CouponListRow = memo(function CouponListRow({
   coupon,
   isSelected,
   onSelect,
-  onOpenApp,
 }: {
   rowId?: string;
   store: CouponMapStore;
   coupon: CouponMapCoupon;
   isSelected: boolean;
   onSelect: (storeId: string, couponId: string) => void;
-  onOpenApp: (
-    store: CouponMapStore,
-    coupon: CouponMapCoupon,
-    source: 'coupon_list'
-  ) => void;
 }) {
   const locationLabel =
     store.distanceMeters === undefined
@@ -38,7 +32,6 @@ export const CouponListRow = memo(function CouponListRow({
       aria-label={`${store.brandName} ${store.name} ${coupon.title} ${coupon.headline}`}
       onClick={() => {
         onSelect(store.id, coupon.id);
-        onOpenApp(store, coupon, 'coupon_list');
       }}
     >
       <BrandLogo store={store} className="storeLogo" />

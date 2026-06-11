@@ -10,6 +10,7 @@ vi.mock('@amplitude/unified', () => amplitudeMock);
 afterEach(() => {
   vi.resetModules();
   vi.clearAllMocks();
+  vi.restoreAllMocks();
 });
 
 describe('Amplitude browser tracking', () => {
@@ -26,8 +27,15 @@ describe('Amplitude browser tracking', () => {
     expect(amplitudeMock.initAll).toHaveBeenCalledWith(
       '19445bfc8856391e9e23cfa3d76f7c60',
       {
+        serverZone: 'US',
         analytics: {
           autocapture: true,
+          flushIntervalMillis: 1000,
+          flushQueueSize: 1,
+          remoteConfig: {
+            fetchRemoteConfig: false,
+          },
+          transport: 'beacon',
         },
         sessionReplay: {
           sampleRate: 1,
@@ -51,5 +59,21 @@ describe('Amplitude browser tracking', () => {
     expect(amplitudeMock.track).toHaveBeenCalledWith('coupon_map_viewed', {
       store_count: 2,
     });
+  });
+
+  it('still attempts to track events when unified initialization rejects', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    amplitudeMock.initAll.mockRejectedValueOnce(new Error('Session Replay failed'));
+
+    const { trackAmplitudeEvent } = await import('../lib/amplitude');
+
+    trackAmplitudeEvent('coupon_app_opened');
+
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(warnSpy).toHaveBeenCalled();
+    expect(amplitudeMock.track).toHaveBeenCalledWith('coupon_app_opened', undefined);
   });
 });

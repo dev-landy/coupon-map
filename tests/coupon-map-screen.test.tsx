@@ -414,7 +414,7 @@ describe('CouponMapScreen', () => {
     );
   });
 
-  it('lists nearby coupons and opens the selected coupon row app link', () => {
+  it('selects the clicked coupon row without opening the app', () => {
     render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
 
     expect(screen.getByText('1km 내 쿠폰')).toBeTruthy();
@@ -430,12 +430,7 @@ describe('CouponMapScreen', () => {
     expect(detail.getAttribute('data-selected-coupon-id')).toBe('fries');
     expect(detail.querySelector('h2')?.textContent).toBe('감자튀김 1,000원 할인');
 
-    expect(openBrandApp).toHaveBeenCalledTimes(1);
-    expect(openBrandApp).toHaveBeenCalledWith(
-      VIEW.stores[0].brand,
-      undefined,
-      'mcdonaldskr://coupon/fries'
-    );
+    expect(openBrandApp).not.toHaveBeenCalled();
     expect(trackAmplitudeEvent).toHaveBeenCalledWith(
       'coupon_selected',
       expect.objectContaining({
@@ -445,14 +440,9 @@ describe('CouponMapScreen', () => {
         store_id: 'hongdae',
       })
     );
-    expect(trackAmplitudeEvent).toHaveBeenCalledWith(
+    expect(trackAmplitudeEvent).not.toHaveBeenCalledWith(
       'coupon_app_opened',
-      expect.objectContaining({
-        brand_id: 'brand-mcdonalds',
-        coupon_id: 'fries',
-        source: 'coupon_list',
-        store_id: 'hongdae',
-      })
+      expect.anything()
     );
   });
 
@@ -644,6 +634,27 @@ describe('CouponMapScreen', () => {
     expect(screen.queryByTestId('selected-store-detail')).toBeNull();
   });
 
+  it('shows the map brand and feedback action beside the locate button', () => {
+    const { container } = render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+    const topChrome = container.querySelector('.mapTopChrome');
+
+    expect(topChrome).toBeTruthy();
+    expect(within(topChrome as HTMLElement).getByText('쿠폰맵')).toBeTruthy();
+
+    const feedbackButton = within(topChrome as HTMLElement).getByRole('button', {
+      name: '피드백 보내기',
+    });
+    const locateButton = within(topChrome as HTMLElement).getByRole('button', {
+      name: '기본 위치로 이동',
+    });
+
+    expect(locateButton.getAttribute('title')).toBeNull();
+
+    fireEvent.click(feedbackButton);
+
+    expect(screen.getByRole('dialog', { name: '피드백 보내기' })).toBeTruthy();
+  });
+
   it('submits selected coupon feedback without showing the coupon context in the dialog', async () => {
     Object.defineProperty(navigator, 'geolocation', {
       configurable: true,
@@ -820,6 +831,34 @@ describe('CouponMapScreen', () => {
       ?.getProjection()
       .containerPointFromCoords(new MockKakaoLatLng(VIEW.stores[1].lat, VIEW.stores[1].lng));
 
+    expect(selectedPoint).toEqual({ x: 400, y: 300 });
+    expect(latestKakaoMap?.getCenter().getLat()).toBe(VIEW.stores[1].lat);
+    expect(latestKakaoMap?.getCenter().getLng()).toBe(VIEW.stores[1].lng);
+  });
+
+  it('centers a mobile store selected from the coupon list', async () => {
+    vi.stubEnv('NEXT_PUBLIC_KAKAO_MAP_APP_KEY', 'test-key');
+    mockMobileViewport();
+    mockAnimationFrame();
+    mockKakaoMaps();
+
+    render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+
+    const gangnamCouponRow = screen.getByRole('button', {
+      name: '버거킹 강남점 와퍼 3,000원 할인 3,000원',
+    });
+
+    await waitFor(() => expect(latestKakaoMap).toBeTruthy());
+
+    fireEvent.click(gangnamCouponRow);
+
+    const detail = screen.getByTestId('selected-store-detail');
+    const selectedPoint = latestKakaoMap
+      ?.getProjection()
+      .containerPointFromCoords(new MockKakaoLatLng(VIEW.stores[1].lat, VIEW.stores[1].lng));
+
+    expect(detail.getAttribute('data-selected-store-id')).toBe('gangnam');
+    expect(detail.getAttribute('data-selected-coupon-id')).toBe('whopper');
     expect(selectedPoint).toEqual({ x: 400, y: 300 });
     expect(latestKakaoMap?.getCenter().getLat()).toBe(VIEW.stores[1].lat);
     expect(latestKakaoMap?.getCenter().getLng()).toBe(VIEW.stores[1].lng);

@@ -745,19 +745,35 @@ export default function CouponMapScreen({
           activeStoreId={activeStoreId}
           onSelectStore={(storeId) => selectStore(storeId, 'map_marker')}
         />
-        <button
-          type="button"
-          className="locateButton"
-          aria-label={locateButtonLabel}
-          title={locateButtonLabel}
-          disabled={userLocation.isLoading}
-          onClick={(event) => {
-            event.stopPropagation();
-            returnToUserLocation();
-          }}
-        >
-          <LocateIcon />
-        </button>
+        <div className="mapTopChrome">
+          <strong className="mapBrand">쿠폰맵</strong>
+          <div className="mapActions">
+            <button
+              type="button"
+              className="mapFeedbackButton"
+              onClick={(event) => {
+                event.stopPropagation();
+                openFeedback(
+                  selectedStore && selectedCoupon ? 'coupon_incorrect' : 'feature_request'
+                );
+              }}
+            >
+              피드백 보내기
+            </button>
+            <button
+              type="button"
+              className="locateButton"
+              aria-label={locateButtonLabel}
+              disabled={userLocation.isLoading}
+              onClick={(event) => {
+                event.stopPropagation();
+                returnToUserLocation();
+              }}
+            >
+              <LocateIcon />
+            </button>
+          </div>
+        </div>
 
         {displayView.stores.length === 0 ? (
           <div className="empty">

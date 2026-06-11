@@ -1,7 +1,10 @@
 -- Re-apply this when the frontend shows:
 --   permission denied for table brands
+--   column brands.iphone_store_url does not exist
 --
--- It restores the read-only public access expected by the Next.js app.
+-- It restores the schema/read-only public access expected by the Next.js app.
+
+alter table public.brands add column if not exists iphone_store_url text;
 
 alter table public.brands enable row level security;
 alter table public.stores enable row level security;

@@ -137,7 +137,7 @@ export const styles = `
   .notice {
     position: fixed;
     z-index: 50;
-    top: 18px;
+    top: 76px;
     left: 18px;
     width: min(420px, calc(100vw - 36px));
     border: 1px solid #f5d565;
@@ -190,15 +190,61 @@ export const styles = `
     box-shadow: 0 2px 8px rgba(20,20,30,.22);
   }
 
-  .locateButton {
+  .mapTopChrome {
     position: absolute;
     z-index: 32;
     left: 18px;
-    bottom: 22px;
+    top: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: calc(100vw - 460px);
+  }
+
+  .mapBrand {
+    display: inline-flex;
+    align-items: center;
+    min-height: 46px;
+    border: 1px solid rgba(21,21,26,.1);
+    border-radius: 8px;
+    padding: 0 15px;
+    background: rgba(255,255,255,.96);
+    color: #15151a;
+    font-size: 19px;
+    font-weight: 950;
+    letter-spacing: 0;
+    box-shadow: 0 12px 28px rgba(20,20,30,.14);
+    white-space: nowrap;
+  }
+
+  .mapActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .mapFeedbackButton {
+    min-height: 46px;
+    border: 1px solid rgba(21,21,26,.1);
+    border-radius: 8px;
+    padding: 0 14px;
+    background: #15151a;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 900;
+    box-shadow: 0 12px 28px rgba(20,20,30,.16);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform .16s ease, opacity .16s ease;
+  }
+
+  .locateButton {
     display: grid;
+    flex: 0 0 auto;
     place-items: center;
-    width: 48px;
-    height: 48px;
+    width: 46px;
+    height: 46px;
     border: 1px solid rgba(21,21,26,.1);
     border-radius: 8px;
     background: rgba(255,255,255,.96);
@@ -208,12 +254,13 @@ export const styles = `
     transition: transform .16s ease, opacity .16s ease;
   }
 
+  .mapFeedbackButton:hover:not(:disabled),
   .locateButton:hover:not(:disabled) {
     transform: translateY(-1px);
   }
 
   .locateButton:disabled {
-    cursor: wait;
+    cursor: default;
     opacity: .58;
   }
 
@@ -331,7 +378,7 @@ export const styles = `
   .couponListRow:focus-visible,
   .openAppButton:focus-visible,
   .reportCouponButton:focus-visible,
-  .feedbackOpenButton:focus-visible,
+  .mapFeedbackButton:focus-visible,
   .emptyFeedbackButton:focus-visible,
   .feedbackCloseButton:focus-visible,
   .feedbackSecondaryButton:focus-visible,
@@ -755,25 +802,6 @@ export const styles = `
     white-space: nowrap;
   }
 
-  .feedbackEntry {
-    flex: 0 0 auto;
-    border-top: 1px solid #ececef;
-    padding: 10px 18px 12px;
-    background: rgba(255,255,255,.98);
-  }
-
-  .feedbackOpenButton {
-    width: 100%;
-    min-height: 42px;
-    border: 1px solid #d7d7dc;
-    border-radius: 8px;
-    background: #f7f7f5;
-    color: #15151a;
-    font-size: 14px;
-    font-weight: 900;
-    cursor: pointer;
-  }
-
   .feedbackOverlay {
     position: fixed;
     z-index: 80;
@@ -937,17 +965,40 @@ export const styles = `
 
   @media (max-width: 760px) {
     .notice {
-      top: max(14px, env(safe-area-inset-top));
+      top: calc(max(14px, env(safe-area-inset-top)) + 54px);
       left: 14px;
       width: calc(100vw - 28px);
     }
 
-    .locateButton {
+    .mapTopChrome {
       top: max(14px, env(safe-area-inset-top));
-      bottom: auto;
+      right: 14px;
       left: 14px;
-      width: 46px;
-      height: 46px;
+      justify-content: space-between;
+      gap: 8px;
+      max-width: none;
+    }
+
+    .mapBrand {
+      min-height: 42px;
+      padding: 0 12px;
+      font-size: 17px;
+    }
+
+    .mapActions {
+      flex: 0 0 auto;
+      gap: 6px;
+    }
+
+    .mapFeedbackButton {
+      min-height: 42px;
+      padding: 0 11px;
+      font-size: 13px;
+    }
+
+    .locateButton {
+      width: 42px;
+      height: 42px;
     }
 
     .panelDock {
@@ -1091,10 +1142,6 @@ export const styles = `
 
     .couponRowDeal strong {
       font-size: 16px;
-    }
-
-    .feedbackEntry {
-      padding: 9px 18px max(10px, env(safe-area-inset-bottom));
     }
 
     .feedbackOverlay {

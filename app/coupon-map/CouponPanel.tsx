@@ -204,20 +204,9 @@ export const CouponPanel = memo(function CouponPanel({
                       item.store.id === activeStoreId && item.coupon.id === selectedCoupon?.id
                     }
                     onSelect={onSelectCoupon}
-                    onOpenApp={openCouponApp}
                   />
                 ))}
               </div>
-
-              <footer className="feedbackEntry">
-                <button
-                  type="button"
-                  className="feedbackOpenButton"
-                  onClick={() => onOpenFeedback(selectedStore ? 'other' : 'feature_request')}
-                >
-                  피드백 보내기
-                </button>
-              </footer>
             </div>
           </>
         ) : null}
