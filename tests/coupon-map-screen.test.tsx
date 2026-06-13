@@ -539,17 +539,24 @@ describe('CouponMapScreen', () => {
     const { container } = render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
     const sheetDragArea = container.querySelector('.sheetDragArea') as HTMLElement;
     const panelDock = container.querySelector('.panelDock') as HTMLElement;
+    const mapActions = container.querySelector('.mapActions') as HTMLElement;
 
     firePointer(sheetDragArea, 'pointerdown', 120);
     firePointer(sheetDragArea, 'pointermove', 240);
 
     expect(panelDock.style.getPropertyValue('--sheet-drag-y')).toBe('120px');
+    expect(mapActions.style.getPropertyValue('--sheet-drag-y')).toBe('120px');
 
     firePointer(sheetDragArea, 'pointerup', 240);
 
     expect(panelDock.className).toContain('isSheetLowered');
     expect(panelDock.style.getPropertyValue('--sheet-base-y')).toBe('calc(100% - 124px)');
     expect(panelDock.style.getPropertyValue('--sheet-drag-y')).toBe('0px');
+    expect(mapActions.className).toContain('isSheetLowered');
+    expect(mapActions.style.getPropertyValue('--mobile-action-base-y')).toBe(
+      'calc(var(--mobile-sheet-height, 0px) - 124px)'
+    );
+    expect(mapActions.style.getPropertyValue('--sheet-drag-y')).toBe('0px');
     expect(screen.getByTestId('selected-store-detail')).toBeTruthy();
 
     firePointer(sheetDragArea, 'pointerdown', 240);

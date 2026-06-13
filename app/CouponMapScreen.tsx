@@ -15,6 +15,7 @@ import {
   readCachedCouponResponse,
   writeCachedCouponResponse,
 } from '../lib/couponResponseCache';
+import { COUPON_SHEET_PEEK_HEIGHT_PX } from '../lib/couponSheet';
 import { formatNearbyEmptyMessage } from '../lib/format';
 import { cancelFrame, requestFrame } from '../lib/domFrame';
 import { trackAmplitudeEvent } from '../lib/amplitude';
@@ -181,6 +182,12 @@ export default function CouponMapScreen({
       : userLocation.usingDefault
         ? '기본 위치로 이동'
         : '현재 위치로 이동';
+  const mobileMapActionsStyle = {
+    '--mobile-action-base-y': isCouponSheetLowered
+      ? `calc(var(--mobile-sheet-height, 0px) - ${COUPON_SHEET_PEEK_HEIGHT_PX}px)`
+      : '0px',
+    '--sheet-drag-y': `${sheetDragY}px`,
+  } as React.CSSProperties;
 
   const suppressViewportReload = useCallback(() => {
     viewportReloadSuppressedUntilRef.current =
@@ -745,8 +752,14 @@ export default function CouponMapScreen({
           onSelectStore={(storeId) => selectStore(storeId, 'map_marker')}
         />
         <div className="mapTopChrome">
-          <strong className="mapBrand">쿠폰맵</strong>
-          <div className="mapActions">
+          <strong className="mapBrand">
+            <img className="mapBrandIcon" src="/icon.svg" alt="" aria-hidden="true" />
+            <span>쿠폰맵</span>
+          </strong>
+          <div
+            className={`mapActions ${isCouponPanelOpen ? 'isPanelOpen' : 'isPanelClosed'} ${isCouponSheetLowered ? 'isSheetLowered' : ''} ${isSheetDragging ? 'isSheetDragging' : ''}`}
+            style={mobileMapActionsStyle}
+          >
             <button
               type="button"
               className="mapFeedbackButton"

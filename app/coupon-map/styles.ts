@@ -205,17 +205,25 @@ export const styles = `
   .mapBrand {
     display: inline-flex;
     align-items: center;
+    gap: 8px;
     min-height: 46px;
     border: 1px solid rgba(21,21,26,.1);
     border-radius: 8px;
-    padding: 0 15px;
+    padding: 0 14px 0 10px;
     background: rgba(255,255,255,.96);
     color: #15151a;
     font-size: 19px;
-    font-weight: 950;
+    font-weight: 650;
     letter-spacing: 0;
     box-shadow: 0 12px 28px rgba(20,20,30,.14);
     white-space: nowrap;
+  }
+
+  .mapBrandIcon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    flex: 0 0 auto;
   }
 
   .mapActions {
@@ -356,6 +364,14 @@ export const styles = `
   .pinLogo.brandBadge[data-brand-logo="burgerking"] {
     font-size: 9px;
     line-height: 1.05;
+  }
+
+  .pinLogo.brandBadge[data-brand-logo="mcdonalds"] {
+    width: 42px;
+    padding: 0 4px;
+    font-size: 10px;
+    white-space: nowrap;
+    word-break: keep-all;
   }
 
   .pinDeal {
@@ -977,6 +993,10 @@ export const styles = `
   }
 
   @media (max-width: 760px) {
+    .appShell {
+      --mobile-sheet-height: min(74dvh, 620px, calc(100dvh - 92px));
+    }
+
     .notice {
       top: calc(max(14px, env(safe-area-inset-top)) + 54px);
       left: 14px;
@@ -999,8 +1019,25 @@ export const styles = `
     }
 
     .mapActions {
+      position: fixed;
+      z-index: 34;
+      right: 14px;
+      bottom: calc(var(--mobile-sheet-height) + 12px);
       flex: 0 0 auto;
       gap: 6px;
+      transform: translateY(
+        calc(var(--mobile-action-base-y, 0px) + var(--sheet-drag-y, 0px))
+      );
+      transition: transform .22s ease;
+    }
+
+    .mapActions.isPanelClosed {
+      bottom: max(14px, env(safe-area-inset-bottom));
+      transform: none;
+    }
+
+    .mapActions.isSheetDragging {
+      transition: none;
     }
 
     .mapFeedbackButton {
@@ -1020,8 +1057,7 @@ export const styles = `
       bottom: 0;
       left: 0;
       width: auto;
-      height: min(74dvh, 620px);
-      max-height: calc(100dvh - 92px);
+      height: var(--mobile-sheet-height);
     }
 
     .panelDock.isPanelClosed {
