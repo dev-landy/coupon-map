@@ -37,7 +37,6 @@ import { MapStatusOverlay } from './coupon-map/MapStatusOverlay';
 import { MarkerLayer, type MarkerLayerHandle } from './coupon-map/MarkerLayer';
 import { useCouponSheet } from './coupon-map/useCouponSheet';
 import { useFeedbackForm } from './coupon-map/useFeedbackForm';
-import { styles } from './coupon-map/styles';
 
 export type { CouponMapLoadStatus } from '../lib/frontendData';
 
@@ -828,8 +827,6 @@ export default function CouponMapScreen({
           onClose={closeFeedback}
         />
       ) : null}
-
-      <style dangerouslySetInnerHTML={{ __html: styles }} />
     </main>
   );
 }

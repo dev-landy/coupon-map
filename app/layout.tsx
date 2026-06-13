@@ -3,6 +3,7 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import { AmplitudeInitializer } from './AmplitudeInitializer';
+import { styles as couponMapStyles } from './coupon-map/styles';
 import {
   SITE_DESCRIPTION,
   SITE_ICON,
@@ -100,6 +101,10 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <head>
+        <style
+          id="coupon-map-critical-styles"
+          dangerouslySetInnerHTML={{ __html: couponMapStyles }}
+        />
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-YW4N6K6GD8" />
         <script
           dangerouslySetInnerHTML={{

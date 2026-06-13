@@ -73,15 +73,27 @@ const BRAND_COLORS = [
   '#344054',
 ];
 
+function getBrandColor(brand: Brand): string {
+  return BRAND_COLORS[hashString(brand.id) % BRAND_COLORS.length];
+}
+
+function hashString(value: string): number {
+  let hash = 0;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
+  }
+
+  return hash;
+}
+
 export function buildCouponMapView(
   rows: CouponMapRows,
   now: Date,
   options: BuildCouponMapViewOptions = {}
 ): CouponMapView {
   const brandsById = new Map(rows.brands.map((brand) => [brand.id, brand]));
-  const brandColorsById = new Map(
-    rows.brands.map((brand, index) => [brand.id, BRAND_COLORS[index % BRAND_COLORS.length]])
-  );
+  const brandColorsById = new Map(rows.brands.map((brand) => [brand.id, getBrandColor(brand)]));
   const activeCoupons = filterActiveCoupons(rows.coupons, now);
   const couponsByBrand = groupCouponsByBrand(activeCoupons);
 

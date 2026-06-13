@@ -91,6 +91,52 @@ describe('buildCouponMapView', () => {
     expect(view.stores[0].brandInitial).toBe('KFC');
   });
 
+  it('keeps brand colors stable across location-scoped response subsets and order changes', () => {
+    const brand1 = makeBrand({ id: 'brand-1', name: '맥도날드' });
+    const brand2 = makeBrand({ id: 'brand-2', name: '버거킹' });
+    const store1 = makeStore({ id: 'brand-1-store', brand_id: 'brand-1', name: '홍대점' });
+    const store2 = makeStore({
+      id: 'brand-2-store',
+      brand_id: 'brand-2',
+      name: '강남점',
+      lat: 37.4979,
+      lng: 127.0276,
+    });
+    const coupon1 = makeCoupon({ id: 'brand-1-coupon', brand_id: 'brand-1' });
+    const coupon2 = makeCoupon({ id: 'brand-2-coupon', brand_id: 'brand-2' });
+
+    const fullView = buildCouponMapView(
+      {
+        brands: [brand1, brand2],
+        stores: [store1, store2],
+        coupons: [coupon1, coupon2],
+      },
+      NOW
+    );
+    const subsetView = buildCouponMapView(
+      {
+        brands: [brand2],
+        stores: [store2],
+        coupons: [coupon2],
+      },
+      NOW
+    );
+    const reorderedView = buildCouponMapView(
+      {
+        brands: [brand2, brand1],
+        stores: [store1, store2],
+        coupons: [coupon1, coupon2],
+      },
+      NOW
+    );
+
+    const fullColor = fullView.stores.find((store) => store.brand.id === 'brand-2')?.brandColor;
+
+    expect(fullColor).toBeDefined();
+    expect(subsetView.stores.find((store) => store.brand.id === 'brand-2')?.brandColor).toBe(fullColor);
+    expect(reorderedView.stores.find((store) => store.brand.id === 'brand-2')?.brandColor).toBe(fullColor);
+  });
+
   it('summarizes rich raw_payload fields for coupon detail display', () => {
     const view = buildCouponMapView(
       {

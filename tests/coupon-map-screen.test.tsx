@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, waitFor, within } from '@testing-librar
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import CouponMapScreen from '../app/CouponMapScreen';
+import { styles } from '../app/coupon-map/styles';
 import type { CouponMapView } from '../lib/frontendData';
 import { USER_LOCATION_STORAGE_KEY } from '../lib/geo';
 
@@ -752,10 +753,7 @@ describe('CouponMapScreen', () => {
       expect(marker.style.getPropertyValue('--pin-y')).toBe('300px');
     });
 
-    const styleText = [...document.querySelectorAll('style')]
-      .map((style) => style.textContent ?? '')
-      .join('\n');
-    expect(styleText).toContain('.marker:not(.isProjected)');
+    expect(styles).toContain('.marker:not(.isProjected)');
   });
 
   it('keeps the mobile camera anchored to the user when coupon stores are outside the search radius', async () => {
