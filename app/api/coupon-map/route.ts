@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { loadCouponRowsNearLocation } from '../../../lib/couponMapData';
 import { formatNearbyEmptyMessage } from '../../../lib/format';
 import { buildCouponMapView, type CouponMapLoadStatus } from '../../../lib/frontendData';
-import { MAX_SCALE_RADIUS_METERS } from '../../../lib/mapScale';
+import { MAX_SEARCH_RADIUS_METERS } from '../../../lib/mapScale';
 import { DEFAULT_RADIUS_METERS, isValidCoordinate } from '../../../lib/stores';
 
 export const revalidate = 60;
@@ -26,7 +26,7 @@ export async function GET(request: Request) {
 
   if (radiusMeters === null) {
     return NextResponse.json(
-      { message: `radiusMeters must be between 0 and ${MAX_SCALE_RADIUS_METERS}.` },
+      { message: `radiusMeters must be between 0 and ${MAX_SEARCH_RADIUS_METERS}.` },
       { status: 400 }
     );
   }
@@ -64,7 +64,7 @@ function parseNumberParam(value: string | null): number | null {
 
 function parseRadiusMeters(value: string | null): number | null {
   const parsed = value === null || value.trim() === '' ? DEFAULT_RADIUS_METERS : Number(value);
-  if (!Number.isFinite(parsed) || parsed < 0 || parsed > MAX_SCALE_RADIUS_METERS) return null;
+  if (!Number.isFinite(parsed) || parsed < 0 || parsed > MAX_SEARCH_RADIUS_METERS) return null;
   return parsed;
 }
 

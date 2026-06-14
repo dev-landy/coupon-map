@@ -89,6 +89,29 @@ describe('GET /api/coupon-map', () => {
     });
   });
 
+  it('accepts viewport-sized radii above the close zoom fallback', async () => {
+    loaderMock.loadCouponRowsNearLocation.mockResolvedValue({
+      rows: {
+        brands: [BRAND],
+        stores: [STORE],
+        coupons: [COUPON],
+      },
+      status: 'ready',
+      message: null,
+    });
+
+    const response = await GET(
+      new Request('http://localhost/api/coupon-map?lat=37.5563&lng=126.9236&radiusMeters=25000')
+    );
+
+    expect(response.status).toBe(200);
+    expect(loaderMock.loadCouponRowsNearLocation).toHaveBeenCalledWith({
+      lat: 37.5563,
+      lng: 126.9236,
+      radiusMeters: 25000,
+    });
+  });
+
   it('rejects invalid coordinates before loading Supabase data', async () => {
     const response = await GET(
       new Request('http://localhost/api/coupon-map?lat=999&lng=126.9236&radiusMeters=1000')

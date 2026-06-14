@@ -19,6 +19,8 @@ export interface KakaoLatLng {
 
 export interface KakaoLatLngBounds {
   extend(latlng: KakaoLatLng): void;
+  getNorthEast(): KakaoLatLng;
+  getSouthWest(): KakaoLatLng;
 }
 
 export interface KakaoMapProjection {
@@ -27,6 +29,7 @@ export interface KakaoMapProjection {
 }
 
 export interface KakaoMap {
+  getBounds(): KakaoLatLngBounds;
   getCenter(): KakaoLatLng;
   getLevel(): number;
   getProjection(): KakaoMapProjection;

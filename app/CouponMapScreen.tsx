@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useUserLocation, type UserLocationSource } from '../lib/geo';
 import type { CouponMapLoadStatus, CouponMapView } from '../lib/frontendData';
 import { DEFAULT_LOCATION, type Coords } from '../lib/location';
-import { radiusMetersForMapLevel } from '../lib/mapScale';
+import { radiusMetersForMapViewport } from '../lib/mapScale';
 import { DEFAULT_RADIUS_METERS, haversineMeters } from '../lib/stores';
 import {
   type CachedCouponMapApiResponse,
@@ -400,7 +400,7 @@ export default function CouponMapScreen({
     void reloadNearbyCoupons(
       { lat: center.getLat(), lng: center.getLng() },
       {
-        radiusMeters: radiusMetersForMapLevel(map.getLevel()),
+        radiusMeters: radiusMetersForMapViewport(map),
         source: 'map_viewport',
       }
     );
@@ -697,7 +697,7 @@ export default function CouponMapScreen({
     const map = mapRef.current;
     const kakaoMaps = kakaoMapsRef.current;
     const radiusMeters = map
-      ? radiusMetersForMapLevel(map.getLevel())
+      ? radiusMetersForMapViewport(map)
       : searchRadiusRef.current;
 
     collapseSheet();

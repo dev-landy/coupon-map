@@ -219,7 +219,7 @@ create or replace function public.nearby_stores(
     where st_dwithin(
       s.location,
       st_setsrid(st_makepoint(p_lng, p_lat), 4326)::geography,
-      least(greatest(p_radius_meters, 0), 5000)
+      least(greatest(p_radius_meters, 0), 100000)
     )
     order by distance_meters asc;
   $$;

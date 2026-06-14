@@ -230,10 +230,28 @@ class MockKakaoLatLng {
 }
 
 class MockKakaoLatLngBounds {
-  readonly points: MockKakaoLatLng[] = [];
+  readonly points: MockKakaoLatLng[];
+
+  constructor(points: MockKakaoLatLng[] = []) {
+    this.points = points;
+  }
 
   extend(latlng: MockKakaoLatLng): void {
     this.points.push(latlng);
+  }
+
+  getNorthEast(): MockKakaoLatLng {
+    return new MockKakaoLatLng(
+      Math.max(...this.points.map((point) => point.getLat())),
+      Math.max(...this.points.map((point) => point.getLng()))
+    );
+  }
+
+  getSouthWest(): MockKakaoLatLng {
+    return new MockKakaoLatLng(
+      Math.min(...this.points.map((point) => point.getLat())),
+      Math.min(...this.points.map((point) => point.getLng()))
+    );
   }
 }
 
@@ -263,6 +281,15 @@ class MockKakaoMap {
 
   getCenter(): MockKakaoLatLng {
     return this.center;
+  }
+
+  getBounds(): MockKakaoLatLngBounds {
+    const halfSpan = this.level >= 8 ? 0.15 : 0.004;
+
+    return new MockKakaoLatLngBounds([
+      new MockKakaoLatLng(this.center.getLat() - halfSpan, this.center.getLng() - halfSpan),
+      new MockKakaoLatLng(this.center.getLat() + halfSpan, this.center.getLng() + halfSpan),
+    ]);
   }
 
   getLevel(): number {
@@ -908,6 +935,51 @@ describe('CouponMapScreen', () => {
 
     expect(screen.getByRole('button', { name: '쿠폰 패널 닫기' })).toBeTruthy();
     expect(projectGangnam()).toEqual({ x: 186, y: 300 });
+  });
+
+  it('uses visible map bounds when reloading a zoomed-out map viewport', async () => {
+    vi.stubEnv('NEXT_PUBLIC_KAKAO_MAP_APP_KEY', 'test-key');
+    mockAnimationFrame();
+    mockKakaoMaps();
+    const fetchMock = vi.fn((_input: RequestInfo | URL, _init?: RequestInit) =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () =>
+          Promise.resolve({
+            view: VIEW,
+            status: 'ready',
+            message: null,
+          }),
+      } as Response)
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    const { container } = render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+
+    await waitFor(() => expect(latestKakaoMap).toBeTruthy());
+    await act(async () => {
+      await new Promise((resolve) => window.setTimeout(resolve, 950));
+    });
+
+    const providerMap = container.querySelector('.providerMap');
+    expect(providerMap).toBeTruthy();
+
+    await act(async () => {
+      latestKakaoMap?.setLevel(10);
+      fireEvent.wheel(providerMap as HTMLElement);
+      latestKakaoMap?.panTo(new MockKakaoLatLng(37.62, 127.12));
+      await new Promise((resolve) => window.setTimeout(resolve, 550));
+    });
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    const requestedUrl = String(fetchMock.mock.calls[0]?.[0] ?? '');
+    const radiusMeters = Number(
+      new URL(requestedUrl, 'http://localhost').searchParams.get('radiusMeters')
+    );
+
+    expect(requestedUrl).toContain('/api/coupon-map?');
+    expect(radiusMeters).toBeGreaterThan(5000);
   });
 
   it('reloads coupon data when the browser reports a moved location', async () => {
