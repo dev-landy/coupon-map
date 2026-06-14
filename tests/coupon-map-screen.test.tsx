@@ -758,6 +758,26 @@ describe('CouponMapScreen', () => {
     expect(container.querySelector('.mapStatus')).toBeTruthy();
   });
 
+  it('keeps the provider map and projected markers hidden until the initial map fit settles', async () => {
+    vi.stubEnv('NEXT_PUBLIC_KAKAO_MAP_APP_KEY', 'test-key');
+    mockAnimationFrame();
+    mockKakaoMaps();
+
+    const { container } = render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+    const mapCanvas = container.querySelector('.mapCanvas') as HTMLElement;
+
+    expect(mapCanvas.className).toContain('usesFallbackMap');
+    expect(mapCanvas.className).toContain('isMapLoading');
+    expect(mapCanvas.className).not.toContain('hasProviderMap');
+    expect(screen.queryByRole('button', { name: '맥도날드 홍대점 20%' })).toBeNull();
+
+    await waitFor(() => expect(mapCanvas.className).toContain('hasProviderMap'));
+
+    expect(mapCanvas.className).not.toContain('isMapLoading');
+    expect(container.querySelector('.mapStatus')).toBeNull();
+    expect(await screen.findByRole('button', { name: '맥도날드 홍대점 20%' })).toBeTruthy();
+  });
+
   it('keeps Kakao-projected store markers anchored on mobile camera moves', async () => {
     vi.stubEnv('NEXT_PUBLIC_KAKAO_MAP_APP_KEY', 'test-key');
     mockMobileViewport();
@@ -841,7 +861,7 @@ describe('CouponMapScreen', () => {
     });
   });
 
-  it('centers a selected mobile store without bottom-sheet midpoint offset', async () => {
+  it('centers a selected mobile store in the visible map area above the bottom sheet', async () => {
     vi.stubEnv('NEXT_PUBLIC_KAKAO_MAP_APP_KEY', 'test-key');
     mockMobileViewport();
     mockAnimationFrame();
@@ -863,9 +883,12 @@ describe('CouponMapScreen', () => {
       ?.getProjection()
       .containerPointFromCoords(new MockKakaoLatLng(VIEW.stores[1].lat, VIEW.stores[1].lng));
 
-    expect(selectedPoint).toEqual({ x: 400, y: 300 });
-    expect(latestKakaoMap?.getCenter().getLat()).toBe(VIEW.stores[1].lat);
-    expect(latestKakaoMap?.getCenter().getLng()).toBe(VIEW.stores[1].lng);
+    expect(selectedPoint).toEqual({ x: 400, y: 112 });
+    expect(latestKakaoMap?.getCenter().getLat()).toBeCloseTo(
+      VIEW.stores[1].lat - 0.00188,
+      5
+    );
+    expect(latestKakaoMap?.getCenter().getLng()).toBeCloseTo(VIEW.stores[1].lng, 5);
   });
 
   it('centers a mobile store selected from the coupon list', async () => {
@@ -891,9 +914,51 @@ describe('CouponMapScreen', () => {
 
     expect(detail.getAttribute('data-selected-store-id')).toBe('gangnam');
     expect(detail.getAttribute('data-selected-coupon-id')).toBe('whopper');
-    expect(selectedPoint).toEqual({ x: 400, y: 300 });
-    expect(latestKakaoMap?.getCenter().getLat()).toBe(VIEW.stores[1].lat);
-    expect(latestKakaoMap?.getCenter().getLng()).toBe(VIEW.stores[1].lng);
+    expect(selectedPoint).toEqual({ x: 400, y: 112 });
+    expect(latestKakaoMap?.getCenter().getLat()).toBeCloseTo(
+      VIEW.stores[1].lat - 0.00188,
+      5
+    );
+    expect(latestKakaoMap?.getCenter().getLng()).toBeCloseTo(VIEW.stores[1].lng, 5);
+  });
+
+  it('keeps a selected mobile store centered as the bottom sheet is lowered', async () => {
+    vi.stubEnv('NEXT_PUBLIC_KAKAO_MAP_APP_KEY', 'test-key');
+    mockMobileViewport();
+    mockAnimationFrame();
+    mockKakaoMaps();
+
+    const { container } = render(<CouponMapScreen view={VIEW} status="ready" message={null} />);
+
+    const gangnamCouponRow = screen.getByRole('button', {
+      name: '버거킹 강남점 와퍼 3,000원 할인 3,000원',
+    });
+    const sheetDragArea = container.querySelector('.sheetDragArea') as HTMLElement;
+    const projectGangnam = () =>
+      latestKakaoMap
+        ?.getProjection()
+        .containerPointFromCoords(new MockKakaoLatLng(VIEW.stores[1].lat, VIEW.stores[1].lng));
+
+    await waitFor(() => expect(latestKakaoMap).toBeTruthy());
+
+    fireEvent.click(gangnamCouponRow);
+
+    await waitFor(() => expect(projectGangnam()).toEqual({ x: 400, y: 112 }));
+
+    await act(async () => {
+      firePointer(sheetDragArea, 'pointerdown', 120);
+      firePointer(sheetDragArea, 'pointermove', 240);
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+
+    await waitFor(() => expect(projectGangnam()).toEqual({ x: 400, y: 172 }));
+
+    await act(async () => {
+      firePointer(sheetDragArea, 'pointerup', 240);
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+
+    await waitFor(() => expect(projectGangnam()).toEqual({ x: 400, y: 272 }));
   });
 
   it('keeps a selected desktop store centered in the visible map area as the right panel opens and closes', async () => {
